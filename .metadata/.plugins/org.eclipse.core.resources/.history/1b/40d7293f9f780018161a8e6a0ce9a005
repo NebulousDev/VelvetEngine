@@ -1,8 +1,0 @@
-package graphics;
-
-public interface IGraphics
-{
-	void initGrahpics();
-	GraphicsBuffer createBuffer(GraphicsBufferType type, int size);
-
-}

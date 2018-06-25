@@ -1,9 +1,0 @@
-package math;
-
-public class Main {
-
-	public static void main(String[] args) {
-		Vector2f vec2 = new Vector2f();
-	}
-
-}

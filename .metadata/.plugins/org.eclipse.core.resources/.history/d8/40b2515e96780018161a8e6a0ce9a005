@@ -1,8 +1,0 @@
-package graphics.opengl;
-
-import graphics.IGraphics;
-
-public class GLGraphics implements IGraphics
-{
-
-}

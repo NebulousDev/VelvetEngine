@@ -1,9 +1,0 @@
-package graphics;
-
-public class Window
-{
-	public static Window createWindow(String title, String width, String height, int flags)
-	{
-		
-	}
-}

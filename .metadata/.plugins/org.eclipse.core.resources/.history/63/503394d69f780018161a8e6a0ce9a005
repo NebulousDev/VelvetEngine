@@ -1,6 +1,0 @@
-package graphics;
-
-public class GraphicsContext
-{
-	public long context = 0;
-}
