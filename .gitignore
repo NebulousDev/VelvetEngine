@@ -6,6 +6,9 @@
 /.recommenders/*
 .metadata
 .recommenders
+bin
+build
+*.log
 
 # Ignore Gradle GUI config
 gradle-app.setting
