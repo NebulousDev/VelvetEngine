@@ -1,3 +1,5 @@
+import org.lwjgl.glfw.GLFW;
+
 import core.Application;
 import core.Window;
 import graphics.Graphics;
@@ -13,7 +15,7 @@ public class Main
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 		
-		while(!app.shouldClose())
+		while(GLFW.glfwWindowShouldClose(app.getContext().getContext()));
 		{
 			gfx.clearBuffers();
 			app.update();

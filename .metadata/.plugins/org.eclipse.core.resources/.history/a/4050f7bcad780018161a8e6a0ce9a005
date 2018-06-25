@@ -13,7 +13,7 @@ public class Main
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 		
-		while(!app.shouldClose())
+		while(true);
 		{
 			gfx.clearBuffers();
 			app.update();

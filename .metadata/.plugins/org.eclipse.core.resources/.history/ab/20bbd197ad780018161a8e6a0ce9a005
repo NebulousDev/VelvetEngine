@@ -117,11 +117,6 @@ public class Application
 		graphics.swapBuffers(context);
 		GLFW.glfwPollEvents();
 	}
-	
-	public boolean shouldClose()
-	{
-		return GLFW.glfwWindowShouldClose(context.getContext());
-	}
 
 	public String getName() { return name; }
 

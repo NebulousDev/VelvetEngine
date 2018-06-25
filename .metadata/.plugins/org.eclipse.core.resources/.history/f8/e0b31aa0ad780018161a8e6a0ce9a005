@@ -120,7 +120,7 @@ public class Application
 	
 	public boolean shouldClose()
 	{
-		return GLFW.glfwWindowShouldClose(context.getContext());
+		
 	}
 
 	public String getName() { return name; }
