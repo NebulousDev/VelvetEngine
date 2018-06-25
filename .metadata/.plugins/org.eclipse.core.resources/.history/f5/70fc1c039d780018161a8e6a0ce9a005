@@ -1,0 +1,17 @@
+package core;
+
+import graphics.GraphicsAPI;
+
+public class Application
+{
+	GraphicsAPI gfxApi;
+	IGrahpics	graphics;
+	
+	private Application() {}
+	
+	static void createApplication(String name, GraphicsAPI api)
+	{
+		
+	}
+	
+}

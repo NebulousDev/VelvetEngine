@@ -1,0 +1,17 @@
+package graphics;
+
+public class Window
+{
+	
+	private Window() {}
+	
+	public static Window createWindow(String title, String width, String height, int x, int y, int flags)
+	{
+		
+	}
+	
+	public static Window createWindow(String title, String width, String height, int flags)
+	{
+		
+	}
+}

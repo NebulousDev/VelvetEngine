@@ -1,0 +1,28 @@
+package graphics;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL15;
+
+public class GL3Graphics implements IGraphics
+{
+	@Override
+	public boolean initGrahpics()
+	{
+		boolean init = GLFW.glfwInit();
+		if(!init)
+		{
+			//TODO: add error handling
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public GraphicsBuffer createBuffer(GraphicsBufferType type, int size)
+	{
+		int buffer = GL15.glGenBuffers();
+		return new GraphicsBuffer(buffer, size, type);
+	}
+
+}

@@ -1,0 +1,9 @@
+package graphics;
+
+public interface IGraphics
+{
+	boolean initGrahpics();
+	boolean setContextCurrent(GraphicsContext context);
+	GraphicsBuffer createBuffer(GraphicsBufferType type, int size);
+
+}

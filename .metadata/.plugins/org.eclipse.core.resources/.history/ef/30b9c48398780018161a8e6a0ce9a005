@@ -1,0 +1,23 @@
+package graphics;
+
+public class Window
+{
+	public static final int BORDERLESS 		= 0x1;
+	public static final int NONRESIZEABLE 	= 0x1;
+	public static final int VSYNC			= 0x2;
+	
+	public static final int FULLSCREEN 		= 0x1;
+	public static final int WINDOWED 		= 0x1;
+	
+	private Window() {}
+	
+	public static Window createWindow(String title, String width, String height, int x, int y, int flags)
+	{
+		
+	}
+	
+	public static Window createWindow(String title, String width, String height, int flags)
+	{
+		
+	}
+}

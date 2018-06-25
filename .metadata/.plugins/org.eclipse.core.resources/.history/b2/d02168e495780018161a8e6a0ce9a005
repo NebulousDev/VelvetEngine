@@ -1,0 +1,19 @@
+package graphics;
+
+public class GraphicsBuffer
+{
+	protected int 					id;
+	protected int 					size;
+	protected GraphicsBufferType 	type;
+	
+	GraphicsBuffer(int id, int size)
+	{
+		this.id 	= id;
+		this.size 	= size;
+	}
+	
+	public int getID() { return id; }
+	
+	public int getSize() { return size; }
+
+}

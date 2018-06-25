@@ -1,0 +1,8 @@
+package core;
+
+public class Application
+{
+
+	static void createApplication(String name, )
+	
+}

@@ -1,0 +1,7 @@
+package graphics;
+
+public class GraphicsBuffer
+{
+	protected int size;
+	protected int idl
+}

@@ -1,0 +1,14 @@
+import graphics.GL3Graphics;
+import graphics.GraphicsBufferType;
+import graphics.IGraphics;
+
+public class Main
+{
+
+	public static void main(String[] args)
+	{
+		IGraphics gfx = new GL3Graphics();
+		gfx.createBuffer(GraphicsBufferType.GRAPHICS_BUFFER_VERTEX, 1024);
+	}
+
+}

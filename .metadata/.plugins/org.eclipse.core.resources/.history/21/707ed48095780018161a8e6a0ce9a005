@@ -1,0 +1,7 @@
+package graphics;
+
+public interface IGraphics
+{
+	GraphicsBuffer CreateBuffer(int size);
+
+}

@@ -1,0 +1,58 @@
+package graphics;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL15;
+
+import core.Window;
+
+public class GL3Graphics implements IGraphics
+{
+	@Override
+	public boolean initGraphics()
+	{
+		boolean init = GLFW.glfwInit();
+		if(!init)
+		{
+			//TODO: add error handling
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public GraphicsContext createContext(Window window) {
+		GraphicsContext context = new GraphicsContext(window.getWindowLong());
+		return context;
+	}
+	
+	@Override
+	public boolean setContextCurrent(GraphicsContext context) {
+		GLFW.glfwMakeContextCurrent(context.getContext());
+		return true;
+	}
+
+	
+	@Override
+	public GraphicsBuffer createBuffer(GraphicsBufferType type, int size)
+	{
+		int buffer = GL15.glGenBuffers();
+		return new GraphicsBuffer(buffer, size, type);
+	}
+
+	@Override
+	public boolean setClearColor(int color) {
+		return true;
+	}
+
+	@Override
+	public boolean clearScreen() {
+		return true;
+	}
+
+	@Override
+	public boolean swapBuffers() {
+		return true;
+	}
+	
+}

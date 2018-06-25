@@ -1,0 +1,17 @@
+package graphics;
+
+public class GraphicsBuffer
+{
+	protected int id;
+	protected int size;
+	
+	void GrahpicsBuffer()
+	{
+		
+	}
+	
+	public int getID() { return id; }
+	
+	public int getSize() { return size; }
+
+}

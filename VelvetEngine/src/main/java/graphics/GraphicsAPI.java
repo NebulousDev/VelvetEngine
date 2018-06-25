@@ -1,0 +1,9 @@
+package graphics;
+
+public enum GraphicsAPI
+{
+	GRAPHICS_OPENGL2,
+	GRAPHICS_OPENGL3,
+	GRAPHICS_OPENGLES,
+	GRAPHICS_VULKAN
+}

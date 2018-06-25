@@ -1,0 +1,10 @@
+package math;
+
+class Vector3f {
+
+}
+
+class Vector4f
+{
+	
+}

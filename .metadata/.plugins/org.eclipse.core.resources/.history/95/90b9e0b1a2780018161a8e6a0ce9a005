@@ -1,0 +1,102 @@
+package core;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
+
+import graphics.GL3Graphics;
+import graphics.GraphicsAPI;
+import graphics.GraphicsContext;
+import graphics.IGraphics;
+
+public class Application
+{
+	private String 			name;
+	private GraphicsAPI 	gfxApi;
+	private IGraphics		graphics;
+	private GraphicsContext context;
+	private Window			window;
+	
+	private Application() {}
+	
+	static void createApplication(String name, GraphicsAPI api)
+	{
+		Application app = new Application();
+		app.name = name;
+		app.gfxApi = api;
+		
+		switch(api)
+		{
+			case GRAPHICS_OPENGL2:
+				app.graphics = new GL3Graphics(); break;
+			
+			case GRAPHICS_OPENGL3:
+				app.graphics = new GL3Graphics(); break;
+				
+			case GRAPHICS_OPENGLES:
+				app.graphics = new GL3Graphics(); break;
+			
+			case GRAPHICS_VULKAN:
+				app.graphics = new GL3Graphics(); break;
+		}
+		
+		app.graphics.initGraphics();
+		
+	}
+	
+	public Window createWindow(String title, int width, int height, int x, int y, int flags)
+	{
+		if(window != null)
+		{
+			Window window 	= new Window();
+			window.title 	= title;
+			window.width 	= width;
+			window.height 	= height;
+			window.flags	= flags;
+			
+			boolean fullscreen = false;
+			
+			if((flags & Window.FULLSCREEN) == Window.FULLSCREEN)
+			{
+				GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+				GLFW.glfwWindowHint(GLFW.GLFW_RED_BITS, mode.redBits());
+				GLFW.glfwWindowHint(GLFW.GLFW_GREEN_BITS, mode.greenBits());
+				GLFW.glfwWindowHint(GLFW.GLFW_BLUE_BITS, mode.blueBits());
+				GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, mode.refreshRate());
+				
+				fullscreen = true;
+			}
+			
+			if((flags & Window.BORDERLESS) == Window.BORDERLESS)
+			{
+				//TODO: implement borderless windows
+			}
+			
+			window.windowLong = GLFW.glfwCreateWindow(width, height, title, 0, 0);
+			GLFW.glfwSetWindowPos(window.windowLong, xpos, ypos);
+			
+			context = graphics.createContext(window);
+			graphics.setContextCurrent(context);
+			
+			return window;
+		}
+		else
+		{
+			//TODO: Error, only one window instance allowed
+			return null;
+		}
+		
+	}
+	
+	/*
+	public Window createWindow(String title, int width, int height, int flags)
+	{
+		GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+		int monitorWidth = mode.width();
+		int monitorHeight = mode.height();
+		
+		int x = (monitorWidth / 2) - (width / 2);
+		int y = (monitorHeight / 2) - (height / 2);
+	}
+	*/
+	
+}

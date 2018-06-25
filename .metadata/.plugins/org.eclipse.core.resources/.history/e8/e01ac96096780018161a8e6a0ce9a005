@@ -1,0 +1,14 @@
+package graphics.opengl;
+
+import graphics.GraphicsBuffer;
+import graphics.GraphicsBufferType;
+import graphics.IGraphics;
+
+public class GLGraphics implements IGraphics
+{
+	@Override
+	public GraphicsBuffer createBuffer(GraphicsBufferType type, int size) {
+		return null;
+	}
+
+}

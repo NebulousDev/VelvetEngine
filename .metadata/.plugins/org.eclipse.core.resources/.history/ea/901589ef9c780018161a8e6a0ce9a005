@@ -1,0 +1,15 @@
+package core;
+
+import graphics.GraphicsAPI;
+
+public class Application
+{
+
+	private Application() {}
+	
+	static void createApplication(String name, GraphicsAPI api)
+	{
+		
+	}
+	
+}

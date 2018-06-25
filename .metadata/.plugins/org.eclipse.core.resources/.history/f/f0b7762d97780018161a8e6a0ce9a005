@@ -1,0 +1,11 @@
+import graphics.GLGraphics;
+
+public class Main
+{
+
+	public static void main(String[] args)
+	{
+		IGraphics gfx = new GLGraphics();
+	}
+
+}

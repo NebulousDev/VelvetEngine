@@ -1,0 +1,56 @@
+package graphics;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
+
+public class Window
+{
+	public static final int WINDOWED 		= 0x01;
+	public static final int FULLSCREEN 		= 0x02;
+	public static final int BORDERLESS 		= 0x04;
+	public static final int CENTERED		= 0x08;
+	public static final int NONRESIZEABLE 	= 0x10;
+	public static final int VSYNC			= 0x20;	
+	
+	private String 	title;
+	private int 	x, y;
+	private int 	width, height;
+	private int 	flags;
+	
+	private Window() {}
+	
+	public static Window createWindow(String title, int width, int height, int x, int y, int flags)
+	{
+		Window window = new Window();
+		window.title 	= title;
+		window.width 	= width;
+		window.height 	= height;
+		window.flags	= flags;
+		
+		if((flags & FULLSCREEN) == FULLSCREEN)
+		{
+			GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+			GLFW.glfwWindowHint(GLFW.GLFW_RED_BITS, mode.redBits());
+			GLFW.glfwWindowHint(GLFW.GLFW_GREEN_BITS, mode.greenBits());
+			GLFW.glfwWindowHint(GLFW.GLFW_BLUE_BITS, mode.blueBits());
+			GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, mode.refreshRate());
+		}
+		
+		if((flags & BORDERLESS) == BORDERLESS)
+		{
+			//TODO: implement borderless windows
+		}
+		
+		return window;
+	}
+	
+	public static Window createWindow(String title, int width, int height, int flags)
+	{
+		GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+		int monitorWidth = mode.width();
+		int monitorHeight = mode.height();
+		
+		int x = (monitorWidth / 2) - (width / 2);
+		int y = (monitorHeight / 2) - (height / 2);
+	}
+}
