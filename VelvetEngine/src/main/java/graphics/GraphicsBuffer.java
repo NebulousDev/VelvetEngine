@@ -2,21 +2,18 @@ package graphics;
 
 public class GraphicsBuffer
 {
-	protected int 					id;
-	protected int 					size;
-	protected GraphicsBufferType 	type;
+	int 		id		= -1;
+	int 		size	= 0;
+	BufferType 	type	= null;
 	
-	GraphicsBuffer(int id, int size, GraphicsBufferType type)
-	{
-		this.id = id;
-		this.size = size;
-		this.type = type;
-	}
+	GraphicsBuffer() {}
 	
-	public int getID() { return id; }
+	public int ID() { return id; }
 	
-	public int getSize() { return size; }
+	public int size() { return size; }
 	
-	public GraphicsBufferType getBufferType() { return type; }
+	public BufferType type() { return type; }
+	
+	public boolean isValid() { return id >= 0; }
 
 }

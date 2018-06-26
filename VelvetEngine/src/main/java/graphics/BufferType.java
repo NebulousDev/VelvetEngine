@@ -1,6 +1,6 @@
 package graphics;
 
-public enum GraphicsBufferType
+public enum BufferType
 {
 	GRAPHICS_BUFFER_VERTEX,
 	GRAPHICS_BUFFER_INDEX,

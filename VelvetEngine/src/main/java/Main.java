@@ -12,6 +12,8 @@ public class Main
 		
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(0.0f, 0.08f, 0.1f, 1.0f);
+		//Program program = gfx.createProgram("testShaderProgram");
+		//Shader vertex = gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, "/shaders/test.vert");
 		
 		while(!app.shouldClose())
 		{
