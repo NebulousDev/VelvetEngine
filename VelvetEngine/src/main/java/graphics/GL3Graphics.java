@@ -209,6 +209,19 @@ public class GL3Graphics implements Graphics
 		
 		return false;
 	}
+	
+	@Override
+	public boolean freeShader(Shader shader)
+	{
+		if(shader.isValid())
+		{
+			GL20.glDeleteShader(shader.id);
+			shader.id = -1;
+			return true;
+		}
+		
+		return false;
+	}
 
 	@Override
 	public boolean finalizeProgram(Program program)
@@ -216,6 +229,14 @@ public class GL3Graphics implements Graphics
 		if(program.isValid() && !program.isFinalized())
 		{
 			GL20.glLinkProgram(program.id);
+			
+			for(Shader shader : program.shaders)
+			{
+				shader.id = -1;
+				GL20.glDetachShader(program.id, shader.id);
+				GL20.glDeleteShader(shader.id);
+			}
+			
 			program.finalized = true;
 			return true;
 		}

@@ -36,6 +36,8 @@ public interface Graphics
 	
 	boolean attachShader(Program program, Shader shader);
 	
+	boolean freeShader(Shader shader);
+	
 	boolean finalizeProgram(Program program);
 	
 	boolean bindProgram(Program program);
