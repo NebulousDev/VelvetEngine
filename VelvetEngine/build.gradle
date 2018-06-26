@@ -1,10 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'application'
 
 project.ext.lwjglVersion = "3.1.6"
-//project.ext.steamworks4jVersion = "1.7.0"
-//project.ext.steamworks4j-serverVersion = "1.7.0"
 project.ext.lwjglNatives = "natives-windows"
 
 sourceSets
@@ -38,6 +35,4 @@ dependencies
 	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-	//compile "com.code-disaster.steamworks4j:steamworks4j:${steamworks4jVersion}"
-	//compile "com.code-disaster.steamworks4j:steamworks4j-server:${steamworks4j-serverVersion}"
 }

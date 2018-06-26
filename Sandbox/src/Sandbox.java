@@ -6,7 +6,7 @@ import graphics.Program;
 import graphics.Shader;
 import graphics.ShaderType;
 
-public class Main
+public class Sandbox
 {
 	public static void main(String[] args)
 	{
@@ -19,6 +19,11 @@ public class Main
 		Program program 	= gfx.createProgram("testShaderProgram");
 		Shader 	vertex 		= gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, "/shaders/test.vert");
 		Shader 	fragment 	= gfx.createShader("testShaderFrag", ShaderType.SHADER_TYPE_FRAGMENT, "/shaders/test.frag");
+		
+		gfx.attachShader(program, vertex);
+		gfx.attachShader(program, fragment);
+		
+		gfx.finalizeProgram(program);
 		
 		while(!app.shouldClose())
 		{
