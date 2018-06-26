@@ -1,0 +1,3 @@
+rootProject.name = 'Sandbox'
+include ":VelvetEngine"
+project(":VelvetEngine").projectDir = file("../VelvetEngine")
