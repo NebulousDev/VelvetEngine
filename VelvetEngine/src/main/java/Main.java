@@ -11,7 +11,7 @@ public class Main
 		app.createWindow("VelvetEngine", 640, 480, 0, 0, Window.CENTERED);
 		
 		Graphics gfx = app.getGraphics();
-		gfx.setClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		gfx.setClearColor(0.0f, 0.08f, 0.1f, 1.0f);
 		
 		while(!app.shouldClose())
 		{
