@@ -1,5 +1,9 @@
 package math;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+
 public class Vector3f
 {
 	public static final int SIZE 	= 3;
@@ -114,5 +118,20 @@ public class Vector3f
 		float ry = (z * vec3.x) - (x * vec3.z);
 		float rz = (x * vec3.y) - (y * vec3.x);
 		return new Vector3f(rx, ry, rz);
+	}
+	
+	public FloatBuffer toFloatBuffer(boolean flip)
+	{
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(SIZE);
+		buffer.put(x);
+		buffer.put(y);
+		buffer.put(z);
+		if(flip) buffer.flip();
+		return buffer;
+	}
+	
+	public FloatBuffer toFloatBuffer()
+	{
+		return toFloatBuffer(false);
 	}
 }

@@ -1,5 +1,9 @@
 package math;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+
 public class Vector2f
 {
 	public static final int SIZE 	= 2;
@@ -58,5 +62,19 @@ public class Vector2f
 	public float magnitude()
 	{
 		return (float)Math.sqrt((x * x) + (y * y));
+	}
+	
+	public FloatBuffer toFloatBuffer(boolean flip)
+	{
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(SIZE);
+		buffer.put(x);
+		buffer.put(y);
+		if(flip) buffer.flip();
+		return buffer;
+	}
+	
+	public FloatBuffer toFloatBuffer()
+	{
+		return toFloatBuffer(false);
 	}
 }

@@ -1,5 +1,9 @@
 package math;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+
 public class Matrix4f
 {
 	public static final int SIZE 	= 16;
@@ -112,5 +116,18 @@ public class Matrix4f
 		matrix.elements[2 + 3 * 4] = -(far + near) / (far - near);
 		matrix.elements[3 + 3 * 4] = 1.0f;
 		return matrix;
+	}
+	
+	public FloatBuffer toFloatBuffer(boolean flip)
+	{
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(SIZE);
+		buffer.put(elements);
+		if(flip) buffer.flip();
+		return buffer;
+	}
+	
+	public FloatBuffer toFloatBuffer()
+	{
+		return toFloatBuffer(false);
 	}
 }
