@@ -2,6 +2,9 @@ import core.Application;
 import core.Window;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
+import graphics.Program;
+import graphics.Shader;
+import graphics.ShaderType;
 
 public class Main
 {
@@ -12,8 +15,10 @@ public class Main
 		
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(0.0f, 0.08f, 0.1f, 1.0f);
-		//Program program = gfx.createProgram("testShaderProgram");
-		//Shader vertex = gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, "/shaders/test.vert");
+		
+		Program program 	= gfx.createProgram("testShaderProgram");
+		Shader 	vertex 		= gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, "/shaders/test.vert");
+		Shader 	fragment 	= gfx.createShader("testShaderFrag", ShaderType.SHADER_TYPE_FRAGMENT, "/shaders/test.frag");
 		
 		while(!app.shouldClose())
 		{
