@@ -29,7 +29,7 @@ public class Application
 			case GRAPHICS_OPENGL2:
 				app.graphics = new GL3Graphics(); break;
 			
-			case GRAPHICS_OPENGL3:
+			case GRAPHICS_OPENGL:
 				app.graphics = new GL3Graphics(); break;
 				
 			case GRAPHICS_OPENGLES:

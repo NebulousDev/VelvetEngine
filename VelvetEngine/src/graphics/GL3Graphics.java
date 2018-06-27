@@ -83,12 +83,10 @@ public class GL3Graphics implements Graphics
 	}
 	
 	@Override
-	public GraphicsBuffer createBuffer(BufferType type, int size)
+	public GraphicsBuffer createBuffer()
 	{
 		GraphicsBuffer buffer = new GraphicsBuffer();
 		buffer.id = GL15.glGenBuffers();
-		buffer.size = size;
-		buffer.type = type;
 		
 		if(buffer.isValid()) return buffer;
 		else return null;
@@ -137,11 +135,15 @@ public class GL3Graphics implements Graphics
 	}
 	
 	@Override
-	public boolean setBufferData(GraphicsBuffer buffer, int[] data)
+	public boolean setBufferData(GraphicsBuffer buffer, BufferType type, int[] data)
 	{
 		if(buffer.isValid())
 		{
-			GL15.glBufferData(graphicsTypeToInt(buffer.type), data, GL15.GL_STATIC_DRAW);
+			int bufferType = graphicsTypeToInt(type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL15.glBufferData(bufferType, data, GL15.GL_STATIC_DRAW);
+			buffer.size = data.length;
+			buffer.type = type;
 			return true;
 		}
 		
@@ -149,11 +151,15 @@ public class GL3Graphics implements Graphics
 	}
 
 	@Override
-	public boolean setBufferData(GraphicsBuffer buffer, float[] data)
+	public boolean setBufferData(GraphicsBuffer buffer, BufferType type, float[] data)
 	{
 		if(buffer.isValid())
 		{
-			GL15.glBufferData(graphicsTypeToInt(buffer.type), data, GL15.GL_STATIC_DRAW);
+			int bufferType = graphicsTypeToInt(type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL15.glBufferData(graphicsTypeToInt(type), data, GL15.GL_STATIC_DRAW);
+			buffer.size = data.length;
+			buffer.type = type;
 			return true;
 		}
 		
@@ -230,11 +236,19 @@ public class GL3Graphics implements Graphics
 		{
 			GL20.glLinkProgram(program.id);
 			
+			int success = GL20.glGetProgrami(program.id, GL20.GL_LINK_STATUS);
+			if(success == GL11.GL_FALSE)
+			{
+				int length = GL20.glGetProgrami(program.id, GL20.GL_INFO_LOG_LENGTH);
+				String error = GL20.glGetProgramInfoLog(program.id, length);
+				System.out.println(error);
+			}
+			
 			for(Shader shader : program.shaders)
 			{
-				shader.id = -1;
 				GL20.glDetachShader(program.id, shader.id);
 				GL20.glDeleteShader(shader.id);
+				shader.id = -1;
 			}
 			
 			program.finalized = true;

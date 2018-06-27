@@ -12,7 +12,7 @@ public interface Graphics
 	
 	GraphicsContext createContext(Window window);
 	
-	GraphicsBuffer createBuffer(BufferType type, int size);
+	GraphicsBuffer createBuffer();
 	
 	Program createProgram(String name);
 	
@@ -24,9 +24,9 @@ public interface Graphics
 	
 	boolean createCapibilities();
 	
-	boolean setBufferData(GraphicsBuffer buffer, int[] data);
+	boolean setBufferData(GraphicsBuffer buffer, BufferType type, int[] data);
 	
-	boolean setBufferData(GraphicsBuffer buffer, float[] data);
+	boolean setBufferData(GraphicsBuffer buffer, BufferType type, float[] data);
 	
 	boolean bindBuffer(GraphicsBuffer buffer);
 	
