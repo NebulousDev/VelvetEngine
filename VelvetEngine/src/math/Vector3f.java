@@ -27,6 +27,11 @@ public class Vector3f
 		this.z = z;
 	}
 	
+	public Vector3f copy()
+	{
+		return new Vector3f(x, y, z);
+	}
+	
 	public Vector3f(Vector2f vec2, float z)
 	{
 		this.x = vec2.x;
@@ -102,6 +107,15 @@ public class Vector3f
 		return this;
 	}
 	
+	public Vector3f normalize()
+	{
+		float magnitude = magnitude();
+		x /= magnitude;
+		y /= magnitude;
+		z /= magnitude;
+		return this;
+	}
+	
 	public float magnitude()
 	{
 		return (float)Math.sqrt((x * x) + (y * y) + (z * z));
@@ -112,6 +126,7 @@ public class Vector3f
 		return (x * vec3.x) + (y * vec3.y) + (z * vec3.z);
 	}
 	
+	//TODO: look into cross modifying calling class
 	public Vector3f cross(Vector3f vec3)
 	{
 		float rx = (y * vec3.z) - (z * vec3.y);
@@ -133,5 +148,10 @@ public class Vector3f
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + x + ", " + y + ", " + z + "]";
 	}
 }

@@ -11,9 +11,14 @@ public class Matrix4f
 	
 	float[] elements;
 	
-	Matrix4f(float[] elements)
+	public Matrix4f(float[] elements)
 	{
 		this.elements = elements;
+	}
+	
+	public Matrix4f copy()
+	{
+		return new Matrix4f(elements);
 	}
 	
 	public Matrix4f mul(Matrix4f other)
@@ -88,6 +93,19 @@ public class Matrix4f
 		matrix.elements[2 + 2 * 4] = (cosX * cosY);
 
 		return matrix;
+	}
+	
+	public static Matrix4f View(Vector3f forward, Vector3f right, Vector3f up) {
+		
+		float[] elements =
+		{
+			right.x, up.x, -forward.x, 0.0f,
+			right.y, up.y, -forward.y, 0.0f,
+			right.z, up.z, -forward.z, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		};
+			
+		return new Matrix4f(elements);
 	}
 	
 	//TODO: Redo perspective matrix

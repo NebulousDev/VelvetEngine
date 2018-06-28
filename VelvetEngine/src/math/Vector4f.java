@@ -30,6 +30,11 @@ public class Vector4f
 		this.w = w;
 	}
 	
+	public Vector4f copy()
+	{
+		return new Vector4f(x, y, z, w);
+	}
+	
 	public Vector4f(Vector3f vec3, float w)
 	{
 		this.x = vec3.x;
@@ -151,6 +156,16 @@ public class Vector4f
 		return this;
 	}
 	
+	public Vector4f normalize()
+	{
+		float magnitude = magnitude();
+		x /= magnitude;
+		y /= magnitude;
+		z /= magnitude;
+		w /= magnitude;
+		return this;
+	}
+	
 	public float magnitude()
 	{
 		return (float)Math.sqrt((x * x) + (y * y) + (z * z) + (w * w));
@@ -170,5 +185,10 @@ public class Vector4f
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
 	}
 }
