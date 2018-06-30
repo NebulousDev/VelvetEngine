@@ -24,6 +24,20 @@ public class Vector2f
 		this.y = y;
 	}
 	
+	public Vector2f set(float x, float y)
+	{
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+	
+	public Vector2f set(Vector2f vec2)
+	{
+		this.x = vec2.x;
+		this.y = vec2.y;
+		return this;
+	}
+	
 	public Vector2f copy()
 	{
 		return new Vector2f(x, y);
@@ -66,13 +80,13 @@ public class Vector2f
 	
 	public Vector2f normalize()
 	{
-		float magnitude = magnitude();
+		float magnitude = length();
 		x /= magnitude;
 		y /= magnitude;
 		return this;
 	}
 	
-	public float magnitude()
+	public float length()
 	{
 		return (float)Math.sqrt((x * x) + (y * y));
 	}
@@ -89,6 +103,11 @@ public class Vector2f
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
+	}
+	
+	public float[] toArray()
+	{
+		return new float[] { x, y};
 	}
 	
 	@Override

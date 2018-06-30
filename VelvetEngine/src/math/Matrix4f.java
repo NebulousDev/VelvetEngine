@@ -23,7 +23,7 @@ public class Matrix4f
 	
 	public Matrix4f mul(Matrix4f other)
 	{
-		float data[] = new float[16];
+		float data[] = new float[SIZE];
 		
 		for (int y = 0; y < 4; y++)
 		{
@@ -41,6 +41,11 @@ public class Matrix4f
 		return this;
 	}
 	
+	public void set(float[] elements)
+	{
+		this.elements = elements;
+	}
+	
 	public static Matrix4f Identity()
 	{
 		float[] elements = 
@@ -54,14 +59,14 @@ public class Matrix4f
 		return new Matrix4f(elements);
 	}
 	
-	public static Matrix4f Transform(Vector3f vec3)
+	public static Matrix4f Translation(Vector3f vec3)
 	{
 		float[] elements = 
 		{
-			0.0f, 0.0f, 0.0f, vec3.x,
-			0.0f, 0.0f, 0.0f, vec3.y,
-			0.0f, 0.0f, 0.0f, vec3.z,
-			0.0f, 0.0f, 0.0f, 0.0f
+			1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			vec3.x, vec3.y, vec3.z, 1.0f
 		};
 		
 		return new Matrix4f(elements);
@@ -95,7 +100,7 @@ public class Matrix4f
 		return matrix;
 	}
 	
-	public static Matrix4f View(Vector3f forward, Vector3f right, Vector3f up) {
+	public static Matrix4f Orientation(Vector3f forward, Vector3f right, Vector3f up) {
 		
 		float[] elements =
 		{

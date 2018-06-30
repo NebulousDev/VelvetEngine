@@ -27,6 +27,22 @@ public class Vector3f
 		this.z = z;
 	}
 	
+	public Vector3f set(float x, float y, float z)
+	{
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		return this;
+	}
+	
+	public Vector3f set(Vector3f vec3)
+	{
+		this.x = vec3.x;
+		this.y = vec3.y;
+		this.z = vec3.z;
+		return this;
+	}
+	
 	public Vector3f copy()
 	{
 		return new Vector3f(x, y, z);
@@ -107,16 +123,33 @@ public class Vector3f
 		return this;
 	}
 	
+	public Vector3f rotate(Vector3f axis, float angle)
+	{
+		float sinAngle = (float)Math.sin(-angle);
+		float cosAngle = (float)Math.cos(-angle);
+
+		return this.cross(axis.copy().mul(sinAngle))
+			.add((this.copy().mul(cosAngle))
+			.add(axis.copy().mul(this.dot(axis.mul(1 - cosAngle)))));
+	}
+
+	public Vector3f rotate(Quaternion rot)
+	{
+		Quaternion conjugate = rot.copy().conjugate();
+		Quaternion result = rot.copy().mul(this).mul(conjugate);
+		return new Vector3f(result.x, result.y, result.z);
+	}
+	
 	public Vector3f normalize()
 	{
-		float magnitude = magnitude();
+		float magnitude = length();
 		x /= magnitude;
 		y /= magnitude;
 		z /= magnitude;
 		return this;
 	}
 	
-	public float magnitude()
+	public float length()
 	{
 		return (float)Math.sqrt((x * x) + (y * y) + (z * z));
 	}
@@ -148,6 +181,11 @@ public class Vector3f
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
+	}
+	
+	public float[] toArray()
+	{
+		return new float[] { x, y, z };
 	}
 	
 	@Override

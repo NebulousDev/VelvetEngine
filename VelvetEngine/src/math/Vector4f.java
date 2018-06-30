@@ -30,6 +30,24 @@ public class Vector4f
 		this.w = w;
 	}
 	
+	public Vector4f set(float x, float y, float z, float w)
+	{
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+		return this;
+	}
+	
+	public Vector4f set(Vector4f vec4)
+	{
+		this.x = vec4.x;
+		this.y = vec4.y;
+		this.z = vec4.z;
+		this.w = vec4.w;
+		return this;
+	}
+	
 	public Vector4f copy()
 	{
 		return new Vector4f(x, y, z, w);
@@ -158,7 +176,7 @@ public class Vector4f
 	
 	public Vector4f normalize()
 	{
-		float magnitude = magnitude();
+		float magnitude = length();
 		x /= magnitude;
 		y /= magnitude;
 		z /= magnitude;
@@ -166,7 +184,7 @@ public class Vector4f
 		return this;
 	}
 	
-	public float magnitude()
+	public float length()
 	{
 		return (float)Math.sqrt((x * x) + (y * y) + (z * z) + (w * w));
 	}
@@ -185,6 +203,11 @@ public class Vector4f
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
+	}
+	
+	public float[] toArray()
+	{
+		return new float[] { x, y, z, w };
 	}
 	
 	@Override
