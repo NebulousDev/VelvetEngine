@@ -16,7 +16,7 @@ import math.Vector2f;
 import math.Vector3f;
 import math.Vector4f;
 
-public class GL3Graphics implements Graphics
+public class GLGraphics implements Graphics
 {
 	private int graphicsTypeToInt(BufferType type)
 	{
@@ -354,7 +354,7 @@ public class GL3Graphics implements Graphics
 	{
 		if(uniform.isValid())
 		{
-			GL20.glUniform4fv(uniform.id, data.toFloatBuffer(true));
+			GL20.glUniformMatrix4fv(uniform.id, false, data.toFloatBuffer(true));
 			return true;
 		}
 		

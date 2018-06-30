@@ -3,9 +3,10 @@ package core;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 
-import graphics.GL3Graphics;
+import graphics.GLGraphics;
 import graphics.GraphicsAPI;
 import graphics.GraphicsContext;
+import math.Vector2f;
 import graphics.Graphics;
 
 public class Application
@@ -15,6 +16,7 @@ public class Application
 	private Graphics		graphics;
 	private GraphicsContext context;
 	private Window			window;
+	private Input			input;
 	
 	private Application() {}
 	
@@ -27,16 +29,16 @@ public class Application
 		switch(api)
 		{
 			case GRAPHICS_OPENGL2:
-				app.graphics = new GL3Graphics(); break;
+				app.graphics = new GLGraphics(); break;
 			
 			case GRAPHICS_OPENGL:
-				app.graphics = new GL3Graphics(); break;
+				app.graphics = new GLGraphics(); break;
 				
 			case GRAPHICS_OPENGLES:
-				app.graphics = new GL3Graphics(); break;
+				app.graphics = new GLGraphics(); break;
 			
 			case GRAPHICS_VULKAN:
-				app.graphics = new GL3Graphics(); break;
+				app.graphics = new GLGraphics(); break;
 		}
 		
 		app.graphics.initGraphics();
@@ -89,18 +91,27 @@ public class Application
 			}
 			
 			if(fullscreen)
-				window.windowLong = GLFW.nglfwCreateWindow(width, height, GLFW.glfwGetPrimaryMonitor(), 0, 0);
+				window.windowLong = GLFW.nglfwCreateWindow(width, height, 0, GLFW.glfwGetPrimaryMonitor(), 0);
 			else
 			{
 				window.windowLong = GLFW.glfwCreateWindow(width, height, title, 0, 0);
-				GLFW.glfwSetWindowPos(window.windowLong, x, y);				
+				GLFW.glfwSetWindowPos(window.windowLong, x, y);
 			}
 			
-			context = graphics.createContext(window);
+			window.center = new Vector2f(0, 0);
+			window.center.x = width / 2;
+			window.center.y = height / 2;
+			
+			this.context = graphics.createContext(window);
 			graphics.setContextCurrent(context);
 			graphics.createCapibilities();
 			
 			GLFW.glfwShowWindow(window.windowLong);
+			
+			this.window = window;
+			
+			//TODO: find a better place for this?
+			this.input = Input.createIntput(window);
 			
 			return window;
 		}
@@ -112,10 +123,14 @@ public class Application
 		
 	}
 	
-	public void update()
+	public void pollEvents()
+	{
+		GLFW.glfwPollEvents();
+	}
+	
+	public void swapBuffers()
 	{
 		graphics.swapBuffers(context);
-		GLFW.glfwPollEvents();
 	}
 	
 	public boolean shouldClose()
@@ -132,5 +147,6 @@ public class Application
 	public GraphicsContext getContext() { return context; }
 
 	public Window getWindow() { return window; }
-	
+
+	public Input getInput() { return input; }
 }

@@ -1,5 +1,9 @@
 package core;
 
+import org.lwjgl.glfw.GLFW;
+
+import math.Vector2f;
+
 public class Window
 {
 	public static final int WINDOWED 		= 0x01;
@@ -15,7 +19,18 @@ public class Window
 	int 	flags;
 	long	windowLong;
 	
+	Vector2f center;
+	
 	Window() {}
+	
+	public void resize(int width, int height)
+	{
+		this.width = width;
+		this.height = height;
+		this.center.x = width / 2;
+		this.center.y = height / 2;
+		GLFW.glfwSetWindowSize(windowLong, width, height);
+	}
 
 	public String getTitle() { return title; }
 
@@ -26,9 +41,13 @@ public class Window
 	public int getWidth() { return width; }
 
 	public int getHeight() { return height; }
+	
+	public float getAspect() { return (float)width / (float)height; }
 
 	public int getFlags() { return flags; }
 
 	public long getWindowLong() { return windowLong; }
+
+	public Vector2f getCenter() { return center; }
 	
 }
