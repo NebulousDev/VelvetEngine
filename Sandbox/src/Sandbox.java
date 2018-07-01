@@ -15,9 +15,11 @@ import graphics.Program;
 import graphics.Shader;
 import graphics.ShaderType;
 import graphics.Uniform;
+import loaders.FileLoader;
+import loaders.OBJLoader;
+import loaders.OBJLoader.OBJModel;
 import math.Axis;
 import math.Matrix4f;
-import utils.FileReader;
 
 public class Sandbox
 {
@@ -37,8 +39,8 @@ public class Sandbox
 		Camera camera = Camera.createCamera(Matrix4f.Perspective(90.0f, window.getAspect(), 0.01f, 1000f));
 		camera.getPosition().set(0, 0, 1.0f);
 		
-		String vert = FileReader.readFileAsString("/shaders/test.vert");
-		String frag = FileReader.readFileAsString("/shaders/test.frag");
+		String vert = FileLoader.readFileAsString("/shaders/test.vert");
+		String frag = FileLoader.readFileAsString("/shaders/test.frag");
 		
 		Program program 	= gfx.createProgram("testShaderProgram");
 		Shader 	vertex 		= gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, vert);
@@ -48,6 +50,8 @@ public class Sandbox
 		gfx.attachShader(program, fragment);
 		
 		gfx.finalizeProgram(program);
+		
+		OBJModel model = OBJLoader.parseOBJModel("/models", "standard");
 		
 		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 		Uniform mvp = gfx.getUniform(program, "mvp");

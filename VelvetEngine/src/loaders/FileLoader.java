@@ -1,15 +1,14 @@
-package utils;
+package loaders;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
-public class FileReader
+public class FileLoader
 {
 	public static String readFileAsString(String filepath)
 	{
 		byte[] buffer = new byte[1024];
-		InputStream fileStream = FileReader.class.getResourceAsStream(filepath);
+		InputStream fileStream = FileLoader.class.getResourceAsStream(filepath);
 		ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
 		
 		try
@@ -21,8 +20,9 @@ public class FileReader
 			}
 		}
 		
-		catch(IOException e)
+		catch(Exception e)
 		{
+			System.out.println("Error! Unable to locate file: " + filepath);
 			e.printStackTrace();
 			return null;
 		}
