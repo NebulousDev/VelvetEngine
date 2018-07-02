@@ -36,7 +36,7 @@ public class Sandbox
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(0.0f, 0.08f, 0.1f, 1.0f);
 		
-		Camera camera = Camera.createCamera(Matrix4f.Perspective(90.0f, window.getAspect(), 0.01f, 1000f));
+		Camera camera = Camera.createCamera(Matrix4f.Perspective(90.0f, window.getAspect(), 0.001f, 1000f));
 		camera.getPosition().set(0, 0, 1.0f);
 		
 		String vert = FileLoader.readFileAsString("/shaders/test.vert");
@@ -96,8 +96,6 @@ public class Sandbox
 			if(input.keyHeld(Keys.KEY_S)) camera.getPosition().add(camera.getBack().copy().mul(-speed));
 			if(input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(-speed));
 			if(input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(-speed));
-			
-			System.out.println(camera.getForward());
 			
 			if(input.isMouseCaptured())
 			{

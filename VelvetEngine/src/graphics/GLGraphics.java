@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
@@ -379,6 +380,13 @@ public class GLGraphics implements Graphics
 	public boolean swapBuffers(GraphicsContext context)
 	{
 		GLFW.glfwSwapBuffers(context.getContext());
+		return true;
+	}
+
+	@Override
+	public boolean drawElementsRange(int start, int count)
+	{
+		GL11.glDrawElements(GL11.GL_TRIANGLES, count, GL11.GL_UNSIGNED_INT, start);
 		return true;
 	}
 }

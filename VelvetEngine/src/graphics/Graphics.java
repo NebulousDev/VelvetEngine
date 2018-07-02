@@ -63,4 +63,6 @@ public interface Graphics
 	boolean clearBuffers();
 	
 	boolean swapBuffers(GraphicsContext context);
+
+	boolean drawElementsRange(int iboOffset, int iboLength);
 }
