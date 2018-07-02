@@ -142,7 +142,7 @@ public class OBJLoader
 		
 		for(String line : lines)
 		{
-			String tokens[] = line.split(" ");
+			String tokens[] = line.replace("\n", "").replace("\r", "").split(" ");
 			switch(tokens[0].toLowerCase())
 			{
 				case "newmtl":
@@ -293,7 +293,7 @@ public class OBJLoader
 
 		for(String line : lines)
 		{
-			String tokens[] = line.split(" ");
+			String tokens[] = line.replace("\n", "").replace("\r", "").split(" ");
 			switch(tokens[0])
 			{
 				case "mtllib":
