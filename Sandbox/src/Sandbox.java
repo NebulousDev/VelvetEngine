@@ -36,7 +36,7 @@ public class Sandbox
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(0.0f, 0.08f, 0.1f, 1.0f);
 		
-		Camera camera = Camera.createCamera(Matrix4f.Perspective(60.0f, window.getAspect(), 0.001f, 1000f));
+		Camera camera = Camera.createCamera(Matrix4f.Perspective(90.0f, window.getAspect(), 0.0001f, 1000f));
 		camera.getPosition().set(0, 0, 0.0f);
 		
 		String vert = FileLoader.readFileAsString("/shaders/test.vert");
@@ -53,7 +53,7 @@ public class Sandbox
 		
 		OBJModel model = OBJLoader.parseOBJModel("/models", "standard");
 		
-		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
+		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 		Uniform mvp = gfx.getUniform(program, "mvp");
 		
 		int error = 0;
@@ -146,7 +146,7 @@ public class Sandbox
 			{
 				camera.rotate(Axis.UP, input.getMouseRelative().x * -sensitivity);
 				camera.rotate(camera.getRight(), input.getMouseRelative().y * -sensitivity);
-				mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
+				mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 			}
 			
 			if(input.buttonPressed(Buttons.BUTTON_LEFT)) input.captureMouse(false);
