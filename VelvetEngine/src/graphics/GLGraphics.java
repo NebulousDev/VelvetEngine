@@ -176,6 +176,8 @@ public class GLGraphics implements Graphics
 			return true;
 		}
 		
+		System.out.println("Failed to bind buffer!");
+		
 		return false;
 	}
 
@@ -386,7 +388,7 @@ public class GLGraphics implements Graphics
 	@Override
 	public boolean drawElementsRange(int start, int count)
 	{
-		GL11.glDrawElements(GL11.GL_TRIANGLES, count, GL11.GL_UNSIGNED_INT, start);
+		GL11.glDrawElements(GL11.GL_TRIANGLES, count, GL11.GL_UNSIGNED_INT, start * Integer.BYTES);
 		return true;
 	}
 }

@@ -1,5 +1,4 @@
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 
 import core.Application;
 import core.Buttons;
@@ -7,15 +6,16 @@ import core.Input;
 import core.Keys;
 import core.Window;
 import entity.Camera;
-import graphics.BufferType;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
-import graphics.GraphicsBuffer;
 import graphics.Program;
 import graphics.Shader;
 import graphics.ShaderType;
 import graphics.Uniform;
 import loaders.FileLoader;
+import loaders.ModelLoader;
+import loaders.ModelLoader.Model;
+import loaders.ModelLoader.ModelBuffer;
 import loaders.OBJLoader;
 import loaders.OBJLoader.OBJModel;
 import math.Axis;
@@ -23,10 +23,9 @@ import math.Matrix4f;
 
 public class Sandbox
 {
+	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
-		new Axis();
-		
 		Application app = Application.createApplication("VelvetEngine", GraphicsAPI.GRAPHICS_OPENGL);
 		app.createWindow("VelvetEngine", 1280, 720, 0, 0, Window.CENTERED);
 		
@@ -34,9 +33,10 @@ public class Sandbox
 		Input input = app.getInput();
 		
 		Graphics gfx = app.getGraphics();
-		gfx.setClearColor(0.0f, 0.08f, 0.1f, 1.0f);
+		//gfx.setClearColor(0.0f, 0.06f, 0.08f, 1.0f);
+		gfx.setClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
-		Camera camera = Camera.createCamera(Matrix4f.Perspective(90.0f, window.getAspect(), 0.0001f, 1000f));
+		Camera camera = Camera.createCamera(Matrix4f.Perspective(60.0f, window.getAspect(), 0.01f, 1000f));
 		camera.getPosition().set(0, 0, 0.0f);
 		
 		String vert = FileLoader.readFileAsString("/shaders/test.vert");
@@ -51,7 +51,13 @@ public class Sandbox
 		
 		gfx.finalizeProgram(program);
 		
-		OBJModel model = OBJLoader.parseOBJModel("/models", "standard");
+		/////////////////////////////////////////////////////////////////////////////////////////
+		
+		OBJModel obj = OBJLoader.parseOBJModel("/models", "standard");
+		Model model = ModelLoader.createFromOBJModel(obj);
+		ModelBuffer buffer = ModelLoader.loadToModelBuffer(gfx, model);
+		
+		/////////////////////////////////////////////////////////////////////////////////////////
 		
 		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 		Uniform mvp = gfx.getUniform(program, "mvp");
@@ -115,21 +121,27 @@ public class Sandbox
 		//TODO: MOVE TO GRAPHICS 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LESS);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		//GL11.glEnable(GL11.GL_CULL_FACE);
+		//GL11.glCullFace(GL11.GL_FRONT);
 		
-		GraphicsBuffer vbo = gfx.createBuffer();
-		GraphicsBuffer ibo = gfx.createBuffer();
-		gfx.setBufferData(vbo, BufferType.GRAPHICS_BUFFER_VERTEX, cubeVerts);//plainVerts);
-		gfx.setBufferData(ibo, BufferType.GRAPHICS_BUFFER_INDEX, plainIdxs);
+		//GraphicsBuffer vbo = gfx.createBuffer();
+		//GraphicsBuffer ibo = gfx.createBuffer();
+		//gfx.setBufferData(vbo, BufferType.GRAPHICS_BUFFER_VERTEX, cubeVerts);//plainVerts);
+		//gfx.setBufferData(ibo, BufferType.GRAPHICS_BUFFER_INDEX, plainIdxs);
 		
-		gfx.bindBuffer(vbo);
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glEnableVertexAttribArray(1);
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 6 * Float.BYTES, 0);
-		GL20.glVertexAttribPointer(1, 3, GL11.GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
-		gfx.unbindBuffer(vbo);
+		//gfx.bindBuffer(vbo);
+		//GL20.glEnableVertexAttribArray(0);
+		//GL20.glEnableVertexAttribArray(1);
+		//GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+		//GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 3 * Float.BYTES, 0);
+		//GL20.glVertexAttribPointer(1, 3, GL11.GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
+		//gfx.unbindBuffer(vbo);
 		
 		float sensitivity = 0.04f;
 		float speed = 0.001f;
+		
+		//model.uniformColor = gfx.getUniform(program, "color");
 		
 		while(!app.shouldClose())
 		{
@@ -153,20 +165,23 @@ public class Sandbox
 			if(input.keyPressed(Keys.KEY_ESCAPE)) input.releaseMouse();
 		
 			gfx.bindProgram(program);
-			gfx.bindBuffer(vbo);
-			gfx.bindBuffer(ibo);
+			//gfx.bindBuffer(vbo);
+			//gfx.bindBuffer(ibo);
 			
 			gfx.setUniform(mvp, mvpMatrix);
 			
 			//GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, plainIdxs.length, GL11.GL_UNSIGNED_INT, 0);
-			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vbo.size());
+			//GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vbo.size());
+			//model.draw(gfx);
+			
+			ModelLoader.drawModel(gfx, buffer);
 			
 			//int error = 0;
 			if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
 				System.out.println("GLERROR: " + error);
 			
-			gfx.unbindBuffer(ibo);
-			gfx.unbindBuffer(vbo);
+			//gfx.unbindBuffer(ibo);
+			//gfx.unbindBuffer(vbo);
 			gfx.unbindProgram();
 			
 			app.swapBuffers();

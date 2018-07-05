@@ -293,7 +293,7 @@ public class OBJLoader
 
 		for(String line : lines)
 		{
-			String tokens[] = line.replace("\n", "").replace("\r", "").split(" ");
+			String tokens[] = line.replace("\n", "").replace("\r", "").replace("  ", " ").split("\\ |\\  ");
 			switch(tokens[0])
 			{
 				case "mtllib":
