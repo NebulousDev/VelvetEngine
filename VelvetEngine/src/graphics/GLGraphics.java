@@ -1,11 +1,12 @@
 package graphics;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
@@ -160,6 +161,44 @@ public class GLGraphics implements Graphics
 			GL15.glBindBuffer(bufferType, buffer.id);
 			GL15.glBufferData(graphicsTypeToInt(type), data, GL15.GL_STATIC_DRAW);
 			buffer.size = data.length;
+			buffer.type = type;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	//NOTE: setBufferData with IntBuffer does not currently work!
+	
+	@Override
+	public boolean setBufferData(GraphicsBuffer buffer, BufferType type, IntBuffer data)
+	{
+		if(buffer.isValid())
+		{
+			data.flip();
+			int bufferType = graphicsTypeToInt(type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL15.glBufferData(graphicsTypeToInt(type), data, GL15.GL_STATIC_DRAW);
+			buffer.size = data.remaining();
+			buffer.type = type;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	//NOTE: setBufferData with FloatBuffer does not currently work!
+
+	@Override
+	public boolean setBufferData(GraphicsBuffer buffer, BufferType type, FloatBuffer data)
+	{
+		if(buffer.isValid())
+		{
+			data.flip();
+			int bufferType = graphicsTypeToInt(type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL15.glBufferData(graphicsTypeToInt(type), data, GL15.GL_STATIC_DRAW);
+			buffer.size = data.remaining();
 			buffer.type = type;
 			return true;
 		}

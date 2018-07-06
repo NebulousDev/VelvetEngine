@@ -1,419 +1,289 @@
 package loaders;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import loaders.OBJFormat.OBJMesh;
+import loaders.OBJFormat.OBJModel;
+import loaders.OBJFormat.OBJVertex;
 import math.Vector2f;
 import math.Vector3f;
 
+@SuppressWarnings("unused")
 public class OBJLoader
 {
-	public static class OBJTexture
-	{
-		public String	filename;
-		public boolean	verticalBlend;
-		public boolean	horizonalBlend;
-		public Vector2f offset;
-		public Vector2f scale;
-		public boolean	clamp;
-		public float	bumpMult;
-	}
+	private final static String OBJ_COMMENT = "#";
+	private final static String OBJ_MTLLIB = "mtllib";
+	private final static String OBJ_USEMTL = "usemtl";
+	private final static String OBJ_VERTEX = "v";
+	private final static String OBJ_TEXTURE = "vt";
+    private final static String OBJ_NORMAL = "vn";
+    private final static String OBJ_FACE = "f";
+    private final static String OBJ_GROUP = "g";
+    private final static String OBJ_OBJECT = "o";
+    private final static String OBJ_SMOOTH = "s";
+    
+    private final static String MTL_NEWMTL = "newmtl";
+    private final static String MTL_KA = "Ka";
+    private final static String MTL_KD = "Kd";
+    private final static String MTL_KS = "Ks";
+    private final static String MTL_TF = "Tf";
+    private final static String MTL_ILLUM = "illum";
+    private final static String MTL_D = "d";
+    private final static String MTL_NS = "Ns";
+    private final static String MTL_NI = "Ni";
+    private final static String MTL_MAP_KA = "map_Ka";
+    private final static String MTL_MAP_KD = "map_Kd";
+    private final static String MTL_MAP_KS = "map_Ks";
+    private final static String MTL_MAP_NS = "map_Ns";
+    private final static String MTL_MAP_D = "map_d";
+    private final static String MTL_DISP = "disp";
+    private final static String MTL_DECAL = "decal";
+    private final static String MTL_BUMP = "bump";
+    private final static String MTL_REFL = "refl";
 	
-	public static class OBJMaterial
+    private static final int NO_INDEX = -2;
+    
+    private static class OBJIndexGroup
+    {
+    	public int positionIndex 	= NO_INDEX;
+    	public int texCoordIndex 	= NO_INDEX;
+    	public int normalIndex 		= NO_INDEX;
+    }
+    
+	public static OBJModel readOBJ(String filepath)
 	{
-		public String		name;
-		public Vector3f 	ambient;
-		public Vector3f 	diffuse;
-		public Vector3f 	specular;
-		public float		exponent;
-		public float		transparency;
-		public boolean		reverseTransparency;
-		public int			illum;
-		public OBJTexture	ambientTexture;
-		public OBJTexture	diffuseTexture;
-		public OBJTexture	specularColorTexture;
-		public OBJTexture	specularHighlightTexture;
-		public OBJTexture	alphaTexture;
-		public OBJTexture	bumpTexture;
-		public OBJTexture	displacementTexture;
-	}
-	
-	public static class OBJMeshVertex
-	{
-		public int vertIdx;
-		public int texIdx;
-		public int normIdx;
-	}
-	
-	public static class OBJMeshFace
-	{
-		public int 						numVertices;
-		public ArrayList<OBJMeshVertex> vertices;
-	}
-	
-	public static class OBJMesh
-	{
-		public ArrayList<Vector3f> 		vertices;
-		public ArrayList<Vector2f>		texCoords;
-		public ArrayList<Vector3f>		normals;
-		public ArrayList<OBJMeshFace>	faces;
-		boolean hasTexCoords;
-		boolean hasNormals;
-	}
-	
-	public static class OBJObject
-	{
-		public String		name;
-		public boolean		isDefault;
-		public OBJMaterial 	material;
-		public OBJMesh 		mesh;
-	}
-	
-	public static class OBJModel
-	{
-		public String				name;
-		public OBJObject			object;
-		public ArrayList<OBJObject> objects;
-		public boolean				useObjectList;
-	}
-	
-	private static OBJTexture parseOBJTexture(String[] tokens)
-	{
-		OBJTexture texture = new OBJTexture();
+		String data = FileUtils.readFileAsString(filepath);
 		
-		int i = 1;
-		boolean name = false;
-		while(i != tokens.length || name)
+		if(data == null)
 		{
-			switch(tokens[i])
-			{
-				case "-blendu":
-				{
-					texture.horizonalBlend = !tokens[++i].toLowerCase().equals("off");
-					break;
-				}
-				
-				case "-blendv":
-				{
-					texture.verticalBlend = !tokens[++i].toLowerCase().equals("off");
-					break;
-				}
-				
-				case "-o":
-				{
-					float u = Float.parseFloat(tokens[++i]);
-					float v = Float.parseFloat(tokens[++i]);
-					texture.offset = new Vector2f(u, v);
-					break;
-				}
-				
-				case "-s":
-				{
-					float u = Float.parseFloat(tokens[++i]);
-					float v = Float.parseFloat(tokens[++i]);
-					texture.scale = new Vector2f(u, v);
-					break;
-				}
-				
-				case "-clamp":
-				{
-					texture.clamp = tokens[++i].toLowerCase().equals("on");
-					break;
-				}
-				
-				default:
-				{
-					texture.filename = tokens[i];
-					name = true;
-					break;
-				}
-			}
+			System.out.println("Error reading OBJ file: No such file exists: " + filepath);
+			return null;
 		}
 		
-		return texture;
-	}
-	
-	private static void parseOBJMaterials(HashMap<String, OBJMaterial> materialMap, String filepath, String filename)
-	{
-		String data = FileLoader.readFileAsString(filepath + "/" + filename);
-		String lines[] = data.split("\n");
-		
-		OBJMaterial material = null;
-		
-		for(String line : lines)
-		{
-			String tokens[] = line.replace("\n", "").replace("\r", "").split(" ");
-			switch(tokens[0].toLowerCase())
-			{
-				case "newmtl":
-				{
-					if(material != null)
-						materialMap.put(material.name, material);
-					material = new OBJMaterial();
-					material.name = tokens[1];
-					break;
-				}
-				
-				case "ka":
-				{
-					float r = Float.parseFloat(tokens[1]);
-					float g = Float.parseFloat(tokens[2]);
-					float b = Float.parseFloat(tokens[3]);
-					material.ambient = new Vector3f(r, g, b);
-					break;
-				}
-				
-				case "kd":
-				{
-					float r = Float.parseFloat(tokens[1]);
-					float g = Float.parseFloat(tokens[2]);
-					float b = Float.parseFloat(tokens[3]);
-					material.diffuse = new Vector3f(r, g, b);
-					break;
-				}
-				
-				case "ks":
-				{
-					float r = Float.parseFloat(tokens[1]);
-					float g = Float.parseFloat(tokens[2]);
-					float b = Float.parseFloat(tokens[3]);
-					material.specular = new Vector3f(r, g, b);
-					break;
-				}
-				
-				case "ns":
-				{
-					material.exponent = Float.parseFloat(tokens[1]);
-					break;
-				}
-				
-				case "d":
-				{
-					material.transparency = Float.parseFloat(tokens[1]);
-					break;
-				}
-				
-				case "tr":
-				{
-					material.transparency = Float.parseFloat(tokens[1]);
-					material.reverseTransparency = true;
-					break;
-				}
-				
-				case "illum":
-				{
-					material.illum = Integer.parseInt(tokens[1]);
-					break;
-				}
-				
-				case "map_ka":
-				{
-					material.ambientTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "map_kd":
-				{
-					material.diffuseTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "map_ks":
-				{
-					material.specularColorTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "map_ns":
-				{
-					material.specularHighlightTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "map_d":
-				{
-					material.alphaTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "map_bump":
-				{
-					material.bumpTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "bump":
-				{
-					material.bumpTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "map_disp":
-				{
-					material.displacementTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				case "disp":
-				{
-					material.displacementTexture = parseOBJTexture(tokens);
-					break;
-				}
-				
-				default:
-				{
-					continue;
-				}
-			}
-		}
-		
-		if(material != null)
-			materialMap.put(material.name, material);
-	}
-	
-	public static OBJModel parseOBJModel(String filepath, String filename)
-	{
-		String data = FileLoader.readFileAsString(filepath + "/" + filename + ".obj");
-		String lines[] = data.split("\n");
-	
 		OBJModel model = new OBJModel();
-		model.objects = new ArrayList<>();
-		model.name = filename;
+		model.name = FileUtils.getFilename(filepath);
 		
-		HashMap<String, OBJMaterial> materialMap = new HashMap<>();
-
-		OBJObject object = new OBJObject();
-		object.name = "default";
-		object.isDefault = true;
-		object.mesh = new OBJMesh();
-		object.mesh.vertices = new ArrayList<>();
-		object.mesh.texCoords = new ArrayList<>();
-		object.mesh.normals = new ArrayList<>();
-		object.mesh.faces = new ArrayList<>();
-
+		ArrayList<Vector3f>			positionList 	= new ArrayList<>();
+		ArrayList<Vector2f>			texCoordList	= new ArrayList<>();
+		ArrayList<Vector3f>			normalList		= new ArrayList<>();
+		ArrayList<OBJIndexGroup>	indexGroupList	= new ArrayList<>();
+		
+		String[] lines = data.split("\r\n|\r|\n");
+		
 		for(String line : lines)
+			if(!parseLine(line, positionList, texCoordList, normalList, indexGroupList, filepath)) return null;
+		
+		HashMap<String, Integer> 	vertexMap 		= new HashMap<>();
+		ArrayList<OBJVertex> 		vertexList 		= new ArrayList<>();
+		ArrayList<Integer> 			indexList 		= new ArrayList<>();
+		ArrayList<OBJMesh> 			meshList 		= new ArrayList<>();
+		
+		int currentIndex = 0;
+		
+		for(OBJIndexGroup index : indexGroupList)
 		{
-			String tokens[] = line.replace("\n", "").replace("\r", "").replace("  ", " ").split("\\ |\\  ");
-			switch(tokens[0])
+			String hash = createIndexHash(index);
+			
+			if(vertexMap.containsKey(hash))
+				indexList.add(vertexMap.get(hash));
+
+			else
 			{
-				case "mtllib":
-				{
-					parseOBJMaterials(materialMap, filepath, tokens[1]);
-					break;
-				}
+				OBJVertex vertex = new OBJVertex();
 				
-				case "usemtl":
-				{
-					if(materialMap.size() > 0)
-						object.material = materialMap.get(tokens[1]);
-					break;
-				}
+				if(index.positionIndex != NO_INDEX) vertex.position = positionList.get(index.positionIndex);
+				else vertex.position = new Vector3f(0);
 				
-				case "o":
-				{
-					if(!object.isDefault)
-						model.objects.add(object);
-					
-					object = new OBJObject();
-					object.name = tokens[1];
-					object.mesh = new OBJMesh();
-					object.mesh.vertices = new ArrayList<>();
-					object.mesh.texCoords = new ArrayList<>();
-					object.mesh.normals = new ArrayList<>();
-					object.mesh.faces = new ArrayList<>();
-					model.useObjectList = true;
-					break;
-				}
+				if(index.texCoordIndex != NO_INDEX) vertex.texCoord = texCoordList.get(index.texCoordIndex);
+				else vertex.texCoord = new Vector2f(0);
 				
-				case "v":
-				{
-					float x = Float.parseFloat(tokens[1]);
-					float y = Float.parseFloat(tokens[2]);
-					float z = Float.parseFloat(tokens[3]);
+				if(index.normalIndex   != NO_INDEX) vertex.normal 	= normalList.get(index.normalIndex);
+				else vertex.normal = new Vector3f(0);
 					
-					object.mesh.vertices.add(new Vector3f(x, y, z));
-					
-					break;
-				}
-				
-				case "vt":
-				{
-					float u = Float.parseFloat(tokens[1]);
-					float v = Float.parseFloat(tokens[2]);
-					
-					object.mesh.texCoords.add(new Vector2f(u, v));
-					
-					break;
-				}
-				
-				case "vn":
-				{
-					float x = Float.parseFloat(tokens[1]);
-					float y = Float.parseFloat(tokens[2]);
-					float z = Float.parseFloat(tokens[3]);
-					
-					object.mesh.normals.add(new Vector3f(x, y, z));
-					
-					break;
-				}
-				
-				case "f":
-				{
-					int numVerts = tokens.length - 1;
-					
-					OBJMeshFace face = new OBJMeshFace();
-					face.numVertices = numVerts;
-					face.vertices = new ArrayList<>();
-					
-					for(int i = 1; i < tokens.length; i++)
-					{
-						String[] elements = tokens[i].split("/");
-						if(elements.length == 1)
-						{
-							OBJMeshVertex vert = new OBJMeshVertex();
-							vert.vertIdx = Integer.parseInt(elements[0]);
-							face.vertices.add(vert);
-						}
-						
-						if(elements.length == 2)
-						{
-							OBJMeshVertex vert = new OBJMeshVertex();
-							vert.vertIdx = Integer.parseInt(elements[0]);
-							vert.texIdx = Integer.parseInt(elements[1]);
-							object.mesh.hasTexCoords = true;
-							face.vertices.add(vert);
-						}
-						
-						if(elements.length == 3)
-						{
-							OBJMeshVertex vert = new OBJMeshVertex();
-							vert.vertIdx = Integer.parseInt(elements[0]);
-							
-							if(!elements[1].equals(""))
-							{
-								vert.texIdx = Integer.parseInt(elements[1]);
-								object.mesh.hasTexCoords = true;
-							}
-							
-							vert.normIdx = Integer.parseInt(elements[2]);
-							object.mesh.hasNormals = true;
-							face.vertices.add(vert);
-						}
-					}
-					
-					object.mesh.faces.add(face);
-					
-					break;
-				}
+				vertexList.add(vertex);
+				indexList.add(currentIndex);
+				vertexMap.put(hash, currentIndex++);
 			}
 		}
 		
-		if(!object.isDefault)
-			model.objects.add(object);
+		OBJVertex[] finalVertices = new OBJVertex[vertexList.size()];
+		vertexList.toArray(finalVertices);
 		
-		if(!model.useObjectList)
-			model.object = object;
+		model.vertices = finalVertices;
+		model.indices = indexList.stream().mapToInt(i->i).toArray();
 		
 		return model;
 	}
+
+	private static boolean parseLine(String line, ArrayList<Vector3f> positionList, ArrayList<Vector2f> texCoordList, 
+			ArrayList<Vector3f> normalList, ArrayList<OBJIndexGroup> indexGroupList, String filepath)
+	{
+		String tokens[] = tokenize(line);
+		
+		if(tokens.length < 2) return true;
+		
+		try
+		{
+			switch(tokens[0])
+			{
+				case OBJ_COMMENT: 	return true;
+				case OBJ_VERTEX: 	return parsePositions(tokens, positionList, filepath);
+				case OBJ_TEXTURE: 	return parseTextureCoords(tokens, texCoordList, filepath);
+				case OBJ_NORMAL: 	return parseNormals(tokens, normalList, filepath);
+				case OBJ_FACE: 		return parseFace(tokens, indexGroupList, filepath);
+				default:			return true;
+			}
+		}
+		
+		catch(NumberFormatException e)
+		{
+			System.out.println("Error parsing OBJ. Incorrect number format. File: " + filepath);
+			return false;
+		}
+	}
+	
+	private static boolean parsePositions(String[] tokens, ArrayList<Vector3f> positions, String filepath)
+	{
+		if(tokens.length < 4)
+		{
+			System.out.println("Error parsing OBJ vertex. Too many elements. File: " + filepath);
+			return false;
+		}
+		
+		float x = Float.parseFloat(tokens[1]);
+		float y = Float.parseFloat(tokens[2]);
+		float z = Float.parseFloat(tokens[3]);
+		
+		positions.add(new Vector3f(x, y, z));
+		
+		return true;
+	}
+	
+	private static boolean parseTextureCoords(String[] tokens, ArrayList<Vector2f> texCoords, String filepath)
+	{
+		if(tokens.length < 3)
+		{
+			System.out.println("Error parsing OBJ texture coord. Too many elements. File: " + filepath);
+			return false;
+		}
+		
+		float x = Float.parseFloat(tokens[1]);
+		float y = Float.parseFloat(tokens[2]);
+		
+		texCoords.add(new Vector2f(x, y));
+		
+		return true;
+	}
+	
+	private static boolean parseNormals(String[] tokens, ArrayList<Vector3f> normals, String filepath)
+	{
+		if(tokens.length < 4)
+		{
+			System.out.println("Error parsing OBJ normal. Too many elements. File: " + filepath);
+			return false;
+		}
+		
+		float x = Float.parseFloat(tokens[1]);
+		float y = Float.parseFloat(tokens[2]);
+		float z = Float.parseFloat(tokens[3]);
+		
+		normals.add(new Vector3f(x, y, z));
+		
+		return true;
+	}
+	
+	private static boolean parseFace(String[] tokens, ArrayList<OBJIndexGroup> indexGroups, String filepath)
+	{
+		if(tokens.length < 4)
+		{
+			System.out.println("Error parsing OBJ face. Too few vertices. File: " + filepath);
+			return false;
+		}
+		
+		if(tokens.length > 4)
+		{
+			//triangulate
+		}
+		
+		else
+		{
+			for(int i = 1; i < tokens.length; i++)
+			{
+				OBJIndexGroup index = new OBJIndexGroup();
+				
+				String[] elements = tokens[i].split("/");
+				
+				try
+				{
+					if(elements.length == 1)
+					{
+						// TODO: Set hasPositions flag
+						index.positionIndex = Integer.parseInt(elements[0]) - 1;
+					}
+					
+					else if (elements.length == 2)
+					{
+						// TODO: Set hasTexCoords flag
+						index.positionIndex = Integer.parseInt(elements[0]) - 1;
+						index.texCoordIndex = Integer.parseInt(elements[1]) - 1;
+					}
+					
+					else if (elements.length == 3)
+					{
+						if(elements[1].equals(""))
+						{
+							// TODO: Set hasPositions flag
+							// TODO: Set hasNormals flag
+							index.positionIndex = Integer.parseInt(elements[0]) - 1;
+							index.normalIndex 	= Integer.parseInt(elements[2]) - 1;
+						}
+						
+						else
+						{
+							// TODO: Set all flags
+							index.positionIndex = Integer.parseInt(elements[0]) - 1;
+							index.texCoordIndex = Integer.parseInt(elements[1]) - 1;
+							index.normalIndex 	= Integer.parseInt(elements[2]) - 1;
+						}
+					}
+					
+					indexGroups.add(index);
+				}
+				
+				catch(NumberFormatException e)
+				{
+					System.out.println("Error parsing OBJ. Incorrect number format. File: " + filepath);
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	private static String[] tokenize(String line)
+	{
+		return line.trim().toLowerCase().split("\\s+");
+	}
+	
+	private static String createIndexHash(OBJIndexGroup index)
+	{
+		return "" + index.positionIndex + index.texCoordIndex + index.normalIndex;
+	}
+	
+	/*
+	public static FloatBuffer vertexListToFloatBuffer(OBJVertex[] verts)
+	{
+		int bufferSize = 0;
+		
+		if(verts[0].position != null) bufferSize += 3;
+		if(verts[0].texCoord != null) bufferSize += 2;
+		if(verts[0].normal   != null) bufferSize += 3;
+		
+		FloatBuffer buffer = FloatBuffer.allocate(bufferSize * verts.length);
+		
+	}
+	*/
 }

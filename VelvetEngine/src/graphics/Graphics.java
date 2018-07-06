@@ -1,5 +1,8 @@
 package graphics;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import core.Window;
 import math.Matrix4f;
 import math.Vector2f;
@@ -27,6 +30,10 @@ public interface Graphics
 	boolean setBufferData(GraphicsBuffer buffer, BufferType type, int[] data);
 	
 	boolean setBufferData(GraphicsBuffer buffer, BufferType type, float[] data);
+	
+	boolean setBufferData(GraphicsBuffer buffer, BufferType type, IntBuffer data);
+	
+	boolean setBufferData(GraphicsBuffer buffer, BufferType type, FloatBuffer data);
 	
 	boolean bindBuffer(GraphicsBuffer buffer);
 	
