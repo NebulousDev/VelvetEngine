@@ -15,8 +15,6 @@ import graphics.Shader;
 import graphics.ShaderType;
 import graphics.Uniform;
 import loaders.FileUtils;
-import loaders.OBJFormat.OBJModel;
-import loaders.OBJLoader;
 import math.Axis;
 import math.Matrix4f;
 
@@ -52,7 +50,7 @@ public class Sandbox
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		Model model = Model.loadFromFile(gfx, "/models/standard.obj");
+		Model model = Model.loadFromFile(gfx, "/models/testScene.obj");
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		

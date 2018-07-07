@@ -40,6 +40,12 @@ public class FileUtils
 		return new String(readFileAsBytes(filepath));
 	}
 	
+	public static String getContainingFolder(String filepath)
+	{
+		int last = filepath.lastIndexOf("/");	//TODO: Allow other methods
+		return filepath.substring(0, last);
+	}
+	
 	public static String stripExtention(String filename)
 	{
 		int last = filename.lastIndexOf(".");

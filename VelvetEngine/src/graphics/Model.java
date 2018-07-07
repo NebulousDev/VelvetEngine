@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import loaders.FileUtils;
+import loaders.OBJFormat.OBJMesh;
 import loaders.OBJFormat.OBJModel;
 import loaders.OBJFormat.OBJVertex;
 import loaders.OBJLoader;
@@ -16,6 +17,7 @@ public class Model
 {
 	public static class SubMesh
 	{
+		public String name;
 		public int offset;
 		public int count;
 	}
@@ -54,6 +56,8 @@ public class Model
 		model.vbo = gfx.createBuffer();
 		model.ibo = gfx.createBuffer();
 		
+		model.meshes = new ArrayList<>();
+		
 		FloatBuffer vertexBuffer = FloatBuffer.allocate(objModel.vertices.length * OBJVertex.SIZE);
 		IntBuffer indexBuffer = IntBuffer.allocate(objModel.indices.length);
 		
@@ -68,6 +72,15 @@ public class Model
 		
 		gfx.setBufferData(model.vbo, BufferType.GRAPHICS_BUFFER_VERTEX, vertexBuffer.array());
 		gfx.setBufferData(model.ibo, BufferType.GRAPHICS_BUFFER_INDEX, indexBuffer.array());
+		
+		for(OBJMesh objMesh : objModel.meshes)
+		{
+			SubMesh mesh = new SubMesh();
+			mesh.name = objMesh.name;
+			mesh.offset = objMesh.idxOffset;
+			mesh.count = objMesh.idxCount;
+			model.meshes.add(mesh);
+		}
 		
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		gfx.bindBuffer(model.vbo);
