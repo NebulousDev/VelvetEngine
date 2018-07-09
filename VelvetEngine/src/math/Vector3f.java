@@ -27,6 +27,20 @@ public class Vector3f
 		this.z = z;
 	}
 	
+	public Vector3f(Vector2f vec2, float z)
+	{
+		this.x = vec2.x;
+		this.y = vec2.y;
+		this.z = z;
+	}
+	
+	public Vector3f(float[] array)
+	{
+		this.x = array[0];
+		this.y = array[1];
+		this.z = array[2];
+	}
+
 	public Vector3f set(float x, float y, float z)
 	{
 		this.x = x;
@@ -46,13 +60,6 @@ public class Vector3f
 	public Vector3f copy()
 	{
 		return new Vector3f(x, y, z);
-	}
-	
-	public Vector3f(Vector2f vec2, float z)
-	{
-		this.x = vec2.x;
-		this.y = vec2.y;
-		this.z = z;
 	}
 	
 	public Vector3f add(Vector3f vec3)

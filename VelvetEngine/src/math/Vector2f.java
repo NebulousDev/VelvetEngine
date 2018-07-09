@@ -24,6 +24,12 @@ public class Vector2f
 		this.y = y;
 	}
 	
+	public Vector2f(float[] array)
+	{
+		this.x = array[0];
+		this.y = array[1];
+	}
+	
 	public Vector2f set(float x, float y)
 	{
 		this.x = x;

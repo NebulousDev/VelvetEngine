@@ -22,6 +22,12 @@ public class Vector2i
 		this.y = y;
 	}
 	
+	public Vector2i(int[] array)
+	{
+		this.x = array[0];
+		this.y = array[1];
+	}
+	
 	public Vector2i set(int x, int y)
 	{
 		this.x = x;

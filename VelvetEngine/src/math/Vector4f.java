@@ -30,6 +30,14 @@ public class Vector4f
 		this.w = w;
 	}
 	
+	public Vector4f(float[] array)
+	{
+		this.x = array[0];
+		this.y = array[1];
+		this.z = array[2];
+		this.w = array[3];
+	}
+	
 	public Vector4f set(float x, float y, float z, float w)
 	{
 		this.x = x;

@@ -28,6 +28,14 @@ public class Vector4i
 		this.w = w;
 	}
 	
+	public Vector4i(int[] array)
+	{
+		this.x = array[0];
+		this.y = array[1];
+		this.z = array[2];
+		this.w = array[3];
+	}
+	
 	public Vector4i set(int x, int y, int z, int w)
 	{
 		this.x = x;
