@@ -1,4 +1,4 @@
-package core;
+package input;
 
 import org.lwjgl.glfw.GLFW;
 

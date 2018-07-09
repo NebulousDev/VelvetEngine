@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-import loaders.FileUtils;
 import math.Vector2f;
 import math.Vector3f;
+import utils.FileUtils;
 import velvetobj.OBJBundle;
 import velvetobj.OBJMaterial;
 import velvetobj.OBJModel;

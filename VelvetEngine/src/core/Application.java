@@ -6,7 +6,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import graphics.GLGraphics;
 import graphics.GraphicsAPI;
 import graphics.GraphicsContext;
+import input.Input;
 import math.Vector2f;
+import resource.AssetManager;
 import graphics.Graphics;
 
 public class Application
@@ -15,6 +17,7 @@ public class Application
 	private GraphicsAPI 	gfxApi;
 	private Graphics		graphics;
 	private GraphicsContext context;
+	private AssetManager	assetManager;
 	private Window			window;
 	private Input			input;
 	
@@ -42,6 +45,10 @@ public class Application
 		}
 		
 		app.graphics.initGraphics();
+		
+		//TODO: find a better place for this?
+		app.assetManager = AssetManager.getInstance();
+		app.assetManager.initAssetManager();
 		
 		return app;
 	}
@@ -111,7 +118,8 @@ public class Application
 			this.window = window;
 			
 			//TODO: find a better place for this?
-			this.input = Input.createIntput(window);
+			input = Input.getInstance();
+			input.initIntput(window);
 			
 			return window;
 		}
@@ -145,6 +153,8 @@ public class Application
 	public Graphics getGraphics() { return graphics; }
 
 	public GraphicsContext getContext() { return context; }
+	
+	public AssetManager getAssetManager() { return assetManager; }
 
 	public Window getWindow() { return window; }
 

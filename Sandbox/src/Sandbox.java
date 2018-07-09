@@ -1,9 +1,6 @@
 import org.lwjgl.opengl.GL11;
 
 import core.Application;
-import core.Buttons;
-import core.Input;
-import core.Keys;
 import core.Window;
 import entity.Camera;
 import graphics.Graphics;
@@ -14,9 +11,14 @@ import graphics.Program;
 import graphics.Shader;
 import graphics.ShaderType;
 import graphics.Uniform;
-import loaders.FileUtils;
+import input.Buttons;
+import input.Input;
+import input.Keys;
 import math.Axis;
 import math.Matrix4f;
+import resource.AssetManager;
+import resource.Texture;
+import utils.FileUtils;
 
 public class Sandbox
 {
@@ -27,7 +29,6 @@ public class Sandbox
 		app.createWindow("VelvetEngine", 1280, 720, 0, 0, Window.CENTERED);
 		
 		Window window = app.getWindow();
-		Input input = app.getInput();
 		
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(0.0f, 0.06f, 0.08f, 1.0f);
@@ -50,7 +51,9 @@ public class Sandbox
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		Model model = Model.loadFromFile(gfx, "/models/standard.obj");
+		Model model = Model.loadFromFile(gfx, "/models/testScene.obj");
+		
+		Texture texture = (Texture) AssetManager.getInstance().addAndLoadAsset("/textures/test.png");
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -126,26 +129,26 @@ public class Sandbox
 		while(!app.shouldClose())
 		{
 			gfx.clearBuffers();
-			input.update();
+			Input.getInstance().update();
 			app.pollEvents();
 			
-			if(input.keyHeld(Keys.KEY_W)) camera.getPosition().add(camera.getForward().copy().mul(-speed));
-			if(input.keyHeld(Keys.KEY_S)) camera.getPosition().add(camera.getBack().copy().mul(-speed));
-			if(input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(speed));
-			if(input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(speed));
+			if(Input.keyHeld(Keys.KEY_W)) camera.getPosition().add(camera.getForward().copy().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_S)) camera.getPosition().add(camera.getBack().copy().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(speed));
+			if(Input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(speed));
 			
-			if(input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
-			if(input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
+			if(Input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
+			if(Input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
 			
-			if(input.isMouseCaptured())
+			if(Input.isMouseCaptured())
 			{
-				camera.rotate(Axis.UP, input.getMouseRelative().x * sensitivity);
-				camera.rotate(camera.getRight(), input.getMouseRelative().y * -sensitivity);
+				camera.rotate(Axis.UP, Input.getMouseRelative().x * sensitivity);
+				camera.rotate(camera.getRight(), Input.getMouseRelative().y * -sensitivity);
 				mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 			}
 			
-			if(input.buttonPressed(Buttons.BUTTON_LEFT)) input.captureMouse(false);
-			if(input.keyPressed(Keys.KEY_ESCAPE)) input.releaseMouse();
+			if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
+			if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
 		
 			gfx.bindProgram(program);
 			
