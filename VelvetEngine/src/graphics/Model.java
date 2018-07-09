@@ -8,18 +8,22 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import loaders.FileUtils;
-import loaders.OBJFormat.OBJMesh;
-import loaders.OBJFormat.OBJModel;
-import loaders.OBJFormat.OBJVertex;
-import loaders.OBJLoader;
+import math.Vector2f;
+import math.Vector3f;
+import velvetobj.OBJBundle;
+import velvetobj.OBJMaterial;
+import velvetobj.OBJModel;
+import velvetobj.OBJParser;
+import velvetobj.OBJVertex;
 
 public class Model
 {
 	public static class SubMesh
 	{
-		public String name;
-		public int offset;
-		public int count;
+		public String 	name;
+		public int 		offset;
+		public int 		count;
+		public Vector3f color;
 	}
 	
 	public GraphicsBuffer vbo;
@@ -51,21 +55,26 @@ public class Model
 	private static Model loadFromOBJ(Graphics gfx, String filepath)
 	{
 		Model model = new Model();
-		OBJModel objModel = OBJLoader.readOBJ(filepath);
+		OBJModel objModel = OBJParser.parseOBJ(filepath);
 		
 		model.vbo = gfx.createBuffer();
 		model.ibo = gfx.createBuffer();
 		
 		model.meshes = new ArrayList<>();
 		
-		FloatBuffer vertexBuffer = FloatBuffer.allocate(objModel.vertices.length * OBJVertex.SIZE);
+		FloatBuffer vertexBuffer = FloatBuffer.allocate(objModel.vertices.length * 8);
 		IntBuffer indexBuffer = IntBuffer.allocate(objModel.indices.length);
 		
 		for(OBJVertex vert : objModel.vertices)
 		{
-			vertexBuffer.put(vert.position.toArray());
-			vertexBuffer.put(vert.texCoord.toArray());
-			vertexBuffer.put(vert.normal.toArray());
+			if(vert.position != null) vertexBuffer.put(vert.position);
+			else vertexBuffer.put(new float[] {0,0,0});
+			
+			if(vert.texture != null) vertexBuffer.put(vert.texture);
+			else vertexBuffer.put(new float[] {0,0});
+			
+			if(vert.normal != null) vertexBuffer.put(vert.normal);
+			else vertexBuffer.put(new float[] {0,0,0});
 		}
 		
 		indexBuffer.put(objModel.indices);
@@ -73,12 +82,13 @@ public class Model
 		gfx.setBufferData(model.vbo, BufferType.GRAPHICS_BUFFER_VERTEX, vertexBuffer.array());
 		gfx.setBufferData(model.ibo, BufferType.GRAPHICS_BUFFER_INDEX, indexBuffer.array());
 		
-		for(OBJMesh objMesh : objModel.meshes)
+		for(OBJBundle objBundle : objModel.materialBundles)
 		{
 			SubMesh mesh = new SubMesh();
-			mesh.name = objMesh.name;
-			mesh.offset = objMesh.idxOffset;
-			mesh.count = objMesh.idxCount;
+			mesh.name = objBundle.name;
+			mesh.offset = objBundle.index;
+			mesh.count = objBundle.count;
+			mesh.color = new Vector3f(objBundle.material.diffuse);
 			model.meshes.add(mesh);
 		}
 		

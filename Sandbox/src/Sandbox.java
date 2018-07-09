@@ -50,7 +50,7 @@ public class Sandbox
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		Model model = Model.loadFromFile(gfx, "/models/testScene.obj");
+		Model model = Model.loadFromFile(gfx, "/models/standard.obj");
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -116,9 +116,9 @@ public class Sandbox
 		//TODO: MOVE TO GRAPHICS 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LESS);
-		GL11.glDisable(GL11.GL_CULL_FACE);
-		//GL11.glEnable(GL11.GL_CULL_FACE);
-		//GL11.glCullFace(GL11.GL_FRONT);
+		//GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
 		
 		float sensitivity = 0.04f;
 		float speed = 0.001f;
@@ -131,12 +131,15 @@ public class Sandbox
 			
 			if(input.keyHeld(Keys.KEY_W)) camera.getPosition().add(camera.getForward().copy().mul(-speed));
 			if(input.keyHeld(Keys.KEY_S)) camera.getPosition().add(camera.getBack().copy().mul(-speed));
-			if(input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(-speed));
-			if(input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(-speed));
+			if(input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(speed));
+			if(input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(speed));
+			
+			if(input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
+			if(input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
 			
 			if(input.isMouseCaptured())
 			{
-				camera.rotate(Axis.UP, input.getMouseRelative().x * -sensitivity);
+				camera.rotate(Axis.UP, input.getMouseRelative().x * sensitivity);
 				camera.rotate(camera.getRight(), input.getMouseRelative().y * -sensitivity);
 				mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 			}
@@ -150,7 +153,7 @@ public class Sandbox
 			
 			///////////////////////////////
 			
-			ModelRenderer.render(gfx, model);
+			ModelRenderer.render(gfx, program, model);
 			
 			///////////////////////////////
 			

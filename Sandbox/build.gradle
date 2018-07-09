@@ -51,5 +51,5 @@ dependencies
 	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-	compile project(":VelvetEngine");
+	compile project(":VelvetEngine")
 }

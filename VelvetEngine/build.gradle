@@ -13,6 +13,9 @@ sourceSets
 repositories
 {
 	mavenCentral()
+	flatDir {
+       dirs 'B:/Java Development/VelvetOBJ/VelvetOBJ/build/libs'
+   }
 }
 
 dependencies
@@ -35,4 +38,5 @@ dependencies
 	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+	compile name: "VelvetOBJ"
 }
