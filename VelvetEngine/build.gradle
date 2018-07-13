@@ -41,6 +41,6 @@ dependencies
 	api "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 	api "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
 	api "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-	api 'com.github.NebulousDev:VelvetOBJ:1f1aea742c'
-	api 'com.github.NebulousDev:VelvetOBJ:1f1aea742c:sources'
+	api 'com.github.NebulousDev:VelvetOBJ:1.0.1'
+	api 'com.github.NebulousDev:VelvetOBJ:1.0.1:sources'
 }

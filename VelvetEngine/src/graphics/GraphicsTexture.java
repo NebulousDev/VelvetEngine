@@ -1,6 +1,6 @@
 package graphics;
 
-public class Texture
+public class GraphicsTexture
 {
 	int 			id		= -1;
 	int				width	= 0;

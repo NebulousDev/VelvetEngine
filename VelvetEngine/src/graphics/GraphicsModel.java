@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import math.Vector3f;
 
-public class Model
+public class GraphicsModel
 {
 	public static class SubMesh
 	{

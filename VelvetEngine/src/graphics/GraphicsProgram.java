@@ -2,20 +2,20 @@ package graphics;
 
 import java.util.ArrayList;
 
-public class Program
+public class GraphicsProgram
 {
 	int 				id			= -1;
 	String				name		= null;
-	ArrayList<Shader> 	shaders 	= null;
+	ArrayList<GraphicsShader> 	shaders 	= null;
 	boolean				finalized	= false;
 	
-	Program() {}
+	GraphicsProgram() {}
 	
 	public int ID() { return id; }
 	
 	public String name() { return name; }
 	
-	public ArrayList<Shader> shaders() { return shaders; }
+	public ArrayList<GraphicsShader> shaders() { return shaders; }
 	
 	public boolean isFinalized() { return finalized; }
 	

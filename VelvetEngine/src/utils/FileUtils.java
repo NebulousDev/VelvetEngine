@@ -3,23 +3,23 @@ package utils;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
 public class FileUtils
 {
+	public static final String RESOURCE_PATH = "/";
+	
 	public static String getFullPath(String localpath)
 	{
-		String urlString = FileUtils.class.getResource(getResourcePath() + localpath).toExternalForm();
+		String urlString = FileUtils.class.getResource(RESOURCE_PATH + localpath).toExternalForm();
 		return urlString.replaceFirst("file:/", "").replaceFirst("jar:", "").replaceAll("%20", " ");
 	}
 	
 	public static ByteBuffer readFileAsByteBuffer(String filepath)
 	{
 		byte[] buffer = new byte[4096];
-		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
+		InputStream fileStream = FileUtils.class.getResourceAsStream(RESOURCE_PATH + filepath);
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		
 		if(fileStream == null)
@@ -53,7 +53,7 @@ public class FileUtils
 	public static byte[] readFileAsBytes(String filepath)
 	{
 		byte[] buffer = new byte[4096];
-		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
+		InputStream fileStream = FileUtils.class.getResourceAsStream(RESOURCE_PATH + filepath);
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		
 		if(fileStream == null)
@@ -110,8 +110,10 @@ public class FileUtils
 		return filepath.substring(last);
 	}
 
-	public static String getResourcePath()
+	public static boolean fileExists(String filepath)
 	{
-		return "/";	//TODO: do something better?
+		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
+		if(fileStream != null) return true;
+		else return false;
 	}
 }

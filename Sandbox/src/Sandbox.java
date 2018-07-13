@@ -5,13 +5,13 @@ import core.Window;
 import entity.Camera;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
-import graphics.Model;
+import graphics.GraphicsModel;
 import graphics.ModelRenderer;
-import graphics.Program;
-import graphics.Shader;
+import graphics.GraphicsProgram;
+import graphics.GraphicsShader;
 import graphics.ShaderType;
-import graphics.Texture;
-import graphics.Uniform;
+import graphics.GraphicsTexture;
+import graphics.GraphicsUniform;
 import input.Buttons;
 import input.Input;
 import input.Keys;
@@ -33,17 +33,16 @@ public class Sandbox
 		
 		Graphics gfx = app.getGraphics();
 		gfx.setClearColor(0.0f, 0.06f, 0.08f, 1.0f);
-		//gfx.setClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		Camera camera = Camera.createCamera(Matrix4f.Perspective(60.0f, window.getAspect(), 0.01f, 1000f));
 		camera.getPosition().set(0, 0, 0.0f);
 		
-		String vert = FileUtils.readFileAsString("/shaders/test.vert");
-		String frag = FileUtils.readFileAsString("/shaders/test.frag");
+		String vert = FileUtils.readFileAsString("shaders/test.vert");
+		String frag = FileUtils.readFileAsString("shaders/test.frag");
 		
-		Program program 	= gfx.createProgram("testShaderProgram");
-		Shader 	vertex 		= gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, vert);
-		Shader 	fragment 	= gfx.createShader("testShaderFrag", ShaderType.SHADER_TYPE_FRAGMENT, frag);
+		GraphicsProgram program 	= gfx.createProgram("testShaderProgram");
+		GraphicsShader 	vertex 		= gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, vert);
+		GraphicsShader 	fragment 	= gfx.createShader("testShaderFrag", ShaderType.SHADER_TYPE_FRAGMENT, frag);
 		
 		gfx.attachShader(program, vertex);
 		gfx.attachShader(program, fragment);
@@ -52,8 +51,8 @@ public class Sandbox
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		Model model = ModelLoader.loadFromFile(gfx, "models/testscene.obj");
-		Texture texture = TextureLoader.loadFromFile(gfx, "textures/default2.png");
+		GraphicsModel model = ModelLoader.loadFromFile(gfx, "models/dragon.obj");
+		GraphicsTexture texture = TextureLoader.loadFromFile(gfx, "textures/default2.png");
 		
 		gfx.setActiveTextureSlot(0);
 		gfx.bindTexture(texture);
@@ -61,7 +60,8 @@ public class Sandbox
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
 		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
-		Uniform mvp = gfx.getUniform(program, "mvp");
+		GraphicsUniform mvp = gfx.getUniform(program, "mvp");
+		GraphicsUniform view = gfx.getUniform(program, "view");
 		
 		int error = 0;
 		if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
@@ -104,6 +104,7 @@ public class Sandbox
 			gfx.bindProgram(program);
 			
 			gfx.setUniform(mvp, mvpMatrix);
+			gfx.setUniform(view, camera.getView().mul(Matrix4f.Translation(camera.getPosition())));
 			
 			///////////////////////////////
 			

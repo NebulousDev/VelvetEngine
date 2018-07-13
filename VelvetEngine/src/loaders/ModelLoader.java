@@ -9,8 +9,8 @@ import org.lwjgl.opengl.GL20;
 
 import graphics.BufferType;
 import graphics.Graphics;
-import graphics.Model;
-import graphics.Model.SubMesh;
+import graphics.GraphicsModel;
+import graphics.GraphicsModel.SubMesh;
 import math.Vector3f;
 import utils.FileUtils;
 import velvetobj.OBJBundle;
@@ -22,7 +22,7 @@ public class ModelLoader
 {
 	private ModelLoader() {}
 	
-	public static Model loadFromFile(Graphics gfx, String filepath)
+	public static GraphicsModel loadFromFile(Graphics gfx, String filepath)
 	{
 		String ext = FileUtils.getFileExtention(filepath);
 		
@@ -37,10 +37,10 @@ public class ModelLoader
 		
 	}
 	
-	private static Model loadFromOBJ(Graphics gfx, String filepath)
+	private static GraphicsModel loadFromOBJ(Graphics gfx, String filepath)
 	{
-		Model model = new Model();
-		OBJModel objModel = OBJParser.parseOBJ(FileUtils.getResourcePath() + filepath);
+		GraphicsModel model = new GraphicsModel();
+		OBJModel objModel = OBJParser.parseOBJ(FileUtils.RESOURCE_PATH + filepath);
 		
 		model.vbo = gfx.createBuffer();
 		model.ibo = gfx.createBuffer();

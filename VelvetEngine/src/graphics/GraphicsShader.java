@@ -1,12 +1,12 @@
 package graphics;
 
-public class Shader
+public class GraphicsShader
 {
 	int 		id			= -1;
 	String		name		= null;
 	ShaderType 	type		= null;
 	
-	Shader() {}
+	GraphicsShader() {}
 	
 	public int ID() { return id; }
 	

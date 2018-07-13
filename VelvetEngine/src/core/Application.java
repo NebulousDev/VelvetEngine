@@ -3,7 +3,7 @@ package core;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 
-import graphics.GLGraphics;
+import graphics.OpenGLGraphics;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
 import graphics.GraphicsContext;
@@ -30,16 +30,16 @@ public class Application
 		switch(api)
 		{
 			case GRAPHICS_OPENGL2:
-				app.graphics = new GLGraphics(); break;
+				app.graphics = new OpenGLGraphics(); break;
 			
 			case GRAPHICS_OPENGL:
-				app.graphics = new GLGraphics(); break;
+				app.graphics = new OpenGLGraphics(); break;
 				
 			case GRAPHICS_OPENGLES:
-				app.graphics = new GLGraphics(); break;
+				app.graphics = new OpenGLGraphics(); break;
 			
 			case GRAPHICS_VULKAN:
-				app.graphics = new GLGraphics(); break;
+				app.graphics = new OpenGLGraphics(); break;
 		}
 		
 		app.graphics.initGraphics();

@@ -1,12 +1,12 @@
 package graphics;
 
-import graphics.Model.SubMesh;
+import graphics.GraphicsModel.SubMesh;
 
 public class ModelRenderer
 {
-	public static Uniform color = null;
+	public static GraphicsUniform color = null;
 	
-	public static void render(Graphics gfx, Program program, Model model)
+	public static void render(Graphics gfx, GraphicsProgram program, GraphicsModel model)
 	{
 		if(color == null) color = gfx.getUniform(program, "color");
 		

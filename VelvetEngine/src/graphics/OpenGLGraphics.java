@@ -23,7 +23,7 @@ import math.Vector2f;
 import math.Vector3f;
 import math.Vector4f;
 
-public class GLGraphics implements Graphics
+public class OpenGLGraphics implements Graphics
 {
 	private int graphicsTypeToInt(BufferType type)
 	{
@@ -179,11 +179,11 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public Program createProgram(String name)
+	public GraphicsProgram createProgram(String name)
 	{
-		Program program = new Program();
+		GraphicsProgram program = new GraphicsProgram();
 		program.name = name;
-		program.shaders = new ArrayList<Shader>();
+		program.shaders = new ArrayList<GraphicsShader>();
 		
 		program.id = GL20.glCreateProgram();
 		
@@ -192,9 +192,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public Shader createShader(String name, ShaderType type, String data)
+	public GraphicsShader createShader(String name, ShaderType type, String data)
 	{
-		Shader shader = new Shader();
+		GraphicsShader shader = new GraphicsShader();
 		shader.id = GL20.glCreateShader(shaderTypeToInt(type));
 		shader.name = name;
 		shader.type = type;
@@ -210,9 +210,9 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public Texture createTexture()
+	public GraphicsTexture createTexture()
 	{
-		Texture texture = new Texture();
+		GraphicsTexture texture = new GraphicsTexture();
 		texture.id = GL11.glGenTextures();
 		
 		if(texture.isValid()) return texture;
@@ -220,9 +220,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public Uniform getUniform(Program program, String name)
+	public GraphicsUniform getUniform(GraphicsProgram program, String name)
 	{
-		Uniform uniform = new Uniform();
+		GraphicsUniform uniform = new GraphicsUniform();
 		uniform.name = name;
 		uniform.id = GL20.glGetUniformLocation(program.id, name);
 		
@@ -342,7 +342,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean attachShader(Program program, Shader shader)
+	public boolean attachShader(GraphicsProgram program, GraphicsShader shader)
 	{
 		if(program.isValid() && shader.isValid())
 		{
@@ -355,7 +355,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean freeShader(Shader shader)
+	public boolean freeShader(GraphicsShader shader)
 	{
 		if(shader.isValid())
 		{
@@ -369,7 +369,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean finalizeProgram(Program program)
+	public boolean finalizeProgram(GraphicsProgram program)
 	{
 		if(program.isValid() && !program.isFinalized())
 		{
@@ -383,7 +383,7 @@ public class GLGraphics implements Graphics
 				System.out.println(error);
 			}
 			
-			for(Shader shader : program.shaders)
+			for(GraphicsShader shader : program.shaders)
 			{
 				GL20.glDetachShader(program.id, shader.id);
 				GL20.glDeleteShader(shader.id);
@@ -398,7 +398,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean bindProgram(Program program)
+	public boolean bindProgram(GraphicsProgram program)
 	{
 		if(program.isValid())
 		{
@@ -416,7 +416,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean freeProgram(Program program)
+	public boolean freeProgram(GraphicsProgram program)
 	{
 		if(program.isValid())
 		{
@@ -430,9 +430,9 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean setUniform(Uniform uniform, int data)
+	public boolean setUniform(GraphicsUniform uniform, int data)
 	{
-		if(uniform.isValid())
+		if(uniform != null && uniform.isValid())
 		{
 			GL20.glUniform1i(uniform.id, data);
 			return true;
@@ -442,9 +442,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(Uniform uniform, float data)
+	public boolean setUniform(GraphicsUniform uniform, float data)
 	{
-		if(uniform.isValid())
+		if(uniform != null && uniform.isValid())
 		{
 			GL20.glUniform1f(uniform.id, data);
 			return true;
@@ -454,9 +454,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(Uniform uniform, Vector2f data)
+	public boolean setUniform(GraphicsUniform uniform, Vector2f data)
 	{
-		if(uniform.isValid())
+		if(uniform != null && uniform.isValid())
 		{
 			GL20.glUniform2f(uniform.id, data.x, data.y);
 			return true;
@@ -466,9 +466,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(Uniform uniform, Vector3f data)
+	public boolean setUniform(GraphicsUniform uniform, Vector3f data)
 	{
-		if(uniform.isValid())
+		if(uniform != null && uniform.isValid())
 		{
 			GL20.glUniform3f(uniform.id, data.x, data.y, data.z);
 			return true;
@@ -478,9 +478,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(Uniform uniform, Vector4f data)
+	public boolean setUniform(GraphicsUniform uniform, Vector4f data)
 	{
-		if(uniform.isValid())
+		if(uniform != null && uniform.isValid())
 		{
 			GL20.glUniform4f(uniform.id, data.x, data.y, data.z, data.w);
 			return true;
@@ -490,9 +490,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(Uniform uniform, Matrix4f data)
+	public boolean setUniform(GraphicsUniform uniform, Matrix4f data)
 	{
-		if(uniform.isValid())
+		if(uniform != null && uniform.isValid())
 		{
 			GL20.glUniformMatrix4fv(uniform.id, false, data.toFloatBuffer(true));
 			return true;
@@ -525,12 +525,12 @@ public class GLGraphics implements Graphics
 	@Override
 	public boolean drawElementsRange(int start, int count)
 	{
-		GL11.glDrawElements(GL11.GL_TRIANGLES, count, GL11.GL_UNSIGNED_INT, start * Integer.BYTES);
+		GL11.glDrawElements(GL11.GL_TRIANGLES, count, GL11.GL_UNSIGNED_INT, start * Integer.BYTES); 
 		return true;
 	}
 
 	@Override
-	public boolean setTextureData(Texture texture, byte[] data, int width, int height,
+	public boolean setTextureData(GraphicsTexture texture, byte[] data, int width, int height,
 			TextureFormat format, TextureClamp clamp, TextureFilter filter, boolean mipmap)
 	{
 		if(texture.isValid())
@@ -565,7 +565,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean setTextureData(Texture texture, ByteBuffer data, int width, int height, 
+	public boolean setTextureData(GraphicsTexture texture, ByteBuffer data, int width, int height, 
 			TextureFormat format, TextureClamp clamp, TextureFilter filter, boolean mipmap)
 	{
 		if(texture.isValid())
@@ -596,7 +596,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean freeTexture(Texture texture)
+	public boolean freeTexture(GraphicsTexture texture)
 	{
 		if(texture.isValid())
 		{
@@ -612,7 +612,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean bindTexture(Texture texture)
+	public boolean bindTexture(GraphicsTexture texture)
 	{
 		if(texture.isValid())
 		{
