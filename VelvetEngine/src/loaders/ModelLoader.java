@@ -73,7 +73,11 @@ public class ModelLoader
 			mesh.name = objBundle.name;
 			mesh.offset = objBundle.index;
 			mesh.count = objBundle.count;
-			mesh.color = new Vector3f(objBundle.material.diffuse);
+			
+			if(objBundle.material != null)
+				mesh.color = new Vector3f(objBundle.material.diffuse);
+			else mesh.color = new Vector3f(1.0f);
+			
 			model.meshes.add(mesh);
 		}
 		

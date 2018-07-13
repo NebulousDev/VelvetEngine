@@ -52,7 +52,7 @@ public class Sandbox
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		Model model = ModelLoader.loadFromFile(gfx, "models/testScene.obj");
+		Model model = ModelLoader.loadFromFile(gfx, "models/testscene.obj");
 		Texture texture = TextureLoader.loadFromFile(gfx, "textures/default2.png");
 		
 		gfx.setActiveTextureSlot(0);
