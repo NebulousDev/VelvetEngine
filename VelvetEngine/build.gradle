@@ -1,8 +1,13 @@
 apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'eclipse'
 
 project.ext.lwjglVersion = "3.1.6"
 project.ext.lwjglNatives = "natives-windows"
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8.1'
+}
 
 sourceSets
 {
@@ -13,30 +18,29 @@ sourceSets
 repositories
 {
 	mavenCentral()
-	flatDir {
-       dirs 'B:/Java Development/VelvetOBJ/VelvetOBJ/build/libs'
-   }
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies
 {
-	compile "org.lwjgl:lwjgl:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-opencl:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
-	compile "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-	compile name: "VelvetOBJ"
+	api "org.lwjgl:lwjgl:$lwjglVersion"
+	api "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+	api "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
+	api "org.lwjgl:lwjgl-nanovg:$lwjglVersion"
+	api "org.lwjgl:lwjgl-openal:$lwjglVersion"
+	api "org.lwjgl:lwjgl-opencl:$lwjglVersion"
+	api "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+	api "org.lwjgl:lwjgl-opengles:$lwjglVersion"
+	api "org.lwjgl:lwjgl-stb:$lwjglVersion"
+	api "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
+	api "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
+	api "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+	api 'com.github.NebulousDev:VelvetOBJ:1.0.0b'
+	api 'com.github.NebulousDev:VelvetOBJ:1.0.0b:sources'
 }

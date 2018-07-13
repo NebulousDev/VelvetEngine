@@ -7,49 +7,31 @@ project.ext.lwjglNatives = "natives-windows"
 
 mainClassName = 'Sandbox'
 
-sourceSets
-{
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8.1'
+}
+
+sourceSets {
     main.java.srcDirs = ['src']
     main.resources.srcDirs = ['res']
 }
 
-repositories
-{
+repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
-jar
-{
-    manifest
-    {
+jar {
+    manifest {
         attributes 'Main-Class': mainClassName
     }
     
-    from
-    {
+    from {
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
   	}
 }
 
 dependencies
 {
-	compile "org.lwjgl:lwjgl:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-opencl:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
-	compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
-	compile "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
-	compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
 	compile project(":VelvetEngine")
 }

@@ -2,14 +2,25 @@ package utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+
+import org.lwjgl.BufferUtils;
 
 public class FileUtils
 {
-	public static byte[] readFileAsBytes(String filepath)
+	public static String getFullPath(String localpath)
 	{
-		byte[] buffer = new byte[1024];
+		String urlString = FileUtils.class.getResource(getResourcePath() + localpath).toExternalForm();
+		return urlString.replaceFirst("file:/", "").replaceFirst("jar:", "").replaceAll("%20", " ");
+	}
+	
+	public static ByteBuffer readFileAsByteBuffer(String filepath)
+	{
+		byte[] buffer = new byte[4096];
 		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
-		ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		
 		if(fileStream == null)
 		{
@@ -21,7 +32,7 @@ public class FileUtils
 		{
 			int bytes = 0;
 			while((bytes = fileStream.read(buffer)) > 0)
-				byteBuffer.write(buffer, 0, bytes);
+				byteStream.write(buffer, 0, bytes);
 			fileStream.close();
 		}
 		
@@ -32,7 +43,41 @@ public class FileUtils
 			return null;
 		}
 		
-		return byteBuffer.toByteArray();
+		ByteBuffer byteBuffer = BufferUtils.createByteBuffer(byteStream.size());
+		byteBuffer.put(byteStream.toByteArray());
+		byteBuffer.flip();
+		
+		return byteBuffer;
+	}
+	
+	public static byte[] readFileAsBytes(String filepath)
+	{
+		byte[] buffer = new byte[4096];
+		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		
+		if(fileStream == null)
+		{
+			System.out.println("Error reading file: Unable to locate file: " + filepath);
+			return null;
+		}
+		
+		try
+		{
+			int bytes = 0;
+			while((bytes = fileStream.read(buffer)) > 0)
+				byteStream.write(buffer, 0, bytes);
+			fileStream.close();
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println("Error reading file: Unable to read bytes from: " + filepath);
+			e.printStackTrace();
+			return null;
+		}
+		
+		return byteStream.toByteArray();
 	}
 	
 	public static String readFileAsString(String filepath)
@@ -63,5 +108,10 @@ public class FileUtils
 	{
 		int last = filepath.lastIndexOf(".");
 		return filepath.substring(last);
+	}
+
+	public static String getResourcePath()
+	{
+		return "/";	//TODO: do something better?
 	}
 }

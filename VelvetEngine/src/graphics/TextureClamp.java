@@ -1,0 +1,9 @@
+package graphics;
+
+public enum TextureClamp
+{
+	TEXTUTE_CLAMP_REPEAT,
+	TEXTURE_CLAMP_MIRRORED,
+	TEXTURE_CLAMP_EDGE,
+	TEXTURE_CLAMP_BORDER
+}

@@ -1,5 +1,6 @@
 package graphics;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -22,6 +23,8 @@ public interface Graphics
 	Shader createShader(String name, ShaderType type, String data);
 	
 	Uniform getUniform(Program program, String name);
+	
+	Texture createTexture();
 	
 	boolean setContextCurrent(GraphicsContext context);
 	
@@ -64,6 +67,20 @@ public interface Graphics
 	boolean setUniform(Uniform uniform, Vector4f data);
 	
 	boolean setUniform(Uniform uniform, Matrix4f data);
+	
+	boolean bindTexture(Texture texture);
+	
+	boolean unbindTexture();
+	
+	boolean setActiveTextureSlot(int slot);
+	
+	boolean setTextureData(Texture texture, byte[] data, int width, int height, 
+			TextureFormat format, TextureClamp clamp, TextureFilter filter, boolean mipmap);
+	
+	boolean setTextureData(Texture texture, ByteBuffer data, int width, int height, 
+			TextureFormat format, TextureClamp clamp, TextureFilter filter, boolean mipmap);
+	
+	boolean freeTexture(Texture texture);
 	
 	boolean setClearColor(float red, float green, float blue, float alpha);
 	
