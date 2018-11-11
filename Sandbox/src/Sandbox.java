@@ -3,13 +3,15 @@ import org.lwjgl.opengl.GL11;
 import core.Application;
 import core.Window;
 import entity.Camera;
+import entity.Entity;
+import entity.components.MeshComponent;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
-import graphics.GraphicsModel;
-import graphics.ModelRenderer;
+import graphics.GraphicsMesh;
 import graphics.GraphicsProgram;
 import graphics.GraphicsShader;
 import graphics.ShaderType;
+import graphics.renderers.ModelRenderer;
 import graphics.GraphicsTexture;
 import graphics.GraphicsUniform;
 import input.Buttons;
@@ -51,7 +53,7 @@ public class Sandbox
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		GraphicsModel model = ModelLoader.loadFromFile(gfx, "models/dragon.obj");
+		GraphicsMesh model = ModelLoader.loadFromFile(gfx, "models/testscene.obj");
 		GraphicsTexture texture = TextureLoader.loadFromFile(gfx, "textures/default2.png");
 		
 		gfx.setActiveTextureSlot(0);
@@ -76,7 +78,7 @@ public class Sandbox
 		
 		float sensitivity = 0.04f;
 		float speed = 0.001f;
-
+		
 		while(!app.shouldClose())
 		{
 			gfx.clearBuffers();

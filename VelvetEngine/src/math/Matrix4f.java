@@ -46,6 +46,16 @@ public class Matrix4f
 		this.elements = elements;
 	}
 	
+	public Vector4f mul(Vector3f position)
+	{
+		return mul(new Vector4f(position, 1.0f)); 
+	}
+	
+	public Vector4f mul(Vector4f position)
+	{
+		return null;	// TODO: DO
+	}
+	
 	public static Matrix4f Identity()
 	{
 		float[] elements = 

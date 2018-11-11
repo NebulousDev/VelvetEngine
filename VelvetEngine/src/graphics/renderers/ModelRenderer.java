@@ -1,12 +1,17 @@
-package graphics;
+package graphics.renderers;
 
-import graphics.GraphicsModel.SubMesh;
+import graphics.Graphics;
+import graphics.GraphicsMesh;
+import graphics.GraphicsProgram;
+import graphics.GraphicsUniform;
+import graphics.GraphicsMesh.SubMesh;
 
+@Deprecated
 public class ModelRenderer
 {
 	public static GraphicsUniform color = null;
 	
-	public static void render(Graphics gfx, GraphicsProgram program, GraphicsModel model)
+	public static void render(Graphics gfx, GraphicsProgram program, GraphicsMesh model)
 	{
 		if(color == null) color = gfx.getUniform(program, "color");
 		

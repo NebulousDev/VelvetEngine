@@ -76,7 +76,7 @@ public class Vector4f
 		this.z = z;
 		this.w = w;
 	}
-	
+
 	public Vector4f add(Vector4f vec4)
 	{
 		x += vec4.x;
