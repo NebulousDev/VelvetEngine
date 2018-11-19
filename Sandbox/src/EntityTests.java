@@ -2,11 +2,10 @@ import entity.ComponentManager;
 import entity.Entity;
 import entity.EntityManager;
 import entity.components.MeshComponent;
-import entity.components.TransformComponent;
-import graphics.GraphicsMesh;
 import graphics.GraphicsTexture;
-import loaders.ModelLoader;
-import loaders.TextureLoader;
+import resource.Resource;
+import resource.ResourceManager;
+import resource.TestResource;
 
 @SuppressWarnings("unused")
 public class EntityTests
@@ -38,9 +37,19 @@ public class EntityTests
 //		
 //		System.out.println(e1);
 		
-		Entity testEntity = EntityManager.createEntity("TestEntity");
-		MeshComponent meshComponent = ComponentManager.createComponent(MeshComponent.TYPE);
-		meshComponent.setMesh(null);
+		//Entity testEntity = EntityManager.createEntity("TestEntity");
+		//MeshComponent meshComponent = ComponentManager.createComponent(MeshComponent.TYPE);
+		//meshComponent.setMesh(null);
+		
+		ResourceManager.initialize();
+		
+		ResourceManager.registerResourceType(new TestResource(), "Test Resource");
+		
+		ResourceManager.registerResource(TestResource.TYPE, "default_texture", "/textures/default.png", Resource.PERMENENT, ResourceManager.PRELOAD);
+		ResourceManager.registerResource(TestResource.TYPE, "default_texture2", "/textures/default2.png", Resource.PERMENENT, 0);
+		
+		Resource<TestResource> res = ResourceManager.getResource("default_texture");
+		//ResourceManager.releaseResource(texture);
 		
 	}
 }
