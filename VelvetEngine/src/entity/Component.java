@@ -1,6 +1,6 @@
 package entity;
 
-public abstract class Component<T> implements ComponentInitializer<T>
+public abstract class Component<T> implements IComponentType<T>
 {	
 	protected int id;
 	
