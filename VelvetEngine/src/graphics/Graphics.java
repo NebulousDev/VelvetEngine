@@ -18,13 +18,13 @@ public interface Graphics
 	
 	GraphicsBuffer createBuffer();
 	
-	GraphicsProgram createProgram(String name);
+	ShaderProgram createProgram(String name);
 	
-	GraphicsShader createShader(String name, ShaderType type, String data);
+	Shader createShader(String name, ShaderType type, String data);
 	
-	GraphicsUniform getUniform(GraphicsProgram program, String name);
+	GraphicsUniform getUniform(ShaderProgram program, String name);
 	
-	GraphicsTexture createTexture();
+	Texture createTexture();
 	
 	boolean setContextCurrent(GraphicsContext context);
 	
@@ -44,17 +44,17 @@ public interface Graphics
 	
 	boolean freeBuffer(GraphicsBuffer buffer);
 	
-	boolean attachShader(GraphicsProgram program, GraphicsShader shader);
+	boolean attachShader(ShaderProgram program, Shader shader);
 	
-	boolean freeShader(GraphicsShader shader);
+	boolean freeShader(Shader shader);
 	
-	boolean finalizeProgram(GraphicsProgram program);
+	boolean finalizeProgram(ShaderProgram program);
 	
-	boolean bindProgram(GraphicsProgram program);
+	boolean bindProgram(ShaderProgram program);
 	
 	boolean unbindProgram();
 	
-	boolean freeProgram(GraphicsProgram program);
+	boolean freeProgram(ShaderProgram program);
 	
 	boolean setUniform(GraphicsUniform uniform, int data);
 	
@@ -68,19 +68,19 @@ public interface Graphics
 	
 	boolean setUniform(GraphicsUniform uniform, Matrix4f data);
 	
-	boolean bindTexture(GraphicsTexture texture);
+	boolean bindTexture(Texture texture);
 	
 	boolean unbindTexture();
 	
 	boolean setActiveTextureSlot(int slot);
 	
-	boolean setTextureData(GraphicsTexture texture, byte[] data, int width, int height, 
+	boolean setTextureData(Texture texture, byte[] data, int width, int height, 
 			TextureFormat format, TextureClamp clamp, TextureFilter filter, boolean mipmap);
 	
-	boolean setTextureData(GraphicsTexture texture, ByteBuffer data, int width, int height, 
+	boolean setTextureData(Texture texture, ByteBuffer data, int width, int height, 
 			TextureFormat format, TextureClamp clamp, TextureFilter filter, boolean mipmap);
 	
-	boolean freeTexture(GraphicsTexture texture);
+	boolean freeTexture(Texture texture);
 	
 	boolean setClearColor(float red, float green, float blue, float alpha);
 	

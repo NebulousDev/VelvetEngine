@@ -1,8 +1,8 @@
 package graphics.material;
 
-import graphics.GraphicsShader;
+import graphics.Shader;
 
 public class Material
 {
-	GraphicsShader shader;
+	Shader shader;
 }

@@ -19,7 +19,7 @@ public class FileUtils
 	public static ByteBuffer readFileAsByteBuffer(String filepath)
 	{
 		byte[] buffer = new byte[4096];
-		InputStream fileStream = FileUtils.class.getResourceAsStream(RESOURCE_PATH + filepath);
+		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		
 		if(fileStream == null)
@@ -53,7 +53,7 @@ public class FileUtils
 	public static byte[] readFileAsBytes(String filepath)
 	{
 		byte[] buffer = new byte[4096];
-		InputStream fileStream = FileUtils.class.getResourceAsStream(RESOURCE_PATH + filepath);
+		InputStream fileStream = FileUtils.class.getResourceAsStream(filepath);
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		
 		if(fileStream == null)

@@ -74,7 +74,7 @@ public class Camera
 	
 	public Matrix4f getView()
 	{
-		return orientation.toMatrix();
+		return orientation.toMatrix().mul(Matrix4f.Translation(position));
 	}
 
 }

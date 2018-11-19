@@ -1,22 +1,22 @@
 package entity.components;
 
 import entity.Component;
-import graphics.GraphicsMesh;
+import graphics.Mesh;
 
 public class MeshComponent extends Component<MeshComponent>
 {
 	public final static int 	TYPE	= getNextTypeID();
 	public final static String 	NAME	= "Mesh Component";
 	
-	private GraphicsMesh mesh = null;
+	private Mesh mesh = null;
 
-	public void setMesh(GraphicsMesh mesh)
+	public void setMesh(Mesh mesh)
 	{
 		// TODO: update mesh references?
 		this.mesh = mesh;
 	}
 	
-	public GraphicsMesh getMesh()
+	public Mesh getMesh()
 	{
 		return mesh;
 	}

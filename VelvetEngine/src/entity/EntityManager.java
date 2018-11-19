@@ -2,18 +2,29 @@ package entity;
 
 import java.util.ArrayList;
 
+import core.Game;
+
 public final class EntityManager
 {
-	private static ArrayList<Entity> entityList = new ArrayList<>();
+	private Game game;
+	private ComponentManager manager;
 	
-	public static Entity createEntity(String localName)
+	private ArrayList<Entity> entityList = new ArrayList<>();
+	
+	public void initialize(Game game, ComponentManager manager)
 	{
-		Entity entity = new Entity(entityList.size(), localName); // TODO: look into this
+		this.game = game;
+		this.manager = manager;
+	}
+	
+	public Entity createEntity(String localName)
+	{
+		Entity entity = new Entity(manager, entityList.size(), localName); // TODO: look into this
 		entityList.add(entity);
 		return entity;
 	}
 	
-	public static Entity getEntityByID(int entityID)
+	public Entity getEntityByID(int entityID)
 	{
 		return entityList.get(entityID);
 	}

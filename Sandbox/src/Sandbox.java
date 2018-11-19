@@ -1,69 +1,90 @@
+import javax.xml.crypto.dsig.Transform;
+
 import org.lwjgl.opengl.GL11;
 
 import core.Application;
+import core.Game;
 import core.Window;
 import entity.Camera;
 import entity.Entity;
 import entity.components.MeshComponent;
+import entity.components.TransformComponent;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
-import graphics.GraphicsMesh;
-import graphics.GraphicsProgram;
-import graphics.GraphicsShader;
-import graphics.ShaderType;
-import graphics.renderers.ModelRenderer;
-import graphics.GraphicsTexture;
 import graphics.GraphicsUniform;
+import graphics.Mesh;
+import graphics.ShaderProgram;
+import graphics.Texture;
+import graphics.renderers.ModelRenderer;
 import input.Buttons;
 import input.Input;
 import input.Keys;
-import loaders.ModelLoader;
-import loaders.TextureLoader;
 import math.Axis;
 import math.Matrix4f;
-import utils.FileUtils;
+import resource.Asset;
+import resource.AssetManager;
 
-public class Sandbox
+@SuppressWarnings("deprecation")
+public class Sandbox extends Game
 {
-	@SuppressWarnings("unused")
+
 	public static void main(String[] args)
 	{
-		Application app = Application.createApplication("VelvetEngine", GraphicsAPI.GRAPHICS_OPENGL);
-		app.createWindow("VelvetEngine", 1280, 720, 0, 0, Window.CENTERED);
+		/* Initialize Application */
 		
+		Application app = new Application("VelvetEngine", new Sandbox(), GraphicsAPI.GRAPHICS_OPENGL);
 		Window window = app.getWindow();
-		
 		Graphics gfx = app.getGraphics();
+		Game game = app.getGame();
+
 		gfx.setClearColor(0.0f, 0.06f, 0.08f, 1.0f);
+		
+		app.start();
+		
+		/* Initialize Camera */
 		
 		Camera camera = Camera.createCamera(Matrix4f.Perspective(60.0f, window.getAspect(), 0.01f, 1000f));
 		camera.getPosition().set(0, 0, 0.0f);
 		
-		String vert = FileUtils.readFileAsString("shaders/test.vert");
-		String frag = FileUtils.readFileAsString("shaders/test.frag");
+		/* Initialize Resources */
 		
-		GraphicsProgram program 	= gfx.createProgram("testShaderProgram");
-		GraphicsShader 	vertex 		= gfx.createShader("testShaderVert", ShaderType.SHADER_TYPE_VERTEX, vert);
-		GraphicsShader 	fragment 	= gfx.createShader("testShaderFrag", ShaderType.SHADER_TYPE_FRAGMENT, frag);
+		AssetManager assetManager = app.getGame().getResourceManager();
+		assetManager.registerAssetType(new Mesh(), "Mesh");
+		assetManager.registerAssetType(new Texture(), "Texture");
+		assetManager.registerAssetType(new ShaderProgram(), "ShaderProgram");
 		
-		gfx.attachShader(program, vertex);
-		gfx.attachShader(program, fragment);
+		assetManager.registerAsset(Mesh.TYPE, "mesh_testscene", "/models/testscene.obj");
+		assetManager.registerAsset(Texture.TYPE, "texture_default", "/textures/default.png", 0, AssetManager.PRELOAD);
+		assetManager.registerAsset(Texture.TYPE, "texture_default2", "/textures/default2.png", 0, AssetManager.PRELOAD);
+		assetManager.registerAsset(ShaderProgram.TYPE, "shader_default", "/shaders/test", 0, AssetManager.PRELOAD);
 		
-		gfx.finalizeProgram(program);
+		/* Load Resources */
 		
-		/////////////////////////////////////////////////////////////////////////////////////////
-		
-		GraphicsMesh model = ModelLoader.loadFromFile(gfx, "models/testscene.obj");
-		GraphicsTexture texture = TextureLoader.loadFromFile(gfx, "textures/default2.png");
+		Asset<Mesh> mesh = assetManager.getAsset("mesh_testscene");
+		Asset<Texture> texture = assetManager.getAsset("texture_default2");
+		Asset<ShaderProgram> program = assetManager.getAsset("shader_default");
 		
 		gfx.setActiveTextureSlot(0);
-		gfx.bindTexture(texture);
+		gfx.bindTexture(texture.getResource());
+		
+		/* Setup Entities */
+		
+		game.getComponentManager().registerComponentType(new MeshComponent());
+		game.getComponentManager().registerComponentType(new TransformComponent());
+		
+		Entity ground = game.getEntityManager().createEntity("entity_ground");
+		ground.createAndAttachComponent(MeshComponent.TYPE);
+		ground.createAndAttachComponent(TransformComponent.TYPE);
+		MeshComponent groundMeshComponent = ground.getComponent(MeshComponent.TYPE);
+		groundMeshComponent.setMesh(mesh.getResource());
+		TransformComponent groundTransformComponent = ground.getComponent(TransformComponent.TYPE);
+		groundTransformComponent.getPosition().add(0.0f, 0.0f, 0.0f);
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
 		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
-		GraphicsUniform mvp = gfx.getUniform(program, "mvp");
-		GraphicsUniform view = gfx.getUniform(program, "view");
+		GraphicsUniform mvp = gfx.getUniform(program.getResource(), "mvp");
+		GraphicsUniform view = gfx.getUniform(program.getResource(), "view");
 		
 		int error = 0;
 		if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
@@ -97,20 +118,22 @@ public class Sandbox
 			{
 				camera.rotate(Axis.UP, Input.getMouseRelative().x * sensitivity);
 				camera.rotate(camera.getRight(), Input.getMouseRelative().y * -sensitivity);
-				mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
 			}
+			
+			mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
+			mvpMatrix.mul(Matrix4f.Translation(groundTransformComponent.getPosition()));
 			
 			if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
 			if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
 		
-			gfx.bindProgram(program);
+			gfx.bindProgram(program.getResource());
 			
 			gfx.setUniform(mvp, mvpMatrix);
-			gfx.setUniform(view, camera.getView().mul(Matrix4f.Translation(camera.getPosition())));
+			gfx.setUniform(view, camera.getView());
 			
 			///////////////////////////////
 			
-			ModelRenderer.render(gfx, program, model);
+			ModelRenderer.render(gfx, program.getResource(), groundMeshComponent.getMesh());
 			
 			///////////////////////////////
 			
@@ -122,6 +145,18 @@ public class Sandbox
 			
 			app.swapBuffers();
 		}
+	}
+
+	@Override
+	protected void load()
+	{
+		
+	}
+
+	@Override
+	protected void unload()
+	{
+		
 	}
 
 }

@@ -9,8 +9,8 @@ import org.lwjgl.opengl.GL20;
 
 import graphics.BufferType;
 import graphics.Graphics;
-import graphics.GraphicsMesh;
-import graphics.GraphicsMesh.SubMesh;
+import graphics.Mesh;
+import graphics.Mesh.SubMesh;
 import math.Vector3f;
 import utils.FileUtils;
 import velvetobj.OBJBundle;
@@ -22,7 +22,7 @@ public class ModelLoader
 {
 	private ModelLoader() {}
 	
-	public static GraphicsMesh loadFromFile(Graphics gfx, String filepath)
+	public static Mesh loadFromFile(Graphics gfx, String filepath)
 	{
 		String ext = FileUtils.getFileExtention(filepath);
 		
@@ -37,15 +37,15 @@ public class ModelLoader
 		
 	}
 	
-	private static GraphicsMesh loadFromOBJ(Graphics gfx, String filepath)
+	private static Mesh loadFromOBJ(Graphics gfx, String filepath)
 	{
-		GraphicsMesh model = new GraphicsMesh();
+		Mesh model = new Mesh();
 		OBJModel objModel = OBJParser.parseOBJ(FileUtils.RESOURCE_PATH + filepath);
 		
 		model.vbo = gfx.createBuffer();
 		model.ibo = gfx.createBuffer();
 		
-		model.meshes = new ArrayList<>();
+		model.subMeshes = new ArrayList<>();
 		
 		FloatBuffer vertexBuffer = FloatBuffer.allocate(objModel.vertices.length * 8);
 		IntBuffer indexBuffer = IntBuffer.allocate(objModel.indices.length);
@@ -78,7 +78,7 @@ public class ModelLoader
 				mesh.color = new Vector3f(objBundle.material.diffuse);
 			else mesh.color = new Vector3f(1.0f);
 			
-			model.meshes.add(mesh);
+			model.subMeshes.add(mesh);
 		}
 		
 		///////////////////////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 
 import graphics.Graphics;
-import graphics.GraphicsTexture;
+import graphics.Texture;
 import graphics.TextureClamp;
 import graphics.TextureFilter;
 import graphics.TextureFormat;
@@ -17,7 +17,7 @@ public class TextureLoader
 {
 	private TextureLoader() {}
 	
-	public static GraphicsTexture loadFromFile(Graphics gfx, String filepath)
+	public static Texture loadFromFile(Graphics gfx, String filepath)
 	{
 		ByteBuffer data 	= null;
 		ByteBuffer image	= null;
@@ -51,7 +51,7 @@ public class TextureLoader
 			default: format = TextureFormat.TEXTURE_FORMAT_RGBA;
 		}
 		
-		GraphicsTexture texture = gfx.createTexture();
+		Texture texture = gfx.createTexture();
 		gfx.setTextureData(texture, image, width.get(0), height.get(0), format, 
 				TextureClamp.TEXTUTE_CLAMP_REPEAT, TextureFilter.TEXTURE_FILTER_NEAREST, false);
 		

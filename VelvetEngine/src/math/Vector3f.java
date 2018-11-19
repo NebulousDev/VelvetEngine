@@ -62,6 +62,14 @@ public class Vector3f
 		return new Vector3f(x, y, z);
 	}
 	
+	public Vector3f add(float dx, float dy, float dz)
+	{
+		x += dx;
+		y += dy;
+		z += dz;
+		return this;
+	}
+	
 	public Vector3f add(Vector3f vec3)
 	{
 		x += vec3.x;
@@ -77,6 +85,14 @@ public class Vector3f
 		return this;
 	}
 	
+	public Vector3f sub(float dx, float dy, float dz)
+	{
+		x -= dx;
+		y -= dy;
+		z -= dz;
+		return this;
+	}
+	
 	public Vector3f sub(Vector3f vec3)
 	{
 		x -= vec3.x;
@@ -89,6 +105,14 @@ public class Vector3f
 	{
 		x -= vec2.x;
 		y -= vec2.y;
+		return this;
+	}
+	
+	public Vector3f mul(float dx, float dy, float dz)
+	{
+		x *= dx;
+		y *= dy;
+		z *= dz;
 		return this;
 	}
 	
@@ -112,6 +136,14 @@ public class Vector3f
 		x *= num;
 		y *= num;
 		z *= num;
+		return this;
+	}
+	
+	public Vector3f div(float dx, float dy, float dz)
+	{
+		x /= dx;
+		y /= dy;
+		z /= dz;
 		return this;
 	}
 	

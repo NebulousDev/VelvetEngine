@@ -7,14 +7,17 @@ public class Entity
 	private int id;
 	private String name;
 	
-	// TODO: Eventually move this to EntityManager 
-	HashMap<Integer, Integer> componentMap;
+	private ComponentManager manager;
 	
-	Entity(int id, String name)
+	// TODO: Eventually move this to EntityManager
+	private HashMap<Integer, Integer> componentMap;
+	
+	Entity(ComponentManager manager, int id, String name)
 	{
 		// only visible to package
 		this.id = id;
 		this.name = name;
+		this.manager = manager;
 		componentMap = new HashMap<>();
 	}
 	
@@ -24,7 +27,7 @@ public class Entity
 	 */
 	public boolean createAndAttachComponent(int typeID)
 	{
-		Component<?> component = ComponentManager.createComponent(typeID);
+		Component<?> component = manager.createComponent(typeID);
 		return attachComponent(component);
 	}
 	
@@ -58,7 +61,7 @@ public class Entity
 	public <E extends Component<E>> E getComponent(int typeID)
 	{
 		Integer offsetID = componentMap.get(typeID);
-		return offsetID != null ? (E)ComponentManager.getComponent(typeID, offsetID) : null;
+		return offsetID != null ? (E) manager.getComponent(typeID, offsetID) : null;
 	}
 	
 	/**
@@ -75,7 +78,7 @@ public class Entity
 		StringBuilder builder = new StringBuilder();
 		builder.append("Entity[" + name + ":" + id + "]");
 		for(int i : componentMap.keySet())
-			builder.append("\n\t- " + ComponentManager.getComponent(i, componentMap.get(i)));
+			builder.append("\n\t- " + manager.getComponent(i, componentMap.get(i)));
 		
 		return builder.toString();
 	}

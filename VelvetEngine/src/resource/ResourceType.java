@@ -1,12 +1,14 @@
 package resource;
 
+import core.Game;
+
 public abstract class ResourceType<Type> {
 	
-	abstract void load(String filepath, int flags);
+	public abstract boolean load(Game game, String localName, String filepath, int flags);
 	
-	abstract void unload();
+	public abstract boolean unload(Game game);
 	
-	abstract Type create();
+	public abstract Type create(Game game);
 	
 	public abstract int getTypeID();
 	public abstract String getTypeName();

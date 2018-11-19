@@ -17,7 +17,7 @@ public class Window
 	int 	x, y;
 	int 	width, height;
 	int 	flags;
-	long	windowLong;
+	long	windowID;
 	
 	Vector2f center;
 	
@@ -29,7 +29,12 @@ public class Window
 		this.height = height;
 		this.center.x = width / 2;
 		this.center.y = height / 2;
-		GLFW.glfwSetWindowSize(windowLong, width, height);
+		GLFW.glfwSetWindowSize(windowID, width, height);
+	}
+	
+	public void show()
+	{
+		
 	}
 
 	public String getTitle() { return title; }
@@ -46,7 +51,7 @@ public class Window
 
 	public int getFlags() { return flags; }
 
-	public long getWindowLong() { return windowLong; }
+	public long getWindowID() { return windowID; }
 
 	public Vector2f getCenter() { return center; }
 	

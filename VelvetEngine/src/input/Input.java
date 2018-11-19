@@ -72,8 +72,8 @@ public class Input
 			}
 		};
 		
-		GLFW.glfwSetMouseButtonCallback(window.getWindowLong(), mouseButtonCallback);
-		GLFW.glfwSetKeyCallback(window.getWindowLong(), keyCallback);
+		GLFW.glfwSetMouseButtonCallback(window.getWindowID(), mouseButtonCallback);
+		GLFW.glfwSetKeyCallback(window.getWindowID(), keyCallback);
 		
 		initialized = true;
 		
@@ -94,7 +94,7 @@ public class Input
 		System.arraycopy(buttons, 0, buttonsLast, 0, MAX_BUTTONS);
 		System.arraycopy(keys, 0, keysLast, 0, MAX_KEYS);
 		
-		GLFW.glfwGetCursorPos(window.getWindowLong(), mxPos, myPos);
+		GLFW.glfwGetCursorPos(window.getWindowID(), mxPos, myPos);
 		mouseAbsolute.x = (float)mxPos[0];
 		mouseAbsolute.y = (float)myPos[0];
 		
@@ -138,18 +138,18 @@ public class Input
 	public static void captureMouse(boolean visible)
 	{
 		captured = true;
-		if(!visible) GLFW.glfwSetInputMode(window.getWindowLong(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+		if(!visible) GLFW.glfwSetInputMode(window.getWindowID(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 	}
 	
 	public static void releaseMouse()
 	{
 		captured = false;
-		GLFW.glfwSetInputMode(window.getWindowLong(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+		GLFW.glfwSetInputMode(window.getWindowID(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 	}
 	
 	public static void setMouse(Vector2f pos)
 	{
-		GLFW.glfwSetCursorPos(window.getWindowLong(), pos.x, pos.y);
+		GLFW.glfwSetCursorPos(window.getWindowID(), pos.x, pos.y);
 	}
 	
 	public static Vector2f getMouseAbsolute()
