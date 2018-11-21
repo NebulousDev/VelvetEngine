@@ -1,10 +1,15 @@
+import java.util.Arrays;
+
 import org.lwjgl.opengl.GL11;
 
 import core.Application;
 import core.Game;
 import core.Window;
-import entity.Camera;
 import entity.Entity;
+import entity.Require;
+import entity.Require.Requirements;
+import entity.camera.Camera;
+import entity.camera.CameraComponent;
 import entity.component.TransformComponent;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
@@ -28,6 +33,7 @@ import resource.AssetManager;
 public class Sandbox extends Game
 {
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
 		/* Initialize Application */
@@ -69,9 +75,19 @@ public class Sandbox extends Game
 		
 		/* Setup Entities */
 		
-		TransformComponent 	groundTransformComponent 	= new TransformComponent(new Vector3f(0), Quaternion.Identity());
-		MeshComponent 		groundMeshComponent 		= new MeshComponent(mesh.getResource());
-		Entity 				groundEntity 				= game.getEntityManager().createEntity("entity_ground", groundTransformComponent, groundMeshComponent);
+		TransformComponent 	groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
+		MeshComponent 		groundMesh 			= new MeshComponent(mesh.getResource());
+		Entity 				groundEntity 		= game.getEntityManager().createEntity("entity_ground", groundTransform, groundMesh);
+		
+		
+		
+		CameraComponent cameraComponent = new CameraComponent();
+		
+		Require[] requirements = cameraComponent.getClass().getAnnotationsByType(Require.class);
+		System.out.println("@Requires Annotation Present: " + cameraComponent.getClass().isAnnotationPresent(Requirements.class));
+		System.out.println("@Requires Annotation Data: " + Arrays.toString(requirements));
+		
+		
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -95,26 +111,29 @@ public class Sandbox extends Game
 		
 		while(!app.shouldClose())
 		{
+			//groundTransform.position.z += 0.001f;
+			//groundTransform.orientation.mul(Quaternion.Rotation(Axis.UP, Math.toRadians(0.01f)));
+			
 			gfx.clearBuffers();
 			Input.getInstance().update();
 			app.pollEvents();
 			
 			if(Input.keyHeld(Keys.KEY_W)) camera.getPosition().add(camera.getForward().copy().mul(-speed));
 			if(Input.keyHeld(Keys.KEY_S)) camera.getPosition().add(camera.getBack().copy().mul(-speed));
-			if(Input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(speed));
-			if(Input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(speed));
+			if(Input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(-speed));
 			
 			if(Input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
 			if(Input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
 			
 			if(Input.isMouseCaptured())
 			{
-				camera.rotate(Axis.UP, Input.getMouseRelative().x * sensitivity);
+				camera.rotate(Axis.UP, Input.getMouseRelative().x * -sensitivity);
 				camera.rotate(camera.getRight(), Input.getMouseRelative().y * -sensitivity);
 			}
 			
 			mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView());
-			mvpMatrix.mul(Matrix4f.Translation(groundTransformComponent.position));
+			mvpMatrix.mul(groundTransform.calcModelMatrix());
 			
 			if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
 			if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
@@ -126,7 +145,7 @@ public class Sandbox extends Game
 			
 			///////////////////////////////
 			
-			ModelRenderer.render(gfx, program.getResource(), groundMeshComponent.mesh);
+			ModelRenderer.render(gfx, program.getResource(), groundMesh.mesh);
 			
 			///////////////////////////////
 			

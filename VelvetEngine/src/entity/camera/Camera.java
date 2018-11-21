@@ -1,4 +1,4 @@
-package entity;
+package entity.camera;
 
 import math.Matrix4f;
 import math.Quaternion;

@@ -110,6 +110,19 @@ public class Matrix4f
 		return matrix;
 	}
 	
+	public static Matrix4f Scale(Vector3f vec3)
+	{
+		float[] elements = 
+		{
+			vec3.x, 0.0f,   0.0f,   0.0f,
+			0.0f,   vec3.y, 0.0f,   0.0f,
+			0.0f,   0.0f,   vec3.z, 0.0f,
+			0.0f,   0.0f,   0.0f,   1.0f
+		};
+		
+		return new Matrix4f(elements);
+	}
+	
 	public static Matrix4f Orientation(Vector3f forward, Vector3f right, Vector3f up) {
 		
 		float[] elements =
@@ -128,32 +141,13 @@ public class Matrix4f
 	{
 		Matrix4f matrix = Matrix4f.Identity();
 		float q = (float)(1.0f / Math.tan(Math.toRadians(0.5f * fov)));
-		float w = q / -aspect;
+		float w = q / aspect;
 		
 		matrix.elements[0 + 0 * 4] = w;
 		matrix.elements[1 + 1 * 4] = q;
 		matrix.elements[2 + 2 * 4] = (near + far) / (near - far);
 		matrix.elements[2 + 3 * 4] = (2.0f * near * far) / (near - far);
 		matrix.elements[3 + 2 * 4] = -1.0f;
-		
-		/*
-		float scale = (float)Math.tan(Math.toRadians(0.5f * fov)) * near;
-		float right = aspect * scale;
-		float left = -right;
-		float top = scale;
-		float bottom = -top;
-		
-		aspect = -aspect;
-
-		matrix.elements[0 + 0 * 4] = (2 * near) / (right - left);
-		matrix.elements[1 + 1 * 4] = (2 * near) / (top - bottom);
-		matrix.elements[0 + 2 * 4] = (right + left) / (right - left);
-		matrix.elements[1 + 2 * 4] = (top + bottom) / (top - bottom);
-		matrix.elements[2 + 2 * 4] = -(far + near) / (far - near);
-		matrix.elements[3 + 2 * 4] = -1.0f;
-		matrix.elements[2 + 3 * 4] = -(2.0f * near * far) / (far - near);
-		 */
-		
 		
 		return matrix;
 	}
