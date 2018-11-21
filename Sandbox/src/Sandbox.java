@@ -1,5 +1,3 @@
-import javax.xml.crypto.dsig.Transform;
-
 import org.lwjgl.opengl.GL11;
 
 import core.Application;
@@ -7,20 +5,22 @@ import core.Game;
 import core.Window;
 import entity.Camera;
 import entity.Entity;
-import entity.components.MeshComponent;
-import entity.components.TransformComponent;
+import entity.component.TransformComponent;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
 import graphics.GraphicsUniform;
 import graphics.Mesh;
 import graphics.ShaderProgram;
 import graphics.Texture;
+import graphics.component.MeshComponent;
 import graphics.renderers.ModelRenderer;
 import input.Buttons;
 import input.Input;
 import input.Keys;
 import math.Axis;
 import math.Matrix4f;
+import math.Quaternion;
+import math.Vector3f;
 import resource.Asset;
 import resource.AssetManager;
 
@@ -53,36 +53,29 @@ public class Sandbox extends Game
 		assetManager.registerAssetType(new Texture(), "Texture");
 		assetManager.registerAssetType(new ShaderProgram(), "ShaderProgram");
 		
-		assetManager.registerAsset(Mesh.TYPE, "mesh_testscene", "/models/testscene.obj");
+		assetManager.registerAsset(Mesh.TYPE, "mesh_testscene", "/models/testScene.obj");
 		assetManager.registerAsset(Texture.TYPE, "texture_default", "/textures/default.png", 0, AssetManager.PRELOAD);
 		assetManager.registerAsset(Texture.TYPE, "texture_default2", "/textures/default2.png", 0, AssetManager.PRELOAD);
 		assetManager.registerAsset(ShaderProgram.TYPE, "shader_default", "/shaders/test", 0, AssetManager.PRELOAD);
 		
 		/* Load Resources */
 		
-		Asset<Mesh> mesh = assetManager.getAsset("mesh_testscene");
-		Asset<Texture> texture = assetManager.getAsset("texture_default2");
-		Asset<ShaderProgram> program = assetManager.getAsset("shader_default");
+		Asset<Mesh> 			mesh 	= assetManager.getAsset("mesh_testscene");
+		Asset<Texture> 			texture = assetManager.getAsset("texture_default2");
+		Asset<ShaderProgram> 	program = assetManager.getAsset("shader_default");
 		
 		gfx.setActiveTextureSlot(0);
 		gfx.bindTexture(texture.getResource());
 		
 		/* Setup Entities */
 		
-		game.getComponentManager().registerComponentType(new MeshComponent());
-		game.getComponentManager().registerComponentType(new TransformComponent());
-		
-		Entity ground = game.getEntityManager().createEntity("entity_ground");
-		ground.createAndAttachComponent(MeshComponent.TYPE);
-		ground.createAndAttachComponent(TransformComponent.TYPE);
-		MeshComponent groundMeshComponent = ground.getComponent(MeshComponent.TYPE);
-		groundMeshComponent.setMesh(mesh.getResource());
-		TransformComponent groundTransformComponent = ground.getComponent(TransformComponent.TYPE);
-		groundTransformComponent.getPosition().add(0.0f, 0.0f, 0.0f);
+		TransformComponent 	groundTransformComponent 	= new TransformComponent(new Vector3f(0), Quaternion.Identity());
+		MeshComponent 		groundMeshComponent 		= new MeshComponent(mesh.getResource());
+		Entity 				groundEntity 				= game.getEntityManager().createEntity("entity_ground", groundTransformComponent, groundMeshComponent);
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
+		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView());
 		GraphicsUniform mvp = gfx.getUniform(program.getResource(), "mvp");
 		GraphicsUniform view = gfx.getUniform(program.getResource(), "view");
 		
@@ -90,7 +83,7 @@ public class Sandbox extends Game
 		if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
 			System.out.println("GLERROR: " + error);
 		
-		//TODO: MOVE TO GRAPHICS 
+		//TODO: MOVE TO GRAPHICS
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LESS);
 		//GL11.glDisable(GL11.GL_CULL_FACE);
@@ -120,8 +113,8 @@ public class Sandbox extends Game
 				camera.rotate(camera.getRight(), Input.getMouseRelative().y * -sensitivity);
 			}
 			
-			mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(Matrix4f.Translation(Axis.FORWARD)).mul(camera.getView()).mul(Matrix4f.Translation(camera.getPosition()));
-			mvpMatrix.mul(Matrix4f.Translation(groundTransformComponent.getPosition()));
+			mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView());
+			mvpMatrix.mul(Matrix4f.Translation(groundTransformComponent.position));
 			
 			if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
 			if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
@@ -133,7 +126,7 @@ public class Sandbox extends Game
 			
 			///////////////////////////////
 			
-			ModelRenderer.render(gfx, program.getResource(), groundMeshComponent.getMesh());
+			ModelRenderer.render(gfx, program.getResource(), groundMeshComponent.mesh);
 			
 			///////////////////////////////
 			

@@ -1,6 +1,10 @@
 package entity;
 
-public abstract class System
-{
-	public abstract void updateAll();
+public interface System {
+
+	/**
+	 * Activates a single update tick
+	 */
+	public void updateSystem();
+	
 }

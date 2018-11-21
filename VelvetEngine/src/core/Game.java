@@ -1,6 +1,5 @@
 package core;
 
-import entity.ComponentManager;
 import entity.EntityManager;
 import graphics.Graphics;
 import resource.AssetManager;
@@ -9,7 +8,6 @@ public abstract class Game {
 	
 	Application 		application;
 	Graphics 			graphics;
-	ComponentManager	componentManager;
 	EntityManager		entityManager;
 	AssetManager		resourceManager;
 
@@ -20,12 +18,9 @@ public abstract class Game {
 		this.application = application;
 		this.graphics = application.getGraphics();	// TODO: Maybe move graphics into Game only?
 		
-		componentManager = new ComponentManager();
 		resourceManager = new AssetManager();
 		entityManager = new EntityManager();
 		
-		componentManager.initialize(this);
-		entityManager.initialize(this, componentManager);
 		resourceManager.initialize(this);
 		
 		initialized = true;
@@ -52,11 +47,6 @@ public abstract class Game {
 	public EntityManager getEntityManager()
 	{
 		return entityManager;
-	}
-	
-	public ComponentManager getComponentManager()
-	{
-		return componentManager;
 	}
 
 	public AssetManager getResourceManager()

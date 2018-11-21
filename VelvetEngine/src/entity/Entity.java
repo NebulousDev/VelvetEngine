@@ -1,86 +1,90 @@
 package entity;
 
-import java.util.HashMap;
+import java.util.List;
 
-public class Entity
-{
-	private int id;
-	private String name;
+/**
+ * A simple object handle for an entityID.
+ * Generated from an {@link EntityManager}.
+ * @see EntityManager
+ * @see ComponentContainer
+ * 
+ * @author Nebulous
+ */
+public class Entity implements ComponentContainer {
 	
-	private ComponentManager manager;
-	
-	// TODO: Eventually move this to EntityManager
-	private HashMap<Integer, Integer> componentMap;
-	
-	Entity(ComponentManager manager, int id, String name)
-	{
-		// only visible to package
-		this.id = id;
-		this.name = name;
-		this.manager = manager;
-		componentMap = new HashMap<>();
-	}
+	EntityManager 	entityManager;
+	long 			entityID;
 	
 	/**
-	 * Creates then attaches a component of the given type
-	 * Returns false if the component already exists
+	 * Constructs a new Entity. For internal use only.
+	 * 
+	 * @param entityManger
+	 * @param id
 	 */
-	public boolean createAndAttachComponent(int typeID)
+	Entity(EntityManager entityManger, long id)
 	{
-		Component<?> component = manager.createComponent(typeID);
-		return attachComponent(component);
+		this.entityManager = entityManger;
+		this.entityID = id;
 	}
-	
-	/**
-	 * Attaches the given component
-	 * Returns false if the component already exists
-	 * or if the component is invalid
-	 */
-	public boolean attachComponent(Component<?> component)
-	{
-		//TODO: Add asserts
-		componentMap.put(component.getTypeID(), component.id);
-		return true;
-	}
-	
-	/**
-	 * Removes a component of the given typeID.
-	 * Returns false if the component does not exist.
-	 */
-	public boolean detachComponent(int typeID)
-	{
-		//TODO: Add asserts
-		return componentMap.remove(typeID) != null;
-	}
-	
-	/**
-	 * Returns a linked component of the given id.
-	 * Returns null if component does not exist.
-	 */
-	@SuppressWarnings("unchecked")
-	public <E extends Component<E>> E getComponent(int typeID)
-	{
-		Integer offsetID = componentMap.get(typeID);
-		return offsetID != null ? (E) manager.getComponent(typeID, offsetID) : null;
-	}
-	
-	/**
-	 * Returns true if a component of the given id exists
-	 */
-	public boolean hasComponent(int typeID)
-	{
-		return componentMap.containsKey(typeID);
-	}
-	
+
 	@Override
-	public String toString()
+	public <T extends Component> void addComponent(T component)
 	{
-		StringBuilder builder = new StringBuilder();
-		builder.append("Entity[" + name + ":" + id + "]");
-		for(int i : componentMap.keySet())
-			builder.append("\n\t- " + manager.getComponent(i, componentMap.get(i)));
-		
-		return builder.toString();
+		entityManager.addComponent(entityID, component);
+	}
+
+	@Override
+	public <T extends Component> T removeComponent(Class<T> componentType)
+	{
+		return entityManager.removeComponent(componentType, entityID);
+	}
+
+	@Override
+	public <T extends Component> T getComponent(Class<T> componentType)
+	{
+		return entityManager.getComponent(componentType, entityID);
+	}
+
+	@Override
+	public boolean hasComponent(Class<? extends Component> componentType)
+	{
+		return entityManager.hasComponent(componentType, entityID);
 	}
 	
+	/**
+	 * @return the associated {@link EntityManager}
+	 */
+	public EntityManager getEntityManager()
+	{
+		return entityManager;
+	}
+
+	/**
+	 * @return the associated entityID
+	 */
+	public long getEntityID()
+	{
+		return entityID;
+	}
+	
+	/**
+	 * Checks if the current entity is valid
+	 * 
+	 * @return true if entity is valid, else false
+	 */
+	public boolean isValid()
+	{
+		return entityManager.isValidEntityID(entityID);
+	}
+
+	/**
+	 * <strong>[WARNING]</strong> This method is slow and should be used for debugging purposes only!
+	 * <br><br>
+	 * Returns a list of associated components.
+	 */
+	public List<Component> getAllComponents()
+	{
+		return entityManager.getAllComponents(entityID);
+	}
+
 }
