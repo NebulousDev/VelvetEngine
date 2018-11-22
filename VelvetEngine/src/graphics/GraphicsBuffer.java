@@ -2,9 +2,9 @@ package graphics;
 
 public class GraphicsBuffer
 {
-	int 		id		= -1;
-	int 		size	= 0;
-	BufferType 	type	= null;
+	public int 			id		= -1;
+	public int 			size	= 0;
+	public BufferType 	type	= null;
 	
 	GraphicsBuffer() {}
 	

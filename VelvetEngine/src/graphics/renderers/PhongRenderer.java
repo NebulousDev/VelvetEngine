@@ -3,6 +3,7 @@ package graphics.renderers;
 import java.util.Iterator;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import entity.Entity;
 import entity.EntityManager;
@@ -13,7 +14,6 @@ import graphics.Graphics;
 import graphics.GraphicsUniform;
 import graphics.Mesh;
 import graphics.ShaderProgram;
-import graphics.Mesh.SubMesh;
 import graphics.component.MeshComponent;
 import graphics.component.PhongRenderComponent;
 import math.Matrix4f;
@@ -64,8 +64,8 @@ public class PhongRenderer extends RenderSystem {
 			TransformComponent entityTransform = entityManager.getComponent(TransformComponent.class, entityID);
 			MeshComponent entityMesh = entityManager.getComponent(MeshComponent.class, entityID);
 			
-			Mesh mesh = entityMesh.mesh;
-			
+			Mesh mesh = entityMesh.mesh; 
+
 			mvp = Matrix4f.Identity().mul(view).mul(entityTransform.getModel());
 			
 			graphics.setUniform(mvpUniform, mvp);
@@ -73,8 +73,17 @@ public class PhongRenderer extends RenderSystem {
 			graphics.bindBuffer(mesh.vbo);
 			graphics.bindBuffer(mesh.ibo);
 			
-			for(SubMesh subMesh : mesh.subMeshes)
-				graphics.drawElementsRange(subMesh.offset, subMesh.count);
+			GL20.glEnableVertexAttribArray(0);
+			GL20.glEnableVertexAttribArray(1);
+			GL20.glEnableVertexAttribArray(2);
+			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 0);
+			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
+			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
+			
+			graphics.drawElementsRange(0, mesh.ibo.size);
+			
+			//for(SubMesh subMesh : mesh.subMeshes)
+			//	graphics.drawElementsRange(subMesh.offset, subMesh.count);
 		}
 	}
 

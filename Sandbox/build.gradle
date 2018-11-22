@@ -34,5 +34,4 @@ jar {
 dependencies
 {
 	compile project(":VelvetEngine")
-	compile project(":VelvetEngine:sources")
 }

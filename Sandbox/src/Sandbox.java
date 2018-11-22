@@ -26,10 +26,8 @@ import math.Vector3f;
 import resource.Asset;
 import resource.AssetManager;
 
-@SuppressWarnings("deprecation")
 public class Sandbox extends Game
 {
-
 	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
@@ -51,16 +49,18 @@ public class Sandbox extends Game
 		assetManager.registerAssetType(new Texture(), "Texture");
 		assetManager.registerAssetType(new ShaderProgram(), "ShaderProgram");
 		
-		assetManager.registerAsset(Mesh.TYPE, "mesh_testscene", "/models/testScene.obj");
+		assetManager.registerAsset(Mesh.TYPE, "mesh_testscene", "/models/testscene.obj", 0, AssetManager.PRELOAD);
+		assetManager.registerAsset(Mesh.TYPE, "mesh_bunny", "/models/bunny.obj", 0, AssetManager.PRELOAD);
 		assetManager.registerAsset(Texture.TYPE, "texture_default", "/textures/default.png", 0, AssetManager.PRELOAD);
 		assetManager.registerAsset(Texture.TYPE, "texture_default2", "/textures/default2.png", 0, AssetManager.PRELOAD);
 		assetManager.registerAsset(ShaderProgram.TYPE, "shader_default", "/shaders/test", 0, AssetManager.PRELOAD);
 		
 		/* Load Resources */
 		
-		Asset<Mesh> 			mesh 	= assetManager.getAsset("mesh_testscene");
-		Asset<Texture> 			texture = assetManager.getAsset("texture_default2");
-		Asset<ShaderProgram> 	program = assetManager.getAsset("shader_default");
+		Asset<Mesh> 			scene 		= assetManager.getAsset("mesh_testscene");
+		Asset<Mesh> 			bunny 		= assetManager.getAsset("mesh_bunny");
+		Asset<Texture> 			texture 	= assetManager.getAsset("texture_default2");
+		Asset<ShaderProgram> 	program 	= assetManager.getAsset("shader_default");
 		
 		gfx.setActiveTextureSlot(0);
 		gfx.bindTexture(texture.getResource());
@@ -68,21 +68,30 @@ public class Sandbox extends Game
 		/* Setup Entities */
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
-		MeshComponent 			groundMesh 			= new MeshComponent(mesh.getResource());
+		MeshComponent 			groundMesh 			= new MeshComponent(scene.getResource());
 		PhongMaterialComponent 	groundMaterial		= new PhongMaterialComponent();
 		PhongRenderComponent	groundRender		= new PhongRenderComponent(groundMesh, groundMaterial);
 		Entity 					groundEntity 		= game.getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, groundMaterial, groundRender);
+		
+		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 0.0f, -10.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
+		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny.getResource());
+		PhongRenderComponent	bunnyRender			= new PhongRenderComponent(bunnyMesh, groundMaterial);
+		Entity 					bunnyEntity 		= game.getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, groundMaterial, bunnyRender);
 		
 		/* Setup Camera */
 		
 		TransformComponent 	cameraTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
 		CameraComponent 	cameraComponent 	= new PerspectiveCameraComponent(60.0f, window.getAspect(), 0.0001f, 1000f);
 		//CameraComponent 	cameraComponent 	= new OrthoCameraComponent(20f, window.getAspect(), -100f, 100f);
-		Entity				camera				= game.getEntityManager().createEntity("camera", cameraTransform, cameraComponent);
+		Entity				cameraEntity		= game.getEntityManager().createEntity("camera", cameraTransform, cameraComponent);
 		
 		/* Setup Renderers */
 		
-		PhongRenderer	phongRenderer	= new PhongRenderer(assetManager);
+		PhongRenderer		phongRenderer		= new PhongRenderer(assetManager);
+		
+		System.out.println("ground: " + game.getEntityManager().getAllComponents(groundEntity.getEntityID()));
+		System.out.println("bunny: " + game.getEntityManager().getAllComponents(bunnyEntity.getEntityID()));
+		System.out.println("camera: " + game.getEntityManager().getAllComponents(cameraEntity.getEntityID()));
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -119,7 +128,7 @@ public class Sandbox extends Game
 			if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
 		
 			phongRenderer.begin(gfx, game.getEntityManager());
-			phongRenderer.render(camera, gfx, game.getEntityManager());
+			phongRenderer.render(cameraEntity, gfx, game.getEntityManager());
 			phongRenderer.end(gfx, game.getEntityManager());
 			
 			app.swapBuffers();
