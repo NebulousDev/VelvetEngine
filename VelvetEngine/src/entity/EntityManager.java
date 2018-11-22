@@ -9,13 +9,13 @@ import java.util.Map;
  * A manager for creating, retrieving, and destroying entities.
  * @see Entity
  * 
- * @author Nebulous
+ * @author Ben Ratcliff (NebulousDev)
  */
 public final class EntityManager {
 	
-	private EntityComponentTable 	entityComponentTable;
-	private List<Long>				validEntities;
-	private Map<Long, String>		entityNames;
+	private ComponentTable 		componentTable;
+	private List<Long>			validEntities;
+	private Map<Long, String>	entityNames;
 	
 	private long nextUniqueID;
 	
@@ -24,7 +24,7 @@ public final class EntityManager {
 	 */
 	public EntityManager()
 	{
-		entityComponentTable = new EntityComponentTable();
+		componentTable = new ComponentTable();
 		validEntities = new ArrayList<>();
 		entityNames = new HashMap<>();
 	}
@@ -66,7 +66,7 @@ public final class EntityManager {
 		entityNames.put(entityID, "Entity#" + entityID);
 		
 		for(Component c : components)
-			entityComponentTable.put(entityID, c);
+			componentTable.put(entityID, c);
 		
 		return new Entity(this, entityID);
 	}
@@ -83,7 +83,7 @@ public final class EntityManager {
 		entityNames.put(entityID, name);
 		
 		for(Component c : components)
-			entityComponentTable.put(entityID, c);
+			componentTable.put(entityID, c);
 		
 		return new Entity(this, entityID);
 	}
@@ -99,7 +99,7 @@ public final class EntityManager {
 	public <T extends Component> boolean addComponent(long entityID, T component)
 	{
 		if(!isValidEntityID(entityID)) return false;
-		return entityComponentTable.put(entityID, component);
+		return componentTable.put(entityID, component);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public final class EntityManager {
 	public <T extends Component> T removeComponent(Class<T> componentType, long entityID)
 	{
 		if(!isValidEntityID(entityID)) return null;
-		return entityComponentTable.remove(componentType, entityID);
+		return componentTable.remove(componentType, entityID);
 	}
 	
 	/**
@@ -125,7 +125,7 @@ public final class EntityManager {
 	public <T extends Component> T getComponent(Class<T> componentType, long entityID)
 	{
 		if(!isValidEntityID(entityID)) return null;
-		return entityComponentTable.get(componentType, entityID);
+		return componentTable.get(componentType, entityID);
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public final class EntityManager {
 	public <T extends Component> boolean hasComponent(Class<T> componentType, long entityID)
 	{
 		if(!isValidEntityID(entityID)) return false;
-		return entityComponentTable.has(componentType, entityID);
+		return componentTable.has(componentType, entityID);
 	}
 	
 	/**
@@ -161,17 +161,17 @@ public final class EntityManager {
 	public List<Component> getAllComponents(long entityID)
 	{
 		List<Component> components = new ArrayList<>();
-		for(Class<? extends Component> type : entityComponentTable.getTypes())
+		for(Class<? extends Component> type : componentTable.getTypes())
 			if(hasComponent(type, entityID))
 				components.add(getComponent(type, entityID));
 		return components;
 	}
 	
 	/**
-	 * Returns the internal EntityComponentTable.
+	 * Returns the internal ComponentTable.
 	 */
-	public EntityComponentTable getEntityComponentTable()
+	public ComponentTable getComponentTable()
 	{
-		return entityComponentTable;
+		return componentTable;
 	}
 }

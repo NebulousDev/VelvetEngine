@@ -12,18 +12,18 @@ import java.util.Map;
  * @see Entity
  * @see Component
  * 
- * @author Nebulous
+ * @author Ben Ratcliff (NebulousDev)
  */
-public final class EntityComponentTable {
+public final class ComponentTable {
 	
-	private Map<Class<? extends Component>, Map<Long, Component>> entityComponentMap;
+	private Map<Class<? extends Component>, Map<Long, Component>> componentMap;
 	
 	/**
-	 * Creates a new EntityComponentTable. For internal use only.
+	 * Creates a new ComponentTable. For internal use only.
 	 */
-	EntityComponentTable()
+	ComponentTable()
 	{
-		entityComponentMap = new HashMap<>();
+		componentMap = new HashMap<>();
 	}
 	
 	/**
@@ -36,12 +36,12 @@ public final class EntityComponentTable {
 	public <T extends Component> boolean put(long entityID, T component)
 	{
 		Class<? extends Component> componentType = component.getClass();
-		Map<Long, Component> entityMap = entityComponentMap.get(componentType);
+		Map<Long, Component> entityMap = componentMap.get(componentType);
 		
 		if(entityMap == null)
 		{
 			entityMap = new HashMap<>();
-			entityComponentMap.put(componentType, entityMap);
+			componentMap.put(componentType, entityMap);
 		}
 		
 		entityMap.put(entityID, component);
@@ -58,11 +58,11 @@ public final class EntityComponentTable {
 	public <T extends Component> T remove(Class<T> componentType, long entityID)
 	{
 		Component component = null;
-		Map<Long, Component> entityMap = entityComponentMap.get(componentType);
+		Map<Long, Component> entityMap = componentMap.get(componentType);
 		if(entityMap != null && (component = entityMap.remove(entityID)) != null)
 		{
 			if(entityMap.isEmpty())
-				entityComponentMap.remove(componentType);
+				componentMap.remove(componentType);
 			return componentType.cast(component);
 		}
 		return null;
@@ -79,7 +79,7 @@ public final class EntityComponentTable {
 	public <T extends Component> T get(Class<T> componentType, long entityID)
 	{
 		Component component = null;
-		Map<Long, Component> entityMap = entityComponentMap.get(componentType);
+		Map<Long, Component> entityMap = componentMap.get(componentType);
 		if(entityMap != null && (component = entityMap.get(entityID)) != null)
 			return componentType.cast(component);
 		return null;
@@ -94,7 +94,7 @@ public final class EntityComponentTable {
 	 */
 	public <T extends Component> boolean has(Class<T> componentType, long entityID)
 	{
-		Map<Long, Component> entityMap = entityComponentMap.get(componentType);
+		Map<Long, Component> entityMap = componentMap.get(componentType);
 		if(entityMap != null && entityMap.get(entityID) != null)
 			return true;
 		return false;
@@ -141,7 +141,7 @@ public final class EntityComponentTable {
 	 */
 	private boolean typeExists(Class<? extends Component> componentType)
 	{
-		return entityComponentMap.get(componentType) != null;
+		return componentMap.get(componentType) != null;
 	}
 	
 	/**
@@ -157,7 +157,7 @@ public final class EntityComponentTable {
 		
 		return new Iterator<T>()
 		{
-			Map<Long, Component> components = entityComponentMap.get(componentType);
+			Map<Long, Component> components = componentMap.get(componentType);
 			Iterator<Long> entityIterator = components.keySet().iterator();
 			
 			@Override
@@ -176,14 +176,42 @@ public final class EntityComponentTable {
 	}
 	
 	/**
+	 * Creates an iterator of the entities containing the given componentType
+	 * 
+	 * @param componentType
+	 * @return the iterator or null if no entities exist
+	 */
+	public Iterator<Long> getEntityIterator(Class<? extends Component> componentType)
+	{
+		return new Iterator<Long>()
+		{
+			Map<Long, Component> components = componentMap.get(componentType);
+			Iterator<Long> entityIterator = components.keySet().iterator();
+			
+			@Override
+			public boolean hasNext()
+			{
+				return entityIterator.hasNext();
+			}
+			
+			@Override
+			public Long next()
+			{
+				return entityIterator.next();
+			}
+			
+		};
+	}
+	
+	/**
 	 * Creates an iterator of the available component types
 	 * 
 	 * @return the iterator of component types, or null if none exist
 	 */
 	public Iterator<Class<? extends Component>> getTypeIterator()
 	{
-		if(entityComponentMap.isEmpty()) return null;
-		return entityComponentMap.keySet().iterator();
+		if(componentMap.isEmpty()) return null;
+		return componentMap.keySet().iterator();
 	}
 
 }

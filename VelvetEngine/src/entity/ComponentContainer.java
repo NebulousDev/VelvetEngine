@@ -4,7 +4,7 @@ package entity;
  * A container for {@link Component}s.
  * @see Component
  * 
- * @author Nebulous
+ * @author Ben Ratcliff (NebulousDev)
  */
 public interface ComponentContainer {
 

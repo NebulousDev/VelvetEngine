@@ -1,24 +1,21 @@
-import java.util.Arrays;
-
 import org.lwjgl.opengl.GL11;
 
 import core.Application;
 import core.Game;
 import core.Window;
 import entity.Entity;
-import entity.Require;
-import entity.Require.Requirements;
-import entity.camera.Camera;
 import entity.camera.CameraComponent;
+import entity.camera.PerspectiveCameraComponent;
 import entity.component.TransformComponent;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
-import graphics.GraphicsUniform;
 import graphics.Mesh;
 import graphics.ShaderProgram;
 import graphics.Texture;
 import graphics.component.MeshComponent;
-import graphics.renderers.ModelRenderer;
+import graphics.component.PhongMaterialComponent;
+import graphics.component.PhongRenderComponent;
+import graphics.renderers.PhongRenderer;
 import input.Buttons;
 import input.Input;
 import input.Keys;
@@ -47,11 +44,6 @@ public class Sandbox extends Game
 		
 		app.start();
 		
-		/* Initialize Camera */
-		
-		Camera camera = Camera.createCamera(Matrix4f.Perspective(60.0f, window.getAspect(), 0.01f, 1000f));
-		camera.getPosition().set(0, 0, 0.0f);
-		
 		/* Initialize Resources */
 		
 		AssetManager assetManager = app.getGame().getResourceManager();
@@ -75,85 +67,60 @@ public class Sandbox extends Game
 		
 		/* Setup Entities */
 		
-		TransformComponent 	groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
-		MeshComponent 		groundMesh 			= new MeshComponent(mesh.getResource());
-		Entity 				groundEntity 		= game.getEntityManager().createEntity("entity_ground", groundTransform, groundMesh);
+		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
+		MeshComponent 			groundMesh 			= new MeshComponent(mesh.getResource());
+		PhongMaterialComponent 	groundMaterial		= new PhongMaterialComponent();
+		PhongRenderComponent	groundRender		= new PhongRenderComponent(groundMesh, groundMaterial);
+		Entity 					groundEntity 		= game.getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, groundMaterial, groundRender);
 		
+		/* Setup Camera */
 		
+		TransformComponent 	cameraTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
+		CameraComponent 	cameraComponent 	= new PerspectiveCameraComponent(60.0f, window.getAspect(), 0.0001f, 1000f);
+		//CameraComponent 	cameraComponent 	= new OrthoCameraComponent(20f, window.getAspect(), -100f, 100f);
+		Entity				camera				= game.getEntityManager().createEntity("camera", cameraTransform, cameraComponent);
 		
-		CameraComponent cameraComponent = new CameraComponent();
+		/* Setup Renderers */
 		
-		Require[] requirements = cameraComponent.getClass().getAnnotationsByType(Require.class);
-		System.out.println("@Requires Annotation Present: " + cameraComponent.getClass().isAnnotationPresent(Requirements.class));
-		System.out.println("@Requires Annotation Data: " + Arrays.toString(requirements));
-		
-		
+		PhongRenderer	phongRenderer	= new PhongRenderer(assetManager);
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
-		
-		Matrix4f mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView());
-		GraphicsUniform mvp = gfx.getUniform(program.getResource(), "mvp");
-		GraphicsUniform view = gfx.getUniform(program.getResource(), "view");
 		
 		int error = 0;
 		if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
 			System.out.println("GLERROR: " + error);
 		
-		//TODO: MOVE TO GRAPHICS
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthFunc(GL11.GL_LESS);
-		//GL11.glDisable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		
 		float sensitivity = 0.04f;
 		float speed = 0.001f;
 		
+		Matrix4f mvpMatrix = null;
+		
 		while(!app.shouldClose())
 		{
-			//groundTransform.position.z += 0.001f;
-			//groundTransform.orientation.mul(Quaternion.Rotation(Axis.UP, Math.toRadians(0.01f)));
-			
 			gfx.clearBuffers();
 			Input.getInstance().update();
 			app.pollEvents();
 			
-			if(Input.keyHeld(Keys.KEY_W)) camera.getPosition().add(camera.getForward().copy().mul(-speed));
-			if(Input.keyHeld(Keys.KEY_S)) camera.getPosition().add(camera.getBack().copy().mul(-speed));
-			if(Input.keyHeld(Keys.KEY_A)) camera.getPosition().add(camera.getLeft().copy().mul(-speed));
-			if(Input.keyHeld(Keys.KEY_D)) camera.getPosition().add(camera.getRight().copy().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_W)) cameraTransform.position.add(cameraTransform.getForward().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_S)) cameraTransform.position.add(cameraTransform.getBack().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_A)) cameraTransform.position.add(cameraTransform.getLeft().mul(-speed));
+			if(Input.keyHeld(Keys.KEY_D)) cameraTransform.position.add(cameraTransform.getRight().mul(-speed));
 			
 			if(Input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
 			if(Input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
 			
 			if(Input.isMouseCaptured())
 			{
-				camera.rotate(Axis.UP, Input.getMouseRelative().x * -sensitivity);
-				camera.rotate(camera.getRight(), Input.getMouseRelative().y * -sensitivity);
+				cameraTransform.rotate(Axis.UP, Input.getMouseRelative().x * -sensitivity);
+				cameraTransform.rotate(cameraTransform.getRight(), Input.getMouseRelative().y * -sensitivity);
 			}
-			
-			mvpMatrix = Matrix4f.Identity().mul(camera.getProjection()).mul(camera.getView());
-			mvpMatrix.mul(groundTransform.calcModelMatrix());
 			
 			if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
 			if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
 		
-			gfx.bindProgram(program.getResource());
-			
-			gfx.setUniform(mvp, mvpMatrix);
-			gfx.setUniform(view, camera.getView());
-			
-			///////////////////////////////
-			
-			ModelRenderer.render(gfx, program.getResource(), groundMesh.mesh);
-			
-			///////////////////////////////
-			
-			//int error = 0;
-			if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
-				System.out.println("GLERROR: " + error);
-
-			gfx.unbindProgram();
+			phongRenderer.begin(gfx, game.getEntityManager());
+			phongRenderer.render(camera, gfx, game.getEntityManager());
+			phongRenderer.end(gfx, game.getEntityManager());
 			
 			app.swapBuffers();
 		}

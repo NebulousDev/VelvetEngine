@@ -46,9 +46,58 @@ public class TransformComponent implements Component {
 		this.orientation = Quaternion.Identity();
 	}
 	
-	public Matrix4f calcModelMatrix()
+	public TransformComponent rotate(Vector3f axis, float angleDeg)
 	{
-		return Matrix4f.Translation(position).mul(orientation.toMatrix()).mul(Matrix4f.Scale(scale));
+		orientation.mul(Quaternion.Rotation(axis, Math.toRadians(angleDeg)));
+		return this;
+	}
+	
+	public TransformComponent rotate(Quaternion orientation)
+	{
+		orientation.mul(orientation);
+		return this;
+	}
+	
+	public Vector3f getForward()
+	{
+		return orientation.getForward();
+	}
+
+	public Vector3f getBack()
+	{
+		return orientation.getBack();
+	}
+
+	public Vector3f getUp()
+	{
+		return orientation.getUp();
+	}
+
+	public Vector3f getDown()
+	{
+		return orientation.getDown();
+	}
+
+	public Vector3f getRight()
+	{
+		return orientation.getRight();
+	}
+
+	public Vector3f getLeft()
+	{
+		return orientation.getLeft();
+	}
+	
+	public Matrix4f getView()
+	{
+		//return Matrix4f.Translation(position).mul(orientation.toMatrix());
+		return orientation.toMatrix().mul(Matrix4f.Translation(position));
+	}
+	
+	public Matrix4f getModel()
+	{
+		//return Matrix4f.Translation(position).mul(orientation.toMatrix()).mul(Matrix4f.Scale(scale));
+		return Matrix4f.Scale(scale).mul(orientation.toMatrix()).mul(Matrix4f.Translation(position));
 	}
 	
 }

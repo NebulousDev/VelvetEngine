@@ -27,6 +27,16 @@ public class ShaderProgram extends ResourceType<ShaderProgram>
 	public boolean isFinalized() { return finalized; }
 	
 	public boolean isValid() { return id >= 0; }
+	
+	public void bind(Graphics graphics)
+	{
+		graphics.bindProgram(this);
+	}
+	
+	public void unbind(Graphics graphics)
+	{
+		graphics.unbindProgram();
+	}
 
 	@Override
 	public boolean load(Game game, String localName, String filepath, int flags)

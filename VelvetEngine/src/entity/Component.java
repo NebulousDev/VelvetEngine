@@ -5,6 +5,6 @@ package entity;
  * @see Entity
  * @see System
  * 
- * @author Nebulous
+ * @author Ben Ratcliff (NebulousDev)
  */
 public interface Component { }
