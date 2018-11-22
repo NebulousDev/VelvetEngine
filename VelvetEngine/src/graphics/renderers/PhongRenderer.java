@@ -13,6 +13,7 @@ import entity.component.TransformComponent;
 import graphics.Graphics;
 import graphics.GraphicsUniform;
 import graphics.Mesh;
+import graphics.Mesh.SubMesh;
 import graphics.ShaderProgram;
 import graphics.component.MeshComponent;
 import graphics.component.PhongRenderComponent;
@@ -51,7 +52,7 @@ public class PhongRenderer extends RenderSystem {
 		CameraComponent cameraComponent = camera.getComponent(PerspectiveCameraComponent.class);
 		TransformComponent transformComponent = camera.getComponent(TransformComponent.class);
 		
-		Matrix4f view = Matrix4f.Identity().mul(cameraComponent.projection).mul(transformComponent.getView());
+		Matrix4f view = cameraComponent.projection.copy().mul(transformComponent.orientation.toMatrix()).mul(Matrix4f.Translation(transformComponent.position));
 		Matrix4f mvp = null;
 		
 		GraphicsUniform mvpUniform = graphics.getUniform(shader, "mvp");
@@ -66,7 +67,7 @@ public class PhongRenderer extends RenderSystem {
 			
 			Mesh mesh = entityMesh.mesh; 
 
-			mvp = Matrix4f.Identity().mul(view).mul(entityTransform.getModel());
+			mvp = view.copy().mul(entityTransform.getModel());
 			
 			graphics.setUniform(mvpUniform, mvp);
 			
@@ -80,10 +81,10 @@ public class PhongRenderer extends RenderSystem {
 			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
 			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
 			
-			graphics.drawElementsRange(0, mesh.ibo.size);
+			//graphics.drawElementsRange(0, mesh.ibo.size);
 			
-			//for(SubMesh subMesh : mesh.subMeshes)
-			//	graphics.drawElementsRange(subMesh.offset, subMesh.count);
+			for(SubMesh subMesh : mesh.subMeshes)
+				graphics.drawElementsRange(subMesh.offset, subMesh.count);
 		}
 	}
 

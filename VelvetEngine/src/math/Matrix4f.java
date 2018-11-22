@@ -82,6 +82,22 @@ public class Matrix4f
 		return new Matrix4f(elements);
 	}
 	
+	public Matrix4f translate(Vector3f position)
+	{
+		elements[0 + 3 * 4] = elements[0 + 3 * 4] + position.x;
+		elements[1 + 3 * 4] = elements[1 + 3 * 4] + position.y;
+		elements[2 + 3 * 4] = elements[2 + 3 * 4] + position.z;
+		return this;
+	}
+	
+	public Matrix4f translate(Vector3f position, Matrix4f mat4f)
+	{
+		mat4f.elements[0 + 3 * 4] = mat4f.elements[0 + 3 * 4] + position.x;
+		mat4f.elements[1 + 3 * 4] = mat4f.elements[1 + 3 * 4] + position.y;
+		mat4f.elements[2 + 3 * 4] = mat4f.elements[2 + 3 * 4] + position.z;
+		return this;
+	}
+	
 	//TODO: Redo rotation matrix
 	public static Matrix4f Rotation(Vector3f vec3)
 	{
@@ -121,6 +137,14 @@ public class Matrix4f
 		};
 		
 		return new Matrix4f(elements);
+	}
+	
+	public Matrix4f scale(Vector3f scale)
+	{
+		elements[0 + 0 * 4] = elements[0 + 0 * 4] * scale.x;
+		elements[1 + 1 * 4] = elements[1 + 1 * 4] * scale.y;
+		elements[2 + 2 * 4] = elements[2 + 2 * 4] * scale.z;
+		return this;
 	}
 	
 	public static Matrix4f Orientation(Vector3f forward, Vector3f right, Vector3f up) {
@@ -178,4 +202,5 @@ public class Matrix4f
 	{
 		return toFloatBuffer(false);
 	}
+	
 }

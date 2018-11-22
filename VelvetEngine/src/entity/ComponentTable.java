@@ -35,7 +35,7 @@ public final class ComponentTable {
 	 */
 	public <T extends Component> boolean put(long entityID, T component)
 	{
-		Class<? extends Component> componentType = component.getClass();
+		Class<? extends Component> componentType = component.getCastType();
 		Map<Long, Component> entityMap = componentMap.get(componentType);
 		
 		if(entityMap == null)
@@ -155,11 +155,11 @@ public final class ComponentTable {
 		if(!typeExists(componentType))
 			return null;
 		
+		Map<Long, Component> components = componentMap.get(componentType);
+		Iterator<Long> entityIterator = components.keySet().iterator();
+		
 		return new Iterator<T>()
 		{
-			Map<Long, Component> components = componentMap.get(componentType);
-			Iterator<Long> entityIterator = components.keySet().iterator();
-			
 			@Override
 			public boolean hasNext()
 			{
@@ -183,11 +183,14 @@ public final class ComponentTable {
 	 */
 	public Iterator<Long> getEntityIterator(Class<? extends Component> componentType)
 	{
+		if(!typeExists(componentType))
+			return null;
+		
+		Map<Long, Component> components = componentMap.get(componentType);
+		Iterator<Long> entityIterator = components.keySet().iterator();
+		
 		return new Iterator<Long>()
 		{
-			Map<Long, Component> components = componentMap.get(componentType);
-			Iterator<Long> entityIterator = components.keySet().iterator();
-			
 			@Override
 			public boolean hasNext()
 			{

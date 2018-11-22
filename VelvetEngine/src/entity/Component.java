@@ -7,4 +7,10 @@ package entity;
  * 
  * @author Ben Ratcliff (NebulousDev)
  */
-public interface Component { }
+public interface Component {
+	
+	default Class<? extends Component> getCastType()
+	{
+		return this.getClass();
+	}
+}

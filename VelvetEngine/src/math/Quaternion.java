@@ -171,10 +171,40 @@ public class Quaternion
 	//TODO: look into using rotate getters for this:
 	public Matrix4f toMatrix()
 	{
-		Vector3f forward 	= new Vector3f(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
-		Vector3f up 		= new Vector3f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
-		Vector3f right 		= new Vector3f(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y));
-		return Matrix4f.Orientation(forward.normalize(), right.normalize(), up.normalize());
+		float[] elements = new float[]
+		{
+			1.0f - 2.0f * (y * y + z * z), 	2.0f * (x * y + w * z),			2.0f * (x * z - w * y),			0,
+			2.0f * (x * y - w * z),			1.0f - 2.0f * (x * x + z * z),	2.0f * (y * z + w * x),			0,
+			2.0f * (x * z + w * y),			2.0f * (y * z - w * x),			1.0f - 2.0f * (x * x + y * y),	0,
+			0,								0,								0,								1
+		};
+		
+		return new Matrix4f(elements);
+	}
+	
+	public Matrix4f toMatrix(Matrix4f mat4f)
+	{
+		mat4f.elements[0 + 0 * 4] = 1.0f - 2.0f * (y * y + z * z);
+		mat4f.elements[0 + 1 * 4] = 2.0f * (x * y - w * z);
+		mat4f.elements[0 + 2 * 4] = 2.0f * (x * z + w * y);
+		mat4f.elements[0 + 3 * 4] = 0.0f;
+
+		mat4f.elements[1 + 0 * 4] = 2.0f * (x * y + w * z);
+		mat4f.elements[1 + 1 * 4] = 1.0f - 2.0f * (x * x + z * z);
+		mat4f.elements[1 + 2 * 4] = 2.0f * (y * z - w * x);
+		mat4f.elements[1 + 3 * 4] = 0.0f;
+		
+		mat4f.elements[2 + 0 * 4] = 2.0f * (x * z - w * y);
+		mat4f.elements[2 + 1 * 4] = 2.0f * (y * z + w * x);
+		mat4f.elements[2 + 2 * 4] = 1.0f - 2.0f * (x * x + y * y);
+		mat4f.elements[2 + 3 * 4] = 0.0f;
+		
+		mat4f.elements[3 + 0 * 4] = 0.0f;
+		mat4f.elements[3 + 1 * 4] = 0.0f;
+		mat4f.elements[3 + 2 * 4] = 0.0f;
+		mat4f.elements[3 + 3 * 4] = 1.0f;
+		
+		return mat4f;
 	}
 	
 	public FloatBuffer toFloatBuffer(boolean flip)

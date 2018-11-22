@@ -174,4 +174,15 @@ public final class EntityManager {
 	{
 		return componentTable;
 	}
+
+	/**
+	 * Returns an entity object with the given entityID
+	 * 
+	 * @param entityID
+	 * @return the entity handle
+	 */
+	public Entity entityFromID(long entityID)
+	{
+		return new Entity(this, entityID);
+	}
 }

@@ -90,14 +90,12 @@ public class TransformComponent implements Component {
 	
 	public Matrix4f getView()
 	{
-		//return Matrix4f.Translation(position).mul(orientation.toMatrix());
-		return orientation.toMatrix().mul(Matrix4f.Translation(position));
+		return Matrix4f.Identity().translate(position).mul(orientation.toMatrix());
 	}
 	
 	public Matrix4f getModel()
 	{
-		//return Matrix4f.Translation(position).mul(orientation.toMatrix()).mul(Matrix4f.Scale(scale));
-		return Matrix4f.Scale(scale).mul(orientation.toMatrix()).mul(Matrix4f.Translation(position));
+		return Matrix4f.Identity().scale(scale).mul(orientation.toMatrix()).translate(position);
 	}
 	
 }
