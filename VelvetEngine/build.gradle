@@ -6,23 +6,20 @@ project.ext.lwjglVersion = "3.1.6"
 project.ext.lwjglNatives = "natives-windows"
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.8.1'
+   gradleVersion = '4.8.1'
 }
 
-sourceSets
-{
+sourceSets {
     main.java.srcDirs = ['src']
     main.resources.srcDirs = ['res']
 }
 
-repositories
-{
+repositories {
 	mavenCentral()
 	maven { url 'https://jitpack.io' }
 }
 
-dependencies
-{
+dependencies {
 	api "org.lwjgl:lwjgl:$lwjglVersion"
 	api "org.lwjgl:lwjgl-glfw:$lwjglVersion"
 	api "org.lwjgl:lwjgl-jemalloc:$lwjglVersion"
@@ -41,6 +38,6 @@ dependencies
 	api "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 	api "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
 	api "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-	api 'com.github.NebulousDev:VelvetOBJ:1.0.1'
-	api 'com.github.NebulousDev:VelvetOBJ:1.0.1:sources'
+	api "com.github.NebulousDev:VelvetOBJ:1.0.1"
+	api "com.github.NebulousDev:VelvetOBJ:1.0.1:sources"
 }

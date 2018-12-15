@@ -8,7 +8,7 @@ project.ext.lwjglNatives = "natives-windows"
 mainClassName = 'Sandbox'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.8.1'
+   gradleVersion = '4.8.1'
 }
 
 sourceSets {
@@ -31,7 +31,6 @@ jar {
   	}
 }
 
-dependencies
-{
+dependencies {
 	compile project(":VelvetEngine")
 }
