@@ -1,6 +1,3 @@
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-
 import core.Application;
 import core.Game;
 import core.Window;
@@ -12,7 +9,6 @@ import entity.component.TransformComponent;
 import entity.component.UpdateComponent;
 import entity.system.UpdateSystem;
 import graphics.Graphics;
-import graphics.GraphicsAPI;
 import graphics.Mesh;
 import graphics.ShaderProgram;
 import graphics.Texture;
@@ -37,7 +33,9 @@ public class Sandbox extends Game
 	{
 		/* Initialize Application */
 		
-		Application app = new Application("VelvetEngine", new Sandbox(), GraphicsAPI.GRAPHICS_OPENGL);
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		
+		Application app = new Application(new Sandbox());
 		Window window = app.getWindow();
 		Graphics gfx = app.getGraphics();
 		Game game = app.getGame();
@@ -133,11 +131,11 @@ public class Sandbox extends Game
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
-		GLFW.glfwSwapInterval(1);
+		//GLFW.glfwSwapInterval(1);
 		
-		int error = 0;
-		if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
-			System.out.println("GLERROR: " + error);
+		//int error = 0;
+		//if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
+		//	System.out.println("GLERROR: " + error);
 		
 		float sensitivity = 0.04f;
 		float speed = 0.001f;

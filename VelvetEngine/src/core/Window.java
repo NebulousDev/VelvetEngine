@@ -6,12 +6,14 @@ import math.Vector2f;
 
 public class Window
 {
-	public static final int WINDOWED 		= 0x01;
-	public static final int FULLSCREEN 		= 0x02;
-	public static final int BORDERLESS 		= 0x04;
-	public static final int CENTERED		= 0x08;
-	public static final int NONRESIZEABLE 	= 0x10;
-	public static final int VSYNC			= 0x20;	
+	public static final int FULLSCREEN 			= 0x01;
+	public static final int BORDERLESS 			= 0x02;
+	public static final int CENTERED			= 0x04;
+	public static final int NONRESIZEABLE 		= 0x08;
+	public static final int VSYNC				= 0x10;
+	public static final int USE_MONITOR_SIZE 	= 0x20;
+	public static final int RESIZEABLE 			= 0x40;
+	public static final int USE_MONITOR_BITS 	= 0x80;	
 	
 	String 	title;
 	int 	x, y;
@@ -23,7 +25,7 @@ public class Window
 	
 	Window() {}
 	
-	public void resize(int width, int height)
+	public void setSize(int width, int height)
 	{
 		this.width = width;
 		this.height = height;
@@ -34,9 +36,24 @@ public class Window
 	
 	public void show()
 	{
+		GLFW.glfwShowWindow(windowID);
+	}
+	
+	public void hide()
+	{
+		GLFW.glfwHideWindow(windowID);
+	}
+	
+	public void moveCenter()
+	{
 		
 	}
 
+	public void reset()
+	{
+		//reset to creation flags
+	}
+	
 	public String getTitle() { return title; }
 
 	public int getX() { return x; }
@@ -54,5 +71,5 @@ public class Window
 	public long getWindowID() { return windowID; }
 
 	public Vector2f getCenter() { return center; }
-	
+
 }
