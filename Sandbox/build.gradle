@@ -7,10 +7,6 @@ project.ext.lwjglNatives = "natives-windows"
 
 mainClassName = 'Sandbox'
 
-task wrapper(type: Wrapper) {
-   gradleVersion = '4.8.1'
-}
-
 sourceSets {
     main.java.srcDirs = ['src']
     main.resources.srcDirs = ['res']

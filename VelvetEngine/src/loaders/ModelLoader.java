@@ -13,10 +13,10 @@ import graphics.Mesh;
 import graphics.Mesh.SubMesh;
 import math.Vector3f;
 import utils.FileUtils;
-import velvetobj.OBJBundle;
-import velvetobj.OBJModel;
-import velvetobj.OBJParser;
-import velvetobj.OBJVertex;
+import velvet.obj.OBJBundle;
+import velvet.obj.OBJModel;
+import velvet.obj.OBJParser;
+import velvet.obj.OBJVertex;
 
 public class ModelLoader
 {

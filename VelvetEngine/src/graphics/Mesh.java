@@ -11,10 +11,10 @@ import core.Game;
 import math.Vector3f;
 import resource.ResourceType;
 import utils.FileUtils;
-import velvetobj.OBJBundle;
-import velvetobj.OBJModel;
-import velvetobj.OBJParser;
-import velvetobj.OBJVertex;
+import velvet.obj.OBJBundle;
+import velvet.obj.OBJModel;
+import velvet.obj.OBJParser;
+import velvet.obj.OBJVertex;
 
 public class Mesh extends ResourceType<Mesh>
 {
