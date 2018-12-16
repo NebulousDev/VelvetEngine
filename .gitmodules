@@ -1,6 +1,6 @@
 [submodule "VelvetINI"]
 	path = VelvetINI
-	url = git@github.com:NebulousDev/VelvetINI.git
+	url = https://github.com/NebulousDev/VelvetINI.git
 [submodule "VelvetOBJ"]
 	path = VelvetOBJ
-	url = git@github.com:NebulousDev/VelvetOBJ.git
+	url = https://github.com/NebulousDev/VelvetOBJ.git
