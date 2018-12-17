@@ -1,6 +1,7 @@
 package core;
 
 import entity.EntityManager;
+import entity.system.UpdateSystem;
 import graphics.Graphics;
 import resource.AssetManager;
 
@@ -10,28 +11,75 @@ public abstract class Game {
 	Graphics 			graphics;
 	EntityManager		entityManager;
 	AssetManager		resourceManager;
+	
+	UpdateSystem		updateSystem;
 
 	boolean 			initialized;
+	boolean				loaded;
+	boolean				running;
+	boolean				paused;
 	
-	void initialize(Application application)
+	void initialize(Application application, Graphics graphics)
 	{
 		this.application = application;
-		this.graphics = application.getGraphics();	// TODO: Maybe move graphics into Game only?
+		this.graphics = graphics;
 		
-		resourceManager = new AssetManager();
+		resourceManager = application.getResourceManager();
 		entityManager = new EntityManager();
+		updateSystem = new UpdateSystem();
 		
 		resourceManager.initialize(this);
 		
 		initialized = true;
+		running = false;
 	}
 	
-	protected abstract void load();
-	protected abstract void unload();
-	
+	protected abstract void onLoad();
+	protected abstract void onUpdate();
+	protected abstract void onUnload();
+
 	public void start()
 	{
-		if(!initialized) assert(false); // TODO: improve
+		if(initialized)
+		{
+			if(!loaded)
+			{
+				onLoad();
+				loaded = true;
+			}
+			
+			running = true;
+		}
+	}
+	
+	public void update()
+	{
+		if(initialized && running && !paused)
+		{
+			onUpdate();
+			updateSystem.updateAll(this, entityManager, 0.0f);
+		}
+	}
+	
+	public void pause()
+	{
+		paused = true;
+	}
+	
+	public void unpause()
+	{
+		paused = false;
+	}
+	
+	public void stop()
+	{
+		if(loaded)
+		{
+			onUnload();
+			loaded = false;
+		}
+		
+		running = false;
 	}
 	
 	public Application getApplication()
@@ -49,7 +97,7 @@ public abstract class Game {
 		return entityManager;
 	}
 
-	public AssetManager getResourceManager()
+	public AssetManager getAssetManager()
 	{
 		return resourceManager;
 	}

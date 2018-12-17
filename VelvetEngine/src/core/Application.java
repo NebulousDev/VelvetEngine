@@ -1,14 +1,10 @@
 package core;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWVidMode;
-
 import graphics.GLGraphics;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
-import graphics.GraphicsContext;
 import input.Input;
-import math.Vector2f;
+import resource.AssetManager;
 import velvet.ini.INIBuilder;
 import velvet.ini.INIConfig;
 
@@ -16,14 +12,14 @@ public class Application
 {
 	private String 			name;
 	private Window			window;
-	private GraphicsAPI 	gfxApi;
-	private Graphics		graphics;
-	private GraphicsContext context;
-	private Input			input;
-	
+	private GraphicsAPI 	gfxApi;		//TODO: move to window?
 	private INIConfig		config;
+	private AssetManager	assetManager;
+	private Game 			game;
+	private boolean			initialized;
+	private boolean			running;
 	
-	private Game game;
+	private boolean			useConfig;
 	
 	public Application(Game game)
 	{
@@ -32,39 +28,27 @@ public class Application
 	
 	public Application(String name, Game game, GraphicsAPI api, boolean useConfig)
 	{
-		this.config = initConfig();
-
 		this.name = name;
 		this.gfxApi = api;
-		
-		if(useConfig)
-		{
-			this.name = config.getString("appName");
-			
-			switch (config.getInt("appGraphics"))
-			{
-				case GraphicsAPI.GRAPHICS_OPENGL_ID: 	this.gfxApi = GraphicsAPI.GRAPHICS_OPENGL; break;
-				case GraphicsAPI.GRAPHICS_OPENGLES_ID: 	this.gfxApi = GraphicsAPI.GRAPHICS_OPENGLES; break;
-				case GraphicsAPI.GRAPHICS_VULKAN_ID: 	this.gfxApi = GraphicsAPI.GRAPHICS_VULKAN; break;
-				default: 								this.gfxApi = GraphicsAPI.GRAPHICS_OPENGL; break;
-			}
-		}
-		
-		switch(this.gfxApi)
-		{
-			case GRAPHICS_OPENGL: this.graphics = new GLGraphics(); break;
-			case GRAPHICS_OPENGLES: this.graphics = new GLGraphics(); break;
-			case GRAPHICS_VULKAN: this.graphics = new GLGraphics(); break;
-		}
-
-		this.graphics.initGraphics();
-		this.window = createWindow("Default Game", 640, 480, 0, 0, 10, 0, Window.CENTERED, true);
-		
 		this.game = game;
-		this.game.initialize(this);
+		this.useConfig = useConfig;
 	}
 	
-	private INIConfig initConfig()
+	private void initialize()
+	{
+		if(useConfig)
+			config = createConfig();
+		
+		assetManager = new AssetManager();
+		//assetManager.loadFolder("models");
+		Graphics graphics = createGraphics();
+		graphics.initialize();
+		game.initialize(this, graphics);
+		window = createWindow("Default Game", 640, 480, 12, 12, 10, 0, Window.CENTERED, true);
+		initialized = true;
+	}
+	
+	private INIConfig createConfig()
 	{
 		INIConfig config = new INIBuilder()
 		.addStringProperty("appName", Defaults.DEFAULT_APP_NAME)
@@ -90,14 +74,35 @@ public class Application
 		return config;
 	}
 	
-	private Window createWindow(String title, int width, int height, int x, int y, int bits, int hertz, int flags, boolean useConfig)
+	private Graphics createGraphics()
 	{
-		Window window 	= new Window();
-		window.title 	= title;
-		window.width 	= width;
-		window.height 	= height;
-		window.flags	= flags;
+		if(useConfig)
+		{
+			this.name = config.getString("appName");
+			
+			switch (config.getInt("appGraphics"))
+			{
+				case GraphicsAPI.GRAPHICS_OPENGL_ID: 	gfxApi = GraphicsAPI.GRAPHICS_OPENGL; break;
+				case GraphicsAPI.GRAPHICS_OPENGLES_ID: 	gfxApi = GraphicsAPI.GRAPHICS_OPENGLES; break;
+				case GraphicsAPI.GRAPHICS_VULKAN_ID: 	gfxApi = GraphicsAPI.GRAPHICS_VULKAN; break;
+				default: 								gfxApi = GraphicsAPI.GRAPHICS_OPENGL; break;
+			}
+		}
 		
+		Graphics graphics = null;
+		
+		switch(gfxApi)
+		{
+			case GRAPHICS_OPENGL: 	graphics = new GLGraphics(); break;
+			case GRAPHICS_OPENGLES: graphics = new GLGraphics(); break;
+			case GRAPHICS_VULKAN: 	graphics = new GLGraphics(); break;
+		}
+		
+		return graphics;
+	}
+	
+	private Window createWindow(String title, int width, int height, int x, int y, int bits, double hertz, int flags, boolean useConfig)
+	{
 		String windowTitle 				= title;
 		int windowWidth					= width;
 		int windowHeight				= height;
@@ -112,6 +117,7 @@ public class Application
 		boolean windowVSync				= (flags & Window.VSYNC) != 0;
 		int windowBits					= bits;
 		boolean windowUseMonitorBits	= (flags & Window.USE_MONITOR_BITS) != 0;
+		int windowFlags					= flags;
 		
 		if(useConfig)
 		{
@@ -129,113 +135,70 @@ public class Application
 			windowVSync = config.getBoolean("windowVSync");
 			windowBits = config.getInt("windowBits");
 			windowUseMonitorBits = config.getBoolean("windowUseMonitorBits");
-		}
-		
-		// TODO: set values in window class
-		window.center = new Vector2f(windowWidth / 2, windowHeight / 2);
-		
-		GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-		
-		if(windowUseMonitorSize)
-		{
-			windowWidth = mode.width();
-			windowHeight = mode.height();
-		}
-		
-		if(windowBorderless)
-		{
-			GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, GLFW.GLFW_FALSE);
-		}
-		
-		if(windowCentered)
-		{
-			windowPositionX = (int) (window.center.x + 0.5f);
-			windowPositionY = (int) (window.center.y + 0.5f);
-		}
-		
-		if(windowResizeable)
-		{
-			GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-		}
-		
-		if(windowFullscreen)
-		{
-			if(windowUseMonitorBits)
-			{
-				GLFW.glfwWindowHint(GLFW.GLFW_RED_BITS, mode.redBits());
-				GLFW.glfwWindowHint(GLFW.GLFW_GREEN_BITS, mode.greenBits());
-				GLFW.glfwWindowHint(GLFW.GLFW_BLUE_BITS, mode.blueBits());
-			}
 			
-			else
-			{
-				GLFW.glfwWindowHint(GLFW.GLFW_RED_BITS, windowBits);
-				GLFW.glfwWindowHint(GLFW.GLFW_GREEN_BITS, windowBits);
-				GLFW.glfwWindowHint(GLFW.GLFW_BLUE_BITS, windowBits);
-			}
-			
-			if(windowHertz > 0 && !windowVSync)
-				GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, (int)(windowHertz + 0.5));
-			else
-				GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, mode.refreshRate());
-			
-			window.windowID = GLFW.glfwCreateWindow(windowWidth, windowHeight, windowTitle, GLFW.glfwGetPrimaryMonitor(), 0);
+			windowFlags = 
+					(windowFullscreen 		? Window.FULLSCREEN 		: 0) |
+					(windowBorderless 		? Window.BORDERLESS 		: 0) |
+					(windowCentered 		? Window.CENTERED 			: 0) |
+					(windowResizeable 		? Window.RESIZEABLE 		: 0) |
+					(windowVSync 			? Window.VSYNC				: 0) |
+					(windowUseMonitorSize	? Window.USE_MONITOR_SIZE	: 0) |
+					(windowUseMonitorBits	? Window.USE_MONITOR_BITS	: 0) ;
 		}
 		
-		else
-		{
-			window.windowID = GLFW.glfwCreateWindow(windowWidth, windowHeight, windowTitle, 0, 0);
-			GLFW.glfwSetWindowPos(window.windowID, windowPositionX, windowPositionY);
-		}
-		
-		this.context = graphics.createContext(window);
-		graphics.setContextCurrent(context);
-		graphics.createCapibilities();
-		
-		GLFW.glfwShowWindow(window.windowID);
-		
-		//TODO: find a better place for this?
-		input = Input.getInstance();
-		input.initIntput(window);
-		
-		return window;
+		return new Window(windowTitle, windowWidth, windowHeight, windowPositionX, windowPositionY, windowBits, windowHertz, windowFlags);
 	}
 	
-	public void pollEvents()
+	public void start()
 	{
-		GLFW.glfwPollEvents();
-	}
-	
-	public void swapBuffers()
-	{
-		graphics.swapBuffers(context);
-	}
-	
-	public boolean shouldClose()
-	{
-		return GLFW.glfwWindowShouldClose(context.getContext());
-	}
+		if(!initialized)
+		{
+			initialize();
+			window.create(game.getGraphics());
+		}
 
+		if(!running)
+		{
+			window.show();
+			game.start();
+			running = true;
+			run();
+		}
+	}
+	
+	private void run()
+	{
+		// TODO: possibly remove shouldClose() condition
+		while(running && !window.shouldClose())
+		{
+			Input.getInstance().update();
+			window.pollEvents();
+			window.clear();
+			
+			game.update();
+			
+			window.swapBuffers();
+		}
+		
+		window.hide();
+		game.stop();
+	}
+	
+	public void stop()
+	{
+		running = false;
+	}
+	
 	public String getName() { return name; }
 
 	public Window getWindow() { return window; }
 	
 	public GraphicsAPI getGraphicsApi() { return gfxApi; }
 
-	public Graphics getGraphics() { return graphics; }
-
-	public GraphicsContext getContext() { return context; }
-	
-	public Input getInput() { return input; }
-
 	public Game getGame() { return game; }
 
 	public INIConfig getConfig() { return config; }
-	
-	public void start()
-	{
-		window.show();
-		game.start();
-	}
+
+	public AssetManager getResourceManager() { return assetManager; }
+
 }

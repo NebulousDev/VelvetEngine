@@ -12,7 +12,7 @@ import math.Vector4f;
 
 public interface Graphics
 {
-	boolean initGraphics();
+	boolean initialize();
 	
 	GraphicsContext createContext(Window window);
 	

@@ -138,7 +138,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean initGraphics()
+	public boolean initialize()
 	{
 		boolean init = GLFW.glfwInit();
 		if(init)return true;

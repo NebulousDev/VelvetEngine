@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 import core.Window;
 import math.Vector2f;
+import math.Vector2i;
 
 public class Input
 {
@@ -98,7 +99,7 @@ public class Input
 		mouseAbsolute.x = (float)mxPos[0];
 		mouseAbsolute.y = (float)myPos[0];
 		
-		Vector2f center = window.getCenter();
+		Vector2i center = window.getCenter();
 		mouseRelative.x = mouseAbsolute.x - center.x;
 		mouseRelative.y = mouseAbsolute.y - center.y;
 		
@@ -147,9 +148,9 @@ public class Input
 		GLFW.glfwSetInputMode(window.getWindowID(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
 	}
 	
-	public static void setMouse(Vector2f pos)
+	public static void setMouse(Vector2i vector2i)
 	{
-		GLFW.glfwSetCursorPos(window.getWindowID(), pos.x, pos.y);
+		GLFW.glfwSetCursorPos(window.getWindowID(), vector2i.x, vector2i.y);
 	}
 	
 	public static Vector2f getMouseAbsolute()
