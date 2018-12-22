@@ -9,13 +9,13 @@ import org.lwjgl.opengl.GL20;
 
 import core.Game;
 import math.Vector3f;
+import loaders.obj.OBJBundle;
+import loaders.obj.OBJModel;
+import loaders.obj.OBJParser;
+import loaders.obj.OBJVertex;
 import resource.Resource;
 import resource.ResourceManager;
 import utils.FileUtils;
-import velvet.obj.OBJBundle;
-import velvet.obj.OBJModel;
-import velvet.obj.OBJParser;
-import velvet.obj.OBJVertex;
 
 public class Mesh extends Resource
 {

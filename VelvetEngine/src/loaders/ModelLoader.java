@@ -12,11 +12,11 @@ import graphics.Graphics;
 import graphics.Mesh;
 import graphics.Mesh.SubMesh;
 import math.Vector3f;
+import loaders.obj.OBJBundle;
+import loaders.obj.OBJModel;
+import loaders.obj.OBJParser;
+import loaders.obj.OBJVertex;
 import utils.FileUtils;
-import velvet.obj.OBJBundle;
-import velvet.obj.OBJModel;
-import velvet.obj.OBJParser;
-import velvet.obj.OBJVertex;
 
 public class ModelLoader
 {

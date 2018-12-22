@@ -2,9 +2,3 @@ rootProject.name = 'Sandbox'
 
 include ":VelvetEngine"
 project(":VelvetEngine").projectDir = file("../VelvetEngine")
-
-include "VelvetOBJ"
-project(":VelvetOBJ").projectDir = file("../VelvetOBJ/VelvetOBJ")
-
-include "VelvetINI"
-project(":VelvetINI").projectDir = file("../VelvetINI/VelvetINI")

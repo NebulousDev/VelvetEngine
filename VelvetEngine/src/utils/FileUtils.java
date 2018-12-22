@@ -165,7 +165,7 @@ public class FileUtils
 	
 	public static String getContainingFolder(String filepath)
 	{
-		int last = filepath.lastIndexOf("/");	//TODO: Allow other methods
+		int last = filepath.lastIndexOf("\\");	//TODO: Allow other methods
 		return filepath.substring(0, last);
 	}
 	

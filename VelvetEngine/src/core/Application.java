@@ -3,10 +3,10 @@ package core;
 import graphics.GLGraphics;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
+import loaders.ini.INIBuilder;
+import loaders.ini.INIConfig;
 import input.Input;
 import resource.ResourceManager;
-import velvet.ini.INIBuilder;
-import velvet.ini.INIConfig;
 
 public class Application
 {

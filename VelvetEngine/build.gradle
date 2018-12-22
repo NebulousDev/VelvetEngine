@@ -7,7 +7,6 @@ project.ext.lwjglNatives = "natives-windows"
 
 sourceSets {
     main.java.srcDirs = ['src']
-    main.resources.srcDirs = ['res']
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -29,6 +28,11 @@ repositories {
 	mavenCentral()
 }
 
+task copyResources(type:Copy) {
+	from 'res'
+	into "${buildDir}/libs"
+}
+
 dependencies {
 	implementation "org.lwjgl:lwjgl:$lwjglVersion"
 	implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
@@ -48,6 +52,4 @@ dependencies {
 	runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-opengles:$lwjglVersion:$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-	compile project(":VelvetOBJ")
-	compile project(":VelvetINI")
 }
