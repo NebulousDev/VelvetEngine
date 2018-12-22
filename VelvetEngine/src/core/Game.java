@@ -3,14 +3,14 @@ package core;
 import entity.EntityManager;
 import entity.system.UpdateSystem;
 import graphics.Graphics;
-import resource.AssetManager;
+import resource.ResourceManager;
 
 public abstract class Game {
 	
 	Application 		application;
 	Graphics 			graphics;
 	EntityManager		entityManager;
-	AssetManager		resourceManager;
+	ResourceManager		resourceManager;
 	
 	UpdateSystem		updateSystem;
 
@@ -27,8 +27,6 @@ public abstract class Game {
 		resourceManager = application.getResourceManager();
 		entityManager = new EntityManager();
 		updateSystem = new UpdateSystem();
-		
-		resourceManager.initialize(this);
 		
 		initialized = true;
 		running = false;
@@ -97,7 +95,7 @@ public abstract class Game {
 		return entityManager;
 	}
 
-	public AssetManager getAssetManager()
+	public ResourceManager getResourceManager()
 	{
 		return resourceManager;
 	}

@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL20;
 
 import core.Game;
-import resource.ResourceType;
+import resource.Resource;
+import resource.ResourceManager;
 import utils.FileUtils;
 
-public class ShaderProgram extends ResourceType<ShaderProgram>
+public class ShaderProgram extends Resource
 {
-	public final static int 	TYPE	= getNextTypeID();
-	public final static String 	NAME	= "Shader Resource";
-	
 	int 				id			= -1;
 	String				name		= null;
 	ArrayList<Shader> 	shaders 	= null;
@@ -39,26 +37,28 @@ public class ShaderProgram extends ResourceType<ShaderProgram>
 	}
 
 	@Override
-	public boolean load(Game game, String localName, String filepath, int flags)
+	protected Resource load(Game game, ResourceManager manager, String tag, String filepath)
 	{
-		name = localName;
+		name = tag;
 		shaders = new ArrayList<Shader>();
 		
 		Graphics gfx = game.getGraphics();
 		
-		if(!FileUtils.fileExists(filepath + ".vert") || !FileUtils.fileExists(filepath + ".frag"))
+		String filename = FileUtils.stripExtention(filepath);
+		
+		if(!FileUtils.fileExists(filename + ".vert") || !FileUtils.fileExists(filename + ".frag"))
 		{
-			System.out.println("Error! Failed to register resource '" + localName + "'. File not found at '" + filepath + "'.");
-			return false;
+			System.out.println("Error! Failed to register resource '" + tag + "'. File not found at '" + filepath + "'.");
+			return null;
 		}
 
 		id = GL20.glCreateProgram();
 		
-		String vert = FileUtils.readFileAsString(filepath + ".vert");
-		String frag = FileUtils.readFileAsString(filepath + ".frag");
+		String vert = FileUtils.readFileAsString(filename + ".vert");
+		String frag = FileUtils.readFileAsString(filename + ".frag");
 		
-		Shader vertex = gfx.createShader(localName + "_vertex", ShaderType.SHADER_TYPE_VERTEX, vert);
-		Shader fragment = gfx.createShader(localName + "_fragment", ShaderType.SHADER_TYPE_FRAGMENT, frag);
+		Shader vertex = gfx.createShader(tag + "_vertex", ShaderType.SHADER_TYPE_VERTEX, vert);
+		Shader fragment = gfx.createShader(tag + "_fragment", ShaderType.SHADER_TYPE_FRAGMENT, frag);
 		
 		boolean result = false;
 		
@@ -67,31 +67,13 @@ public class ShaderProgram extends ResourceType<ShaderProgram>
 		
 		result = gfx.finalizeProgram(this);
 		
-		return result;
+		return result ? this : null;
 	}
 
 	@Override
-	public boolean unload(Game game)
+	protected void release(Game game, ResourceManager manager)
 	{
-		// TODO: Unload shaders 
-		return false;
+		
 	}
 
-	@Override
-	public ShaderProgram create(Game game)
-	{
-		return new ShaderProgram();
-	}
-
-	@Override
-	public int getTypeID()
-	{
-		return TYPE;
-	}
-
-	@Override
-	public String getTypeName()
-	{
-		return NAME;
-	}
 }

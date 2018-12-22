@@ -8,14 +8,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImage;
 
 import core.Game;
-import resource.ResourceType;
+import resource.Resource;
+import resource.ResourceManager;
 import utils.FileUtils;
 
-public class Texture extends ResourceType<Texture>
+public class Texture extends Resource
 {
-	public final static int 	TYPE	= getNextTypeID();
-	public final static String 	NAME	= "Texture Resource";
-	
 	int 			id		= -1;
 	int				width	= 0;
 	int				height	= 0;
@@ -41,14 +39,14 @@ public class Texture extends ResourceType<Texture>
 	public boolean isValid() { return id >= 0; }
 
 	@Override
-	public boolean load(Game game, String localName, String filepath, int flags)
+	protected Resource load(Game game, ResourceManager manager, String tag, String filepath)
 	{
 		Graphics gfx = game.getGraphics();
 		
 		if(!FileUtils.fileExists(filepath))
 		{
-			System.out.println("Error! Failed to register resource '" + localName + "'. File not found at '" + filepath + "'.");
-			return false;
+			System.out.println("Error! Failed to register resource '" + getName() + "'. File not found at '" + filepath + "'.");
+			return null;
 		}
 		
 		ByteBuffer data 	= null;
@@ -66,7 +64,7 @@ public class Texture extends ResourceType<Texture>
 		if(image == null)
 		{
 			System.out.println("STBImage failed to read file: " + filepath + "\nREASON: " + STBImage.stbi_failure_reason());
-			return false;
+			return null;
 		}
 		
 		int numChannels = channels.get(0);
@@ -88,31 +86,13 @@ public class Texture extends ResourceType<Texture>
 		
 		STBImage.stbi_image_free(image);
 		
-		return true;
+		return this;
 	}
 
 	@Override
-	public boolean unload(Game game)
+	protected void release(Game game, ResourceManager manager)
 	{
-		//TODO: unload textures
-		return false;
-	}
-
-	@Override
-	public Texture create(Game game)
-	{
-		return new Texture();
-	}
-
-	@Override
-	public int getTypeID()
-	{
-		return TYPE;
-	}
-
-	@Override
-	public String getTypeName()
-	{
-		return NAME;
+		GL11.glDeleteTextures(id);
+		this.id = -1;
 	}
 }

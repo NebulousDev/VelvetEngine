@@ -4,7 +4,7 @@ import graphics.GLGraphics;
 import graphics.Graphics;
 import graphics.GraphicsAPI;
 import input.Input;
-import resource.AssetManager;
+import resource.ResourceManager;
 import velvet.ini.INIBuilder;
 import velvet.ini.INIConfig;
 
@@ -12,9 +12,9 @@ public class Application
 {
 	private String 			name;
 	private Window			window;
-	private GraphicsAPI 	gfxApi;		//TODO: move to window?
+	private GraphicsAPI 	gfxApi;
 	private INIConfig		config;
-	private AssetManager	assetManager;
+	private ResourceManager	resourceManager;
 	private Game 			game;
 	private boolean			initialized;
 	private boolean			running;
@@ -39,8 +39,8 @@ public class Application
 		if(useConfig)
 			config = createConfig();
 		
-		assetManager = new AssetManager();
-		//assetManager.loadFolder("models");
+		resourceManager = new ResourceManager(game);
+		//resourceManager.addPath("res");
 		Graphics graphics = createGraphics();
 		graphics.initialize();
 		game.initialize(this, graphics);
@@ -199,6 +199,6 @@ public class Application
 
 	public INIConfig getConfig() { return config; }
 
-	public AssetManager getResourceManager() { return assetManager; }
+	public ResourceManager getResourceManager() { return resourceManager; }
 
 }

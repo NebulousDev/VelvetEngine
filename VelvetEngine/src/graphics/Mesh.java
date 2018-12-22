@@ -9,18 +9,16 @@ import org.lwjgl.opengl.GL20;
 
 import core.Game;
 import math.Vector3f;
-import resource.ResourceType;
+import resource.Resource;
+import resource.ResourceManager;
 import utils.FileUtils;
 import velvet.obj.OBJBundle;
 import velvet.obj.OBJModel;
 import velvet.obj.OBJParser;
 import velvet.obj.OBJVertex;
 
-public class Mesh extends ResourceType<Mesh>
+public class Mesh extends Resource
 {
-	public final static int 	TYPE	= getNextTypeID();
-	public final static String 	NAME	= "Mesh Resource";
-	
 	public static class SubMesh
 	{
 		public String 	name;
@@ -35,14 +33,14 @@ public class Mesh extends ResourceType<Mesh>
 	public ArrayList<SubMesh> subMeshes;
 
 	@Override
-	public boolean load(Game game, String localName, String filepath, int flags)
+	protected Mesh load(Game game, ResourceManager manager, String tag, String filepath)
 	{
 		Graphics gfx = game.getGraphics();
 		
 		if(!FileUtils.fileExists(filepath))
 		{
-			System.out.println("Error! Failed to register resource '" + localName + "'. File not found at '" + filepath + "'.");
-			return false;
+			System.out.println("Error! Failed to register resource '" + tag + "'. File not found at '" + filepath + "'.");
+			return null;
 		}
 		
 		OBJModel objModel = OBJParser.parseOBJ(filepath);
@@ -99,7 +97,13 @@ public class Mesh extends ResourceType<Mesh>
 		gfx.unbindBuffer(vbo);
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		
-		return true;
+		return this;
+	}
+	
+	@Override
+	protected void release(Game game, ResourceManager manager)
+	{
+		dispose(game.getGraphics());
 	}
 
 	public void bind(Graphics gfx)
@@ -114,35 +118,10 @@ public class Mesh extends ResourceType<Mesh>
 		gfx.unbindBuffer(ibo);
 	}
 	
-	@Override
-	public boolean unload(Game game)
-	{
-		dispose(game.getGraphics());
-		return true;
-	}
-	
 	private void dispose(Graphics gfx)
 	{
 		gfx.freeBuffer(vbo);
 		gfx.freeBuffer(ibo);
 	}
 
-	@Override
-	public Mesh create(Game game)
-	{
-		return new Mesh();
-	}
-
-	@Override
-	public int getTypeID()
-	{
-		return TYPE;
-	}
-
-	@Override
-	public String getTypeName()
-	{
-		return NAME;
-	}
-	
 }

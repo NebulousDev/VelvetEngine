@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
+import core.Game;
 import entity.Entity;
 import entity.EntityManager;
 import entity.camera.CameraComponent;
@@ -18,18 +19,14 @@ import graphics.ShaderProgram;
 import graphics.component.MeshComponent;
 import graphics.component.PhongRenderComponent;
 import math.Matrix4f;
-import resource.Asset;
-import resource.AssetManager;
 
 public class PhongRenderer extends RenderSystem {
 
 	private ShaderProgram shader;
 
-	public PhongRenderer(AssetManager assetManager)
+	public PhongRenderer(Game game)
 	{
-		//TODO: This needs to change:
-		Asset<ShaderProgram> program = assetManager.getAsset("shader_default");
-		this.shader = program.getResource();
+		this.shader = game.getResourceManager().getResource(ShaderProgram.class, "simple");
 	}
 	
 	@Override

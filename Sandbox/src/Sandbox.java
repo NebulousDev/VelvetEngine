@@ -21,8 +21,7 @@ import math.Axis;
 import math.Matrix4f;
 import math.Quaternion;
 import math.Vector3f;
-import resource.Asset;
-import resource.AssetManager;
+import resource.ResourceManager;
 
 public class Sandbox extends Game
 {
@@ -40,28 +39,21 @@ public class Sandbox extends Game
 		Graphics gfx = getGraphics();
 		gfx.setClearColor(0.0f, 0.06f, 0.08f, 1.0f);
 		
-		AssetManager assetManager = getAssetManager();
-		assetManager.registerAssetType(new Mesh(), "Mesh");
-		assetManager.registerAssetType(new Texture(), "Texture");
-		assetManager.registerAssetType(new ShaderProgram(), "ShaderProgram");
-		
-		assetManager.registerAsset(Mesh.TYPE, 				"mesh_testscene", 		"/models/testscene.obj");
-		assetManager.registerAsset(Mesh.TYPE, 				"mesh_standard", 		"/models/standard.obj");
-		assetManager.registerAsset(Mesh.TYPE, 				"mesh_bunny", 			"/models/bunny.obj");
-		assetManager.registerAsset(Texture.TYPE, 			"texture_default", 		"/textures/default.png");
-		assetManager.registerAsset(Texture.TYPE, 			"texture_default2", 	"/textures/default2.png");
-		assetManager.registerAsset(ShaderProgram.TYPE, 		"shader_default", 		"/shaders/test");
+		ResourceManager resourceManager = getResourceManager();
+		resourceManager.addPath("assets/models");
+		resourceManager.addPath("assets/shaders");
+		resourceManager.addPath("assets/textures");
 		
 		/* Load Resources */
 		
-		Asset<Mesh> 			scene 		= assetManager.getAsset("mesh_testscene");
-		Asset<Mesh> 			standard 	= assetManager.getAsset("mesh_standard");
-		Asset<Mesh> 			bunny 		= assetManager.getAsset("mesh_bunny");
-		Asset<Texture> 			texture 	= assetManager.getAsset("texture_default2");
-		Asset<ShaderProgram> 	program 	= assetManager.getAsset("shader_default");
+		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "testscene");
+		Mesh  			standard 	= resourceManager.getResource(Mesh.class, "standard");
+		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "bunny");
+		Texture 		texture 	= resourceManager.getResource(Texture.class, "default2");
+		ShaderProgram 	program 	= resourceManager.getResource(ShaderProgram.class, "simple");
 		
 		gfx.setActiveTextureSlot(0);
-		gfx.bindTexture(texture.getResource());
+		gfx.bindTexture(texture);
 		
 		/* Setup Entities */
 		
@@ -86,25 +78,19 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 		
-		System.out.println(rotatingComponent.getCastType());
-		System.out.println(test.getCastType());
-		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
-		MeshComponent 			groundMesh 			= new MeshComponent(scene.getResource());
+		MeshComponent 			groundMesh 			= new MeshComponent(scene);
 		PhongMaterialComponent 	groundMaterial		= new PhongMaterialComponent();
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
 		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, groundMaterial, groundRender);
 		
 		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 0.0f, 10.0f), new Vector3f(1.0f, 2.0f, 1.0f), Quaternion.Identity());
-		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny.getResource());
+		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
 		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, groundMaterial, bunnyRender, test);
 		
-		MeshComponent			standardMesh		= new MeshComponent(standard.getResource());
+		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
-		
-		
-		System.out.println(bunnyEntity.getAllComponents());
 		
 		for(int y = 0; y < 10; y++)
 			for(int x = 0; x < 10; x++)
@@ -120,7 +106,7 @@ public class Sandbox extends Game
 		
 		/* Setup Systems */
 		
-		phongRenderer 	= new PhongRenderer(assetManager);
+		phongRenderer 	= new PhongRenderer(this);
 		
 		/////////////////////////////////////////////////////////////////////////////////////////
 		
