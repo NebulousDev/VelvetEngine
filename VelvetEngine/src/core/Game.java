@@ -3,9 +3,19 @@ package core;
 import entity.EntityManager;
 import entity.system.UpdateSystem;
 import graphics.Graphics;
+import graphics.system.RenderSystem;
 import resource.ResourceManager;
 
 public abstract class Game {
+	
+	enum State
+	{
+		LOADING,
+		RUNNING,
+		PAUSED,
+		UNLOADING,
+		STOPPED
+	}
 	
 	Application 		application;
 	Graphics 			graphics;
@@ -13,11 +23,12 @@ public abstract class Game {
 	ResourceManager		resourceManager;
 	
 	UpdateSystem		updateSystem;
+	RenderSystem		renderSystem;
 
 	boolean 			initialized;
 	boolean				loaded;
-	boolean				running;
-	boolean				paused;
+	
+	State				state;
 	
 	void initialize(Application application, Graphics graphics)
 	{
@@ -27,9 +38,10 @@ public abstract class Game {
 		resourceManager = application.getResourceManager();
 		entityManager = new EntityManager();
 		updateSystem = new UpdateSystem();
+		renderSystem = new RenderSystem();
 		
 		initialized = true;
-		running = false;
+		state = State.STOPPED;
 	}
 	
 	protected abstract void onLoad();
@@ -42,42 +54,49 @@ public abstract class Game {
 		{
 			if(!loaded)
 			{
+				state = State.LOADING;
 				onLoad();
 				loaded = true;
 			}
 			
-			running = true;
+			state = State.RUNNING;
 		}
 	}
 	
 	public void update()
 	{
-		if(initialized && running && !paused)
+		if(initialized && state == State.RUNNING)
 		{
 			onUpdate();
 			updateSystem.updateAll(this, entityManager, 0.0f);
 		}
 	}
 	
+	public void render()
+	{
+		renderSystem.renderWorld(entityManager);
+	}
+	
 	public void pause()
 	{
-		paused = true;
+		state = State.PAUSED;
 	}
 	
 	public void unpause()
 	{
-		paused = false;
+		state = State.RUNNING;
 	}
 	
 	public void stop()
 	{
 		if(loaded)
 		{
+			state = State.UNLOADING;
 			onUnload();
 			loaded = false;
 		}
 		
-		running = false;
+		state = State.STOPPED;
 	}
 	
 	public Application getApplication()

@@ -1,9 +1,0 @@
-package graphics;
-
-public enum BufferType
-{
-	GRAPHICS_BUFFER_VERTEX,
-	GRAPHICS_BUFFER_INDEX,
-	GRAPHICS_BUFFER_UNIFORM,
-	GRAPHICS_BUFFER_DATA
-}

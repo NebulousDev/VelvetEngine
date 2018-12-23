@@ -29,14 +29,27 @@ public class GLGraphics implements Graphics
 	{
 		switch (type)
 		{
-			case GRAPHICS_BUFFER_VERTEX:
+			case VERTEX:
 				return GL15.GL_ARRAY_BUFFER;
 				
-			case GRAPHICS_BUFFER_INDEX:
+			case ELEMENT:
 				return GL15.GL_ELEMENT_ARRAY_BUFFER;
 
 			default:
 				return -1;
+		}
+	}
+	
+	private int drawModeToInt(DrawMode mode)
+	{
+		switch(mode)
+		{
+			case TRIANGLES:			return GL11.GL_TRIANGLES;
+			case TRIANGLE_STRIPS:	return GL11.GL_TRIANGLE_STRIP;
+			case LINES:				return GL11.GL_LINE;
+			case LINE_STRIPS:		return GL11.GL_LINE_STRIP;
+			case POINTS:			return GL11.GL_POINT;
+			default: return -1;
 		}
 	}
 	
@@ -301,6 +314,64 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
+	public boolean setBufferSubData(GraphicsBuffer buffer, int offset, int[] data)
+	{
+		if(buffer.isValid())
+		{
+			int bufferType = graphicsTypeToInt(buffer.type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL20.glBufferSubData(bufferType, offset, data);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean setBufferSubData(GraphicsBuffer buffer, int offset, float[] data)
+	{
+		if(buffer.isValid())
+		{
+			int bufferType = graphicsTypeToInt(buffer.type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL20.glBufferSubData(bufferType, offset, data);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean setBufferSubData(GraphicsBuffer buffer, int offset, IntBuffer data)
+	{
+		if(buffer.isValid())
+		{
+			data.flip();
+			int bufferType = graphicsTypeToInt(buffer.type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL20.glBufferSubData(bufferType, offset, data);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean setBufferSubData(GraphicsBuffer buffer, int offset, FloatBuffer data)
+	{
+		if(buffer.isValid())
+		{
+			data.flip();
+			int bufferType = graphicsTypeToInt(buffer.type);
+			GL15.glBindBuffer(bufferType, buffer.id);
+			GL20.glBufferSubData(bufferType, offset, data);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
 	public boolean bindBuffer(GraphicsBuffer buffer)
 	{
 		if(buffer.isValid())
@@ -523,9 +594,16 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean drawElementsRange(int start, int count)
+	public boolean drawElements(DrawMode mode, int count)
 	{
-		GL11.glDrawElements(GL11.GL_TRIANGLES, count, GL11.GL_UNSIGNED_INT, start * Integer.BYTES); 
+		GL11.glDrawElements(drawModeToInt(mode), count, GL11.GL_UNSIGNED_INT, 0); 
+		return true;
+	}
+	
+	@Override
+	public boolean drawElementsRange(DrawMode mode, int start, int count)
+	{
+		GL11.glDrawElements(drawModeToInt(mode), count, GL11.GL_UNSIGNED_INT, start * Integer.BYTES); 
 		return true;
 	}
 

@@ -1,4 +1,4 @@
-package graphics.renderers;
+package graphics.system;
 
 import java.util.Iterator;
 
@@ -12,6 +12,7 @@ import entity.camera.CameraComponent;
 import entity.camera.PerspectiveCameraComponent;
 import entity.component.TransformComponent;
 import graphics.Graphics;
+import graphics.Graphics.DrawMode;
 import graphics.GraphicsUniform;
 import graphics.Mesh;
 import graphics.Mesh.SubMesh;
@@ -20,7 +21,7 @@ import graphics.component.MeshComponent;
 import graphics.component.PhongRenderComponent;
 import math.Matrix4f;
 
-public class PhongRenderer extends RenderSystem {
+public class PhongRenderer extends Renderer {
 
 	private ShaderProgram shader;
 
@@ -81,20 +82,16 @@ public class PhongRenderer extends RenderSystem {
 			//graphics.drawElementsRange(0, mesh.ibo.size);
 			
 			for(SubMesh subMesh : mesh.subMeshes)
-				graphics.drawElementsRange(subMesh.offset, subMesh.count);
+				graphics.drawElementsRange(DrawMode.TRIANGLES, subMesh.offset, subMesh.count);
 		}
 	}
 
 	@Override
 	public void end(Graphics graphics, EntityManager entityManager)
 	{
-		shader.unbind(graphics); //NOTE: Unnecessary
-	}
-
-	@Override
-	public String getLocalName()
-	{
-		return "PhongRenderer";
+		//NOTE: Unnecessary
+		
+		shader.unbind(graphics); 
 	}
 
 }

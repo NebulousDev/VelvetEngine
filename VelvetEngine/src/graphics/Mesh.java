@@ -8,11 +8,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import core.Game;
-import math.Vector3f;
+import graphics.Graphics.BufferType;
 import loaders.obj.OBJBundle;
 import loaders.obj.OBJModel;
 import loaders.obj.OBJParser;
 import loaders.obj.OBJVertex;
+import math.Vector3f;
 import resource.Resource;
 import resource.ResourceManager;
 import utils.FileUtils;
@@ -67,8 +68,8 @@ public class Mesh extends Resource
 		
 		indexBuffer.put(objModel.indices);
 		
-		gfx.setBufferData(vbo, BufferType.GRAPHICS_BUFFER_VERTEX, vertexBuffer.array());
-		gfx.setBufferData(ibo, BufferType.GRAPHICS_BUFFER_INDEX, indexBuffer.array());
+		gfx.setBufferData(vbo, BufferType.VERTEX, vertexBuffer.array());
+		gfx.setBufferData(ibo, BufferType.ELEMENT, indexBuffer.array());
 		
 		for(OBJBundle objBundle : objModel.materialBundles)
 		{

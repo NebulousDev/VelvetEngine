@@ -1,5 +1,7 @@
 package graphics;
 
+import graphics.Graphics.BufferType;
+
 public class GraphicsBuffer
 {
 	public int 			id		= -1;

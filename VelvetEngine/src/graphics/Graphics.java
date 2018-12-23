@@ -12,6 +12,23 @@ import math.Vector4f;
 
 public interface Graphics
 {
+	public enum BufferType
+	{
+		VERTEX,
+		ELEMENT,
+		UNIFORM,
+		GENERIC
+	}
+	
+	public enum DrawMode
+	{
+		TRIANGLES,
+		TRIANGLE_STRIPS,
+		LINES,
+		LINE_STRIPS,
+		POINTS
+	}
+	
 	boolean initialize();
 	
 	GraphicsContext createContext(Window window);
@@ -37,6 +54,14 @@ public interface Graphics
 	boolean setBufferData(GraphicsBuffer buffer, BufferType type, IntBuffer data);
 	
 	boolean setBufferData(GraphicsBuffer buffer, BufferType type, FloatBuffer data);
+	
+	boolean setBufferSubData(GraphicsBuffer buffer, int offset, int[] data);
+	
+	boolean setBufferSubData(GraphicsBuffer buffer, int offset, float[] data);
+	
+	boolean setBufferSubData(GraphicsBuffer buffer, int offset, IntBuffer data);
+	
+	boolean setBufferSubData(GraphicsBuffer buffer, int offset, FloatBuffer data);
 	
 	boolean bindBuffer(GraphicsBuffer buffer);
 	
@@ -88,5 +113,7 @@ public interface Graphics
 	
 	boolean swapBuffers(GraphicsContext context);
 
-	boolean drawElementsRange(int iboOffset, int iboLength);
+	boolean drawElements(DrawMode mode, int count);
+	
+	boolean drawElementsRange(DrawMode mode, int iboOffset, int iboLength);
 }

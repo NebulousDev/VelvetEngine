@@ -10,10 +10,12 @@ import graphics.Graphics;
 import graphics.Mesh;
 import graphics.ShaderProgram;
 import graphics.Texture;
+import graphics.component.LineRenderComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
-import graphics.renderers.PhongRenderer;
+import graphics.system.LineRenderer;
+import graphics.system.PhongRenderer;
 import input.Buttons;
 import input.Input;
 import input.Keys;
@@ -21,6 +23,7 @@ import math.Axis;
 import math.Matrix4f;
 import math.Quaternion;
 import math.Vector3f;
+import math.Vector4f;
 import resource.ResourceManager;
 
 public class Sandbox extends Game
@@ -29,6 +32,7 @@ public class Sandbox extends Game
 	CameraComponent 	cameraComponent;
 	Entity				cameraEntity;
 	PhongRenderer 		phongRenderer;
+	LineRenderer 		lineRenderer;
 	
 	@Override
 	@SuppressWarnings("unused")
@@ -92,28 +96,18 @@ public class Sandbox extends Game
 		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
 		
-		for(int y = 0; y < 10; y++)
-			for(int x = 0; x < 10; x++)
-				getEntityManager().createEntity( new TransformComponent(new Vector3f(20.0f + (y * 5f), 0.0f, (x * 5f))), standardMesh, standatdRender );
+		Entity lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(new Vector3f(0, 0, 0), new Vector3f(0, 1, 0), new Vector4f(0, 1, 1, 1)));
 		
 		/* Setup Camera */
 		
-		//TransformComponent 	cameraTransform 	= new TransformComponent(new Vector3f(2.0f, -2.0f, 15.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());//Quaternion.Rotation(Axis.UP, 90.0f));
-		cameraTransform 	= new TransformComponent(new Vector3f(0f, 0f, 0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());//Quaternion.Rotation(Axis.UP, 90.0f));
+		cameraTransform 	= new TransformComponent(new Vector3f(0f, 0f, 0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
 		cameraComponent 	= new PerspectiveCameraComponent(60.0f, getApplication().getWindow().getAspect(), 0.0001f, 1000f);
-		//CameraComponent 	cameraComponent 	= new OrthoCameraComponent(20f, window.getAspect(), -100f, 100f);
 		cameraEntity		= getEntityManager().createEntity("camera", cameraTransform, cameraComponent);
 		
 		/* Setup Systems */
 		
 		phongRenderer 	= new PhongRenderer(this);
-		
-		/////////////////////////////////////////////////////////////////////////////////////////
-		
-		//int error = 0;
-		//if((error = GL11.glGetError()) != GL11.GL_NO_ERROR)
-		//	System.out.println("GLERROR: " + error);
-		
+		lineRenderer	= new LineRenderer(this);
 	}
 
 	float sensitivity = 0.04f;
@@ -146,9 +140,13 @@ public class Sandbox extends Game
 	
 		Graphics gfx = getGraphics();
 		
-		phongRenderer.begin(gfx, getEntityManager());
-		phongRenderer.render(cameraEntity, gfx,getEntityManager());
-		phongRenderer.end(gfx, getEntityManager());
+		//phongRenderer.begin(gfx, getEntityManager());
+		//phongRenderer.render(cameraEntity, gfx,getEntityManager());
+		//phongRenderer.end(gfx, getEntityManager());
+		
+		lineRenderer.begin(gfx, getEntityManager());
+		lineRenderer.render(cameraEntity, gfx,getEntityManager());
+		lineRenderer.end(gfx, getEntityManager());
 	}
 
 	@Override

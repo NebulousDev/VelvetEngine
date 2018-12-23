@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-import graphics.BufferType;
 import graphics.Graphics;
+import graphics.Graphics.BufferType;
 import graphics.Mesh;
 import graphics.Mesh.SubMesh;
-import math.Vector3f;
 import loaders.obj.OBJBundle;
 import loaders.obj.OBJModel;
 import loaders.obj.OBJParser;
 import loaders.obj.OBJVertex;
+import math.Vector3f;
 import utils.FileUtils;
 
 public class ModelLoader
@@ -64,8 +64,8 @@ public class ModelLoader
 		
 		indexBuffer.put(objModel.indices);
 		
-		gfx.setBufferData(model.vbo, BufferType.GRAPHICS_BUFFER_VERTEX, vertexBuffer.array());
-		gfx.setBufferData(model.ibo, BufferType.GRAPHICS_BUFFER_INDEX, indexBuffer.array());
+		gfx.setBufferData(model.vbo, BufferType.VERTEX, vertexBuffer.array());
+		gfx.setBufferData(model.ibo, BufferType.ELEMENT, indexBuffer.array());
 		
 		for(OBJBundle objBundle : objModel.materialBundles)
 		{

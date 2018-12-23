@@ -168,7 +168,7 @@ public class Application
 	
 	private void run()
 	{
-		// TODO: possibly remove shouldClose() condition
+		// TODO: remove shouldClose() condition?
 		while(running && !window.shouldClose())
 		{
 			Input.getInstance().update();
@@ -176,6 +176,7 @@ public class Application
 			window.clear();
 			
 			game.update();
+			game.render();
 			
 			window.swapBuffers();
 		}
