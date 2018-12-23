@@ -125,6 +125,14 @@ public class Vector4f
 		return this;
 	}
 	
+	public Vector4f mul(Matrix4f mat4)
+	{
+		x = x * mat4.elements[0 + 0 * 4] + y * mat4.elements[1 + 0 * 4] + z * mat4.elements[2 + 0 * 4] + w * mat4.elements[3 + 0 * 4];
+		y = x * mat4.elements[0 + 1 * 4] + y * mat4.elements[1 + 1 * 4] + z * mat4.elements[2 + 1 * 4] + w * mat4.elements[3 + 1 * 4];
+		z = x * mat4.elements[0 + 2 * 4] + y * mat4.elements[1 + 2 * 4] + z * mat4.elements[2 + 2 * 4] + w * mat4.elements[3 + 2 * 4];
+		return this;
+	}
+	
 	public Vector4f mul(Vector4f vec4)
 	{
 		x *= vec4.x;

@@ -11,6 +11,11 @@ public class Matrix4f
 	
 	float[] elements;
 	
+	public Matrix4f()
+	{
+		elements = new float[16];
+	}
+	
 	public Matrix4f(float[] elements)
 	{
 		this.elements = elements;
@@ -19,6 +24,13 @@ public class Matrix4f
 	public Matrix4f copy()
 	{
 		return new Matrix4f(elements);
+	}
+	
+	public Matrix4f mul(float scalar)
+	{
+		for(int i = 0; i < 16; i++)
+			elements[i] *= scalar;
+		return this;
 	}
 	
 	public Matrix4f mul(Matrix4f other)
@@ -41,19 +53,121 @@ public class Matrix4f
 		return this;
 	}
 	
+	// From JOML math library
+	public float determinant() {
+		return    (elements[0 + 0 * 4] * elements[1 + 1 * 4] - elements[0 + 1 * 4] * elements[1 + 0 * 4])
+				* (elements[2 + 2 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 2 * 4])
+				+ (elements[0 + 2 * 4] * elements[1 + 0 * 4] - elements[0 + 0 * 4] * elements[1 + 2 * 4])
+				* (elements[2 + 1 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 1 * 4])
+				+ (elements[0 + 0 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 0 * 4])
+				* (elements[2 + 1 * 4] * elements[3 + 2 * 4] - elements[2 + 2 * 4] * elements[3 + 1 * 4])
+				+ (elements[0 + 1 * 4] * elements[1 + 2 * 4] - elements[0 + 2 * 4] * elements[1 + 1 * 4])
+				* (elements[2 + 0 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 0 * 4])
+				+ (elements[0 + 3 * 4] * elements[1 + 1 * 4] - elements[0 + 1 * 4] * elements[1 + 3 * 4])
+				* (elements[2 + 0 * 4] * elements[3 + 2 * 4] - elements[2 + 2 * 4] * elements[3 + 0 * 4])
+				+ (elements[0 + 2 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 2 * 4])
+				* (elements[2 + 0 * 4] * elements[3 + 1 * 4] - elements[2 + 1 * 4] * elements[3 + 0 * 4]);
+	}
+	
+	// From LWJGL math library
+	public float determinant2()
+	{
+		float result =
+				  elements[0 + 0 * 4] * 
+			    ((elements[1 + 1 * 4] * elements[2 + 2 * 4] * elements[3 + 3 * 4] 
+			    + elements[1 + 2 * 4] * elements[2 + 3 * 4] * elements[3 + 1 * 4] 
+			    + elements[1 + 3 * 4] * elements[2 + 1 * 4] * elements[3 + 2 * 4])
+				- elements[1 + 3 * 4] * elements[2 + 2 * 4] * elements[3 + 1 * 4]
+				- elements[1 + 1 * 4] * elements[2 + 3 * 4] * elements[3 + 2 * 4]
+				- elements[1 + 2 * 4] * elements[2 + 1 * 4] * elements[3 + 3 * 4]);
+		
+		result -= elements[0 + 1 * 4] * 
+				((elements[1 + 0 * 4] * elements[2 + 2 * 4] * elements[3 + 3 * 4]
+				+ elements[1 + 2 * 4] * elements[2 + 3 * 4] * elements[3 + 0 * 4]
+				+ elements[1 + 3 * 4] * elements[2 + 0 * 4] * elements[3 + 2 * 4])
+				- elements[1 + 3 * 4] * elements[2 + 2 * 4] * elements[3 + 0 * 4]
+				- elements[1 + 0 * 4] * elements[2 + 3 * 4] * elements[3 + 2 * 4]
+				- elements[1 + 2 * 4] * elements[2 + 0 * 4] * elements[3 + 3 * 4]);
+		
+		result += elements[0 + 2 * 4] * 
+				((elements[1 + 0 * 4] * elements[2 + 1 * 4] * elements[3 + 3 * 4]
+				+ elements[1 + 1 * 4] * elements[2 + 3 * 4] * elements[3 + 0 * 4]
+				+ elements[1 + 3 * 4] * elements[2 + 0 * 4] * elements[3 + 1 * 4])
+				- elements[1 + 3 * 4] * elements[2 + 1 * 4] * elements[3 + 0 * 4]
+				- elements[1 + 0 * 4] * elements[2 + 3 * 4] * elements[3 + 1 * 4]
+				- elements[1 + 1 * 4] * elements[2 + 0 * 4] * elements[3 + 3 * 4]);
+		
+		result -= elements[0 + 3 * 4] * 
+				((elements[1 + 0 * 4] * elements[2 + 1 * 4] * elements[3 + 2 * 4]
+				+ elements[1 + 1 * 4] * elements[2 + 2 * 4] * elements[3 + 0 * 4]
+				+ elements[1 + 2 * 4] * elements[2 + 0 * 4] * elements[3 + 1 * 4])
+				- elements[1 + 2 * 4] * elements[2 + 1 * 4] * elements[3 + 0 * 4]
+				- elements[1 + 0 * 4] * elements[2 + 2 * 4] * elements[3 + 1 * 4]
+				- elements[1 + 1 * 4] * elements[2 + 0 * 4] * elements[3 + 2 * 4]);
+		
+		return result;
+	}
+	
+	// From JOML math library
+	public Matrix4f inverse()
+	{
+		Matrix4f m = new Matrix4f();
+
+		float a = elements[0 + 0 * 4] * elements[1 + 1 * 4] - elements[0 + 1 * 4] * elements[1 + 0 * 4];
+		float b = elements[0 + 0 * 4] * elements[1 + 2 * 4] - elements[0 + 2 * 4] * elements[1 + 0 * 4];
+		float c = elements[0 + 0 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 0 * 4];
+		float d = elements[0 + 1 * 4] * elements[1 + 2 * 4] - elements[0 + 2 * 4] * elements[1 + 1 * 4];
+		float e = elements[0 + 1 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 1 * 4];
+		float f = elements[0 + 2 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 2 * 4];
+		float g = elements[2 + 0 * 4] * elements[3 + 1 * 4] - elements[2 + 1 * 4] * elements[3 + 0 * 4];
+		float h = elements[2 + 0 * 4] * elements[3 + 2 * 4] - elements[2 + 2 * 4] * elements[3 + 0 * 4];
+		float i = elements[2 + 0 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 0 * 4];
+		float j = elements[2 + 1 * 4] * elements[3 + 2 * 4] - elements[2 + 2 * 4] * elements[3 + 1 * 4];
+		float k = elements[2 + 1 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 1 * 4];
+		float l = elements[2 + 2 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 2 * 4];
+		
+		float det = 1.0f / (a * l - b * k + c * j + d * i - e * h + f * g);
+		
+		float nm00 = (elements[1 + 1 * 4] * l - elements[1 + 2 * 4] * k + elements[1 + 3 * 4] * j) * det;
+		float nm01 = (-elements[0 + 1 * 4] * l + elements[0 + 2 * 4] * k - elements[0 + 3 * 4] * j) * det;
+		float nm02 = (elements[3 + 1 * 4] * f - elements[3 + 2 * 4] * e + elements[3 + 3 * 4] * d) * det;
+		float nm03 = (-elements[2 + 1 * 4] * f + elements[2 + 2 * 4] * e - elements[2 + 3 * 4] * d) * det;
+		float nm10 = (-elements[1 + 0 * 4] * l + elements[1 + 2 * 4] * i - elements[1 + 3 * 4] * h) * det;
+		float nm11 = (elements[0 + 0 * 4] * l - elements[0 + 2 * 4] * i + elements[0 + 3 * 4] * h) * det;
+		float nm12 = (-elements[3 + 0 * 4] * f + elements[3 + 2 * 4] * c - elements[3 + 3 * 4] * b) * det;
+		float nm13 = (elements[2 + 0 * 4] * f - elements[2 + 2 * 4] * c + elements[2 + 3 * 4] * b) * det;
+		float nm20 = (elements[1 + 0 * 4] * k - elements[1 + 1 * 4] * i + elements[1 + 3 * 4] * g) * det;
+		float nm21 = (-elements[0 + 0 * 4] * k + elements[0 + 1 * 4] * i - elements[0 + 3 * 4] * g) * det;
+		float nm22 = (elements[3 + 0 * 4] * e - elements[3 + 1 * 4] * c + elements[3 + 3 * 4] * a) * det;
+		float nm23 = (-elements[2 + 0 * 4] * e + elements[2 + 1 * 4] * c - elements[2 + 3 * 4] * a) * det;
+		float nm30 = (-elements[1 + 0 * 4] * j + elements[1 + 1 * 4] * h - elements[1 + 2 * 4] * g) * det;
+		float nm31 = (elements[0 + 0 * 4] * j - elements[0 + 1 * 4] * h + elements[0 + 2 * 4] * g) * det;
+		float nm32 = (-elements[3 + 0 * 4] * d + elements[3 + 1 * 4] * b - elements[3 + 2 * 4] * a) * det;
+		float nm33 = (elements[2 + 0 * 4] * d - elements[2 + 1 * 4] * b + elements[2 + 2 * 4] * a) * det;
+		
+		m.elements[0 + 0 * 0] = nm00;
+		m.elements[0 + 1 * 4] = nm01;
+		m.elements[0 + 2 * 4] = nm02;
+		m.elements[0 + 3 * 4] = nm03;
+		m.elements[1 + 0 * 4] = nm10;
+		m.elements[1 + 1 * 4] = nm11;
+		m.elements[1 + 2 * 4] = nm12;
+		m.elements[1 + 3 * 4] = nm13;
+		m.elements[2 + 0 * 4] = nm20;
+		m.elements[2 + 1 * 4] = nm21;
+		m.elements[2 + 2 * 4] = nm22;
+		m.elements[2 + 3 * 4] = nm23;
+		m.elements[3 + 0 * 4] = nm30;
+		m.elements[3 + 1 * 4] = nm31;
+		m.elements[3 + 2 * 4] = nm32;
+		m.elements[3 + 3 * 4] = nm33;
+
+		return m;
+	}
+	
 	public void set(float[] elements)
 	{
 		this.elements = elements;
-	}
-	
-	public Vector4f mul(Vector3f position)
-	{
-		return mul(new Vector4f(position, 1.0f)); 
-	}
-	
-	public Vector4f mul(Vector4f position)
-	{
-		return null;	// TODO: DO
 	}
 	
 	public static Matrix4f Identity()
@@ -201,6 +315,20 @@ public class Matrix4f
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
+	}
+	
+	@Override
+	public String toString()
+	{
+		String result = "";
+		for(int y = 0; y < 4; y++)
+		{
+			for(int x = 0; x < 4; x++)
+				result += elements[x + y * 4] + " ";
+			result += "\n";
+		}
+		
+		return result;
 	}
 	
 }
