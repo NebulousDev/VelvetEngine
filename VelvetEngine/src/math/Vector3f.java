@@ -207,6 +207,11 @@ public class Vector3f
 		return new Vector3f(rx, ry, rz);
 	}
 	
+	public Vector2f xy()
+	{
+		return new Vector2f(x, y);
+	}
+	
 	public FloatBuffer toFloatBuffer(boolean flip)
 	{
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(SIZE);

@@ -196,6 +196,34 @@ public class Matrix4f
 		return new Matrix4f(elements);
 	}
 	
+	public static Matrix4f LookAt(Vector3f eye, Vector3f point, Vector3f up)
+	{
+		Vector3f dir = new Vector3f(eye.x - point.x, eye.y - point.y, eye.z - point.z).normalize();
+		Vector3f nleft = up.cross(dir).normalize();
+		Vector3f nup = dir.cross(nleft);
+		
+		Matrix4f result = new Matrix4f();
+		
+		result.elements[0 + 0 * 4] = nleft.x;
+		result.elements[1 + 0 * 4] = nup.x;
+		result.elements[2 + 0 * 4] = dir.x;
+		result.elements[3 + 0 * 4] = 0.0f;
+		result.elements[0 + 1 * 4] = nleft.y;
+		result.elements[1 + 1 * 4] = nup.y;
+		result.elements[2 + 1 * 4] = dir.y;
+		result.elements[3 + 1 * 4] = 0.0f;
+		result.elements[0 + 2 * 4] = nleft.z;
+		result.elements[1 + 2 * 4] = nup.z;
+		result.elements[2 + 2 * 4] = dir.z;
+		result.elements[3 + 2 * 4] = 0.0f;
+		result.elements[0 + 3 * 4] = -(nleft.x * eye.x + nleft.y * eye.y + nleft.z * eye.z);
+		result.elements[1 + 3 * 4] = -(nup.x * eye.x + nup.y * eye.y + nup.z * eye.z);
+		result.elements[2 + 3 * 4] = -(dir.x * eye.x + dir.y * eye.y + dir.z * eye.z);
+		result.elements[3 + 3 * 4] = 1.0f;
+		
+		return result;
+	}
+	
 	public Matrix4f translate(Vector3f position)
 	{
 		elements[0 + 3 * 4] = elements[0 + 3 * 4] + position.x;

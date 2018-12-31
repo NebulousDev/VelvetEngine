@@ -205,6 +205,16 @@ public class Vector4f
 		return (float)Math.sqrt((x * x) + (y * y) + (z * z) + (w * w));
 	}
 	
+	public Vector3f xyz()
+	{
+		return new Vector3f(x, y, z);
+	}
+	
+	public Vector2f xy()
+	{
+		return new Vector2f(x, y);
+	}
+	
 	public FloatBuffer toFloatBuffer(boolean flip)
 	{
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(SIZE);
@@ -230,4 +240,5 @@ public class Vector4f
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
 	}
+	
 }
