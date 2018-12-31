@@ -22,6 +22,7 @@ import input.Keys;
 import math.Axis;
 import math.Matrix4f;
 import math.Quaternion;
+import math.Vector2f;
 import math.Vector3f;
 import math.Vector4f;
 import resource.ResourceManager;
@@ -33,6 +34,8 @@ public class Sandbox extends Game
 	Entity				cameraEntity;
 	PhongRenderer 		phongRenderer;
 	LineRenderer 		lineRenderer;
+	
+	Entity 				lineEntity;
 	
 	@Override
 	@SuppressWarnings("unused")
@@ -96,8 +99,6 @@ public class Sandbox extends Game
 		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
 		
-		Entity lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(new Vector3f(0, 0, 0), new Vector3f(0, 1, 0), new Vector4f(0, 1, 1, 1)));
-		
 		/* Setup Camera */
 		
 		cameraTransform 	= new TransformComponent(new Vector3f(0f, 0f, 0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
@@ -108,12 +109,42 @@ public class Sandbox extends Game
 		
 		phongRenderer 	= new PhongRenderer(this);
 		lineRenderer	= new LineRenderer(this);
+
+
+		lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(cameraTransform.position, getMouseRay(cameraEntity), new Vector4f(0, 1, 1, 1)));
+	
+	
 	}
 
 	float sensitivity = 0.04f;
 	float speed = 0.001f;
 	
 	Matrix4f mvpMatrix = null;
+	
+	public Vector3f getMouseRay(Entity camera)
+	{
+		TransformComponent transformComponent = camera.getComponent(TransformComponent.class);
+		CameraComponent cameraComponent = camera.getComponent(PerspectiveCameraComponent.class);
+		
+		float width = getApplication().getWindow().getWidth();
+		float height = getApplication().getWindow().getHeight();
+		
+		Vector2f mousePosition = Input.getMouseAbsolute();
+		
+		float mousePosNormX = (mousePosition.x * 2.0f) / width - 1.0f;
+		float mousePosNormY = 1.0f - (mousePosition.y * 2.0f) / height;
+
+		Vector3f rayNorm = new Vector3f(mousePosNormX, mousePosNormY, 1.0f);
+		Vector4f rayClip = new Vector4f(rayNorm.x, rayNorm.y, -1.0f, 1.0f);
+		Vector4f rayEye = rayClip.mul(cameraComponent.projection.inverse());
+		rayEye = new Vector4f(rayEye.x, rayEye.y, -1.0f, 1.0f);
+		
+		Matrix4f view = transformComponent.orientation.toMatrix().mul(Matrix4f.Translation(transformComponent.position));
+		
+		Vector4f rayWorld = rayEye.mul(view.inverse()).normalize();
+
+		return rayWorld.xyz();
+	}
 	
 	@Override
 	protected void onUpdate()
@@ -132,7 +163,7 @@ public class Sandbox extends Game
 		if(Input.isMouseCaptured())
 		{
 			cameraTransform.rotate(Axis.UP, Input.getMouseRelative().x * sensitivity);
-			cameraTransform.rotate(cameraTransform.getRight(), Input.getMouseRelative().y * sensitivity);
+			cameraTransform.rotate(cameraTransform.getRight(), Input.getMouseRelative().y * -sensitivity);
 		}
 		
 		if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
@@ -140,9 +171,14 @@ public class Sandbox extends Game
 	
 		Graphics gfx = getGraphics();
 		
-		//phongRenderer.begin(gfx, getEntityManager());
-		//phongRenderer.render(cameraEntity, gfx,getEntityManager());
-		//phongRenderer.end(gfx, getEntityManager());
+		
+		lineEntity.getComponent(LineRenderComponent.class).p1 = cameraTransform.position;
+		lineEntity.getComponent(LineRenderComponent.class).p2 = getMouseRay(cameraEntity);
+		
+		
+		phongRenderer.begin(gfx, getEntityManager());
+		phongRenderer.render(cameraEntity, gfx,getEntityManager());
+		phongRenderer.end(gfx, getEntityManager());
 		
 		lineRenderer.begin(gfx, getEntityManager());
 		lineRenderer.render(cameraEntity, gfx,getEntityManager());

@@ -50,10 +50,16 @@ public class PhongRenderer extends Renderer {
 		CameraComponent cameraComponent = camera.getComponent(PerspectiveCameraComponent.class);
 		TransformComponent transformComponent = camera.getComponent(TransformComponent.class);
 		
-		Matrix4f view = cameraComponent.projection.copy().mul(transformComponent.orientation.toMatrix()).mul(Matrix4f.Translation(transformComponent.position));
-		Matrix4f mvp = null;
+		Matrix4f view = transformComponent.getViewMatrix();
+		Matrix4f perspective = cameraComponent.projection;
+		Matrix4f model = null;
 		
-		GraphicsUniform mvpUniform = graphics.getUniform(shader, "mvp");
+		GraphicsUniform viewUniform = graphics.getUniform(shader, "view");
+		GraphicsUniform perspectiveUniform = graphics.getUniform(shader, "perspective");
+		GraphicsUniform modelUniform = graphics.getUniform(shader, "model");
+		
+		graphics.setUniform(viewUniform, view);
+		graphics.setUniform(perspectiveUniform, perspective);
 		
 		Iterator<Long> iterator = entityManager.getComponentTable().getEntityIterator(PhongRenderComponent.class);
 		
@@ -65,9 +71,8 @@ public class PhongRenderer extends Renderer {
 			
 			Mesh mesh = entityMesh.mesh; 
 
-			mvp = view.copy().mul(entityTransform.getModel());
-			
-			graphics.setUniform(mvpUniform, mvp);
+			model = entityTransform.getModelMatrix();
+			graphics.setUniform(modelUniform, model);
 			
 			graphics.bindBuffer(mesh.vbo);
 			graphics.bindBuffer(mesh.ibo);

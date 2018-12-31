@@ -60,11 +60,17 @@ public class LineRenderer extends Renderer {
 		CameraComponent cameraComponent = camera.getComponent(PerspectiveCameraComponent.class);
 		TransformComponent transformComponent = camera.getComponent(TransformComponent.class);
 		
-		Matrix4f view = cameraComponent.projection.copy().mul(transformComponent.orientation.toMatrix()).mul(Matrix4f.Translation(transformComponent.position));
-		Matrix4f mvp = null;
+		Matrix4f view = transformComponent.getViewMatrix();
+		Matrix4f perspective = cameraComponent.projection;
+		Matrix4f model = null;
 		
-		GraphicsUniform mvpUniform = graphics.getUniform(shader, "mvp");
+		GraphicsUniform viewUniform = graphics.getUniform(shader, "view");
+		GraphicsUniform perspectiveUniform = graphics.getUniform(shader, "perspective");
+		GraphicsUniform modelUniform = graphics.getUniform(shader, "model");
 		GraphicsUniform colorUniform = graphics.getUniform(shader, "color");
+		
+		graphics.setUniform(viewUniform, view);
+		graphics.setUniform(perspectiveUniform, perspective);
 		
 		Iterator<Long> iterator = entityManager.getComponentTable().getEntityIterator(LineRenderComponent.class);
 		
@@ -78,9 +84,8 @@ public class LineRenderer extends Renderer {
 			TransformComponent entityTransform = entityManager.getComponent(TransformComponent.class, entityID);
 			LineRenderComponent lineComponent = entityManager.getComponent(LineRenderComponent.class, entityID);
 			
-			mvp = view.copy().mul(entityTransform.getModel());
-			graphics.setUniform(mvpUniform, mvp);
-			
+			model = entityTransform.getModelMatrix();
+			graphics.setUniform(modelUniform, model);
 			graphics.setUniform(colorUniform, lineComponent.color);
 			
 			GL20.glEnableVertexAttribArray(0);

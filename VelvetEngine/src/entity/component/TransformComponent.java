@@ -88,12 +88,12 @@ public class TransformComponent implements Component {
 		return orientation.getLeft();
 	}
 	
-	public Matrix4f getView()
+	public Matrix4f getViewMatrix()
 	{
-		return Matrix4f.Identity().translate(position).mul(orientation.toMatrix());
+		return Matrix4f.LookAt(position, position.copy().add(getForward()), getUp());
 	}
 	
-	public Matrix4f getModel()
+	public Matrix4f getModelMatrix()
 	{
 		return Matrix4f.Identity().scale(scale).mul(orientation.toMatrix()).translate(position);
 	}
