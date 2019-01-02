@@ -10,7 +10,6 @@ import graphics.Graphics;
 import graphics.Mesh;
 import graphics.ShaderProgram;
 import graphics.Texture;
-import graphics.component.LineRenderComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
@@ -19,13 +18,11 @@ import graphics.system.PhongRenderer;
 import input.Buttons;
 import input.Input;
 import input.Keys;
-import math.Axis;
 import math.Matrix4f;
 import math.Quaternion;
-import math.Vector2f;
 import math.Vector3f;
-import math.Vector4f;
 import resource.ResourceManager;
+import utils.Axis;
 
 public class Sandbox extends Game
 {
@@ -41,6 +38,34 @@ public class Sandbox extends Game
 	@SuppressWarnings("unused")
 	protected void onLoad()
 	{
+//		float[] data = 
+//		{
+//			0.9989685f, 0.0f, -0.04551963f, 0.0f,
+//			0.0f, 1.000005f, 0.0f, 0.0f,
+//			0.04551963f, 0.0f, 0.9989685f, 0.0f,
+//			0.0f, 0.0f, 0.0f, 1.0f
+//		};
+//		
+//		float[] data2 = 
+//		{
+//			1.0f, 2.0f, 3.0f, 0.0f,
+//			4.0f, 5.0f, 6.0f, 0.0f,
+//			7.0f, 8.0f, 9.0f, 0.0f,
+//			0.0f, 0.0f, 0.0f, 1.0f
+//		};
+//		
+//		Matrix4f id = new Matrix4f();
+//		Matrix4f mat1 = new Matrix4f(data2);
+//		
+//		System.out.println("---\n" + id + "\n");
+//		System.out.println(mat1 + "\n");
+//		
+//		Matrix4f result = new Matrix4f();
+//		
+//		id.mul(mat1);
+//		
+//		System.out.println(id + "\n");
+		
 		/* Initialize Resources */
 		
 		Graphics gfx = getGraphics();
@@ -66,12 +91,14 @@ public class Sandbox extends Game
 		
 		class RotatingComponent implements UpdateComponent
 		{
+			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.001f);
+
 			@Override
 			public void update(Game game, Entity entity, float delta)
 			{
 				TransformComponent transform = entity.getComponent(TransformComponent.class);
 				if(transform != null)
-					transform.rotate(Axis.UP, 0.5f);
+					transform.orientation.rotate(rot);
 			}
 			
 			@Override
@@ -85,23 +112,23 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 		
-		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
+		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Quaternion());
 		MeshComponent 			groundMesh 			= new MeshComponent(scene);
 		PhongMaterialComponent 	groundMaterial		= new PhongMaterialComponent();
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
 		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, groundMaterial, groundRender);
 		
-		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 0.0f, 10.0f), new Vector3f(1.0f, 2.0f, 1.0f), Quaternion.Identity());
+		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 0.0f, -10.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
 		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
-		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, groundMaterial, bunnyRender, test);
+		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, groundMaterial, bunnyRender, test);
 		
 		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
 		
 		/* Setup Camera */
 		
-		cameraTransform 	= new TransformComponent(new Vector3f(0f, 0f, 0f), new Vector3f(1.0f, 1.0f, 1.0f), Quaternion.Identity());
+		cameraTransform 	= new TransformComponent(new Vector3f(0f, 0f, 0f), new Vector3f(1.0f, 1.0f, 1.0f), new Quaternion());
 		cameraComponent 	= new PerspectiveCameraComponent(60.0f, getApplication().getWindow().getAspect(), 0.0001f, 1000f);
 		cameraEntity		= getEntityManager().createEntity("camera", cameraTransform, cameraComponent);
 		
@@ -110,9 +137,7 @@ public class Sandbox extends Game
 		phongRenderer 	= new PhongRenderer(this);
 		lineRenderer	= new LineRenderer(this);
 
-
-		lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(cameraTransform.position, getMouseRay(cameraEntity), new Vector4f(0, 1, 1, 1)));
-	
+		//lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(cameraTransform.position, getMouseRay(cameraEntity), new Vector4f(0, 1, 1, 1)));
 	
 	}
 
@@ -121,6 +146,7 @@ public class Sandbox extends Game
 	
 	Matrix4f mvpMatrix = null;
 	
+	/*
 	public Vector3f getMouseRay(Entity camera)
 	{
 		TransformComponent transformComponent = camera.getComponent(TransformComponent.class);
@@ -145,25 +171,32 @@ public class Sandbox extends Game
 
 		return rayWorld.xyz();
 	}
+	*/
+	
+	Quaternion pitch = new Quaternion();
+	Quaternion yaw = new Quaternion();
 	
 	@Override
 	protected void onUpdate()
 	{
-		//if(Input.keyHeld(Keys.KEY_LEFT_SHIFT)) bunnyTransform.position.z += 0.01f;
-		//if(Input.keyHeld(Keys.KEY_LEFT_CONTROL)) bunnyTransform.position.z -= 0.01f;
-		
 		if(Input.keyHeld(Keys.KEY_W)) cameraTransform.position.add(cameraTransform.getForward().mul(speed));
 		if(Input.keyHeld(Keys.KEY_S)) cameraTransform.position.add(cameraTransform.getBack().mul(speed));
 		if(Input.keyHeld(Keys.KEY_A)) cameraTransform.position.add(cameraTransform.getLeft().mul(-speed));
 		if(Input.keyHeld(Keys.KEY_D)) cameraTransform.position.add(cameraTransform.getRight().mul(-speed));
+		
+		if(Input.keyHeld(Keys.KEY_LEFT)) cameraTransform.orientation.rotate(Axis.FORWARD, 0.5f * sensitivity);
+		if(Input.keyHeld(Keys.KEY_RIGHT)) cameraTransform.orientation.rotate(Axis.FORWARD, 0.5f * -sensitivity);
 		
 		if(Input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
 		if(Input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
 		
 		if(Input.isMouseCaptured())
 		{
-			cameraTransform.rotate(Axis.UP, Input.getMouseRelative().x * sensitivity);
-			cameraTransform.rotate(cameraTransform.getRight(), Input.getMouseRelative().y * -sensitivity);
+			pitch.setAxisAngle(Axis.RIGHT, Input.getMouseRelative().y * sensitivity);
+			yaw.setAxisAngle(Axis.UP, Input.getMouseRelative().x * sensitivity);
+			
+			cameraTransform.orientation.rotateLocal(pitch);
+			cameraTransform.orientation.rotate(yaw);
 		}
 		
 		if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
@@ -171,18 +204,16 @@ public class Sandbox extends Game
 	
 		Graphics gfx = getGraphics();
 		
-		
-		lineEntity.getComponent(LineRenderComponent.class).p1 = cameraTransform.position;
-		lineEntity.getComponent(LineRenderComponent.class).p2 = getMouseRay(cameraEntity);
-		
+		//lineEntity.getComponent(LineRenderComponent.class).p1 = cameraTransform.position;
+		//lineEntity.getComponent(LineRenderComponent.class).p2 = getMouseRay(cameraEntity);
 		
 		phongRenderer.begin(gfx, getEntityManager());
 		phongRenderer.render(cameraEntity, gfx,getEntityManager());
 		phongRenderer.end(gfx, getEntityManager());
 		
-		lineRenderer.begin(gfx, getEntityManager());
-		lineRenderer.render(cameraEntity, gfx,getEntityManager());
-		lineRenderer.end(gfx, getEntityManager());
+		//lineRenderer.begin(gfx, getEntityManager());
+		//lineRenderer.render(cameraEntity, gfx,getEntityManager());
+		//lineRenderer.end(gfx, getEntityManager());
 	}
 
 	@Override

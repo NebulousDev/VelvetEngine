@@ -6,7 +6,7 @@ public class PerspectiveCameraComponent extends CameraComponent {
 
 	public PerspectiveCameraComponent(float fov, float aspect, float near, float far)
 	{
-		super(Matrix4f.Perspective(fov, aspect, near, far));
+		super(new Matrix4f().setPerspective(fov, aspect, near, far));
 	}
 
 }

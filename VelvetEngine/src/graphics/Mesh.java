@@ -79,7 +79,10 @@ public class Mesh extends Resource
 			mesh.count = objBundle.count;
 			
 			if(objBundle.material != null)
-				mesh.color = new Vector3f(objBundle.material.diffuse);
+				mesh.color = new Vector3f(
+					objBundle.material.diffuse[0], 
+					objBundle.material.diffuse[1],
+					objBundle.material.diffuse[2]);
 			else mesh.color = new Vector3f(1.0f);
 			
 			subMeshes.add(mesh);

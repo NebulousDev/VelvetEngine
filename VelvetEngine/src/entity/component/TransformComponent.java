@@ -7,9 +7,9 @@ import math.Vector3f;
 
 public class TransformComponent implements Component {
 
-	public Vector3f position;
-	public Vector3f scale;
-	public Quaternion orientation;
+	public Vector3f 	position;
+	public Quaternion 	orientation;
+	public Vector3f 	scale;
 	
 	public TransformComponent(Vector3f position, Vector3f scale, Quaternion orientation)
 	{
@@ -29,33 +29,21 @@ public class TransformComponent implements Component {
 	{
 		this.position = position;
 		this.scale = scale;
-		this.orientation = Quaternion.Identity();
+		this.orientation = new Quaternion();
 	}
 	
 	public TransformComponent(Vector3f position)
 	{
 		this.position = position;
 		this.scale = new Vector3f(1.0f);
-		this.orientation = Quaternion.Identity();
+		this.orientation = new Quaternion();
 	}
 	
 	public TransformComponent()
 	{
 		this.position = new Vector3f(0.0f);
 		this.scale = new Vector3f(1.0f);
-		this.orientation = Quaternion.Identity();
-	}
-	
-	public TransformComponent rotate(Vector3f axis, float angleDeg)
-	{
-		orientation.mul(Quaternion.Rotation(axis, Math.toRadians(angleDeg)));
-		return this;
-	}
-	
-	public TransformComponent rotate(Quaternion orientation)
-	{
-		orientation.mul(orientation);
-		return this;
+		this.orientation = new Quaternion();
 	}
 	
 	public Vector3f getForward()
@@ -88,14 +76,24 @@ public class TransformComponent implements Component {
 		return orientation.getLeft();
 	}
 	
+	public Matrix4f getViewMatrix(Matrix4f dest)
+	{
+		return dest.setRotation(orientation).translate(position);
+	}
+	
 	public Matrix4f getViewMatrix()
 	{
-		return Matrix4f.LookAt(position, position.copy().add(getForward()), getUp());
+		return getViewMatrix(new Matrix4f());
+	}
+	
+	public Matrix4f getModelMatrix(Matrix4f dest)
+	{
+		return dest.setTranslation(position).rotate(orientation).scale(scale);
 	}
 	
 	public Matrix4f getModelMatrix()
 	{
-		return Matrix4f.Identity().scale(scale).mul(orientation.toMatrix()).translate(position);
+		return getViewMatrix(new Matrix4f());
 	}
 	
 }

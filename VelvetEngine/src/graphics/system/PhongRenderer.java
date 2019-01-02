@@ -52,7 +52,7 @@ public class PhongRenderer extends Renderer {
 		
 		Matrix4f view = transformComponent.getViewMatrix();
 		Matrix4f perspective = cameraComponent.projection;
-		Matrix4f model = null;
+		Matrix4f model = new Matrix4f();
 		
 		GraphicsUniform viewUniform = graphics.getUniform(shader, "view");
 		GraphicsUniform perspectiveUniform = graphics.getUniform(shader, "perspective");
@@ -71,7 +71,7 @@ public class PhongRenderer extends Renderer {
 			
 			Mesh mesh = entityMesh.mesh; 
 
-			model = entityTransform.getModelMatrix();
+			entityTransform.getModelMatrix(model);
 			graphics.setUniform(modelUniform, model);
 			
 			graphics.bindBuffer(mesh.vbo);

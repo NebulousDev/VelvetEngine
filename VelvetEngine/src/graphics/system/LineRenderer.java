@@ -62,7 +62,7 @@ public class LineRenderer extends Renderer {
 		
 		Matrix4f view = transformComponent.getViewMatrix();
 		Matrix4f perspective = cameraComponent.projection;
-		Matrix4f model = null;
+		Matrix4f model = new Matrix4f();
 		
 		GraphicsUniform viewUniform = graphics.getUniform(shader, "view");
 		GraphicsUniform perspectiveUniform = graphics.getUniform(shader, "perspective");
@@ -84,7 +84,7 @@ public class LineRenderer extends Renderer {
 			TransformComponent entityTransform = entityManager.getComponent(TransformComponent.class, entityID);
 			LineRenderComponent lineComponent = entityManager.getComponent(LineRenderComponent.class, entityID);
 			
-			model = entityTransform.getModelMatrix();
+			entityTransform.getModelMatrix(model);
 			graphics.setUniform(modelUniform, model);
 			graphics.setUniform(colorUniform, lineComponent.color);
 			
