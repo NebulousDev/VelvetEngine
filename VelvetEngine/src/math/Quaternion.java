@@ -4,212 +4,645 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-public class Quaternion
-{
-	public static final int SIZE 	= 4;
-	public static final int BYTES 	= 4 * Float.BYTES;
+/**
+ * A 4-float quaternion vector
+ * 
+ * @author Ben Ratcliff (NebulousDev)
+ * 
+ * @see Matrix4f
+ * @see Vector4f
+ * @see Vector3f
+ * @see Vector2f
+ */
+
+public class Quaternion {
 	
+	/**
+	 * The x component
+	 */
 	public float x;
+	
+	/**
+	 * The y component
+	 */
 	public float y;
+	
+	/**
+	 * The z component
+	 */
 	public float z;
+	
+	/**
+	 * The w component
+	 */
 	public float w;
 	
+	/**
+	 * Construct a quaternion
+	 */
 	public Quaternion()
 	{
-		this(0,0,0,1);
+		this(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 	
-	public Quaternion(float x, float y, float z, float w)
+	/**
+	 * Construct a quaternion
+	 * 
+	 * @param vx - x component
+	 * @param vy - y component
+	 * @param vz - z component
+	 * @param vw - w component
+	 */
+	public Quaternion(float vx, float vy, float vz, float vw)
 	{
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
+		x = vx;
+		y = vy;
+		z = vz;
+		w = vw;
 	}
 	
-	public Quaternion(Vector3f vec3)
+	/**
+	 * Construct a quaternion
+	 * 
+	 * @param quat - x, y, z, and w components
+	 */
+	public Quaternion(Quaternion quat)
 	{
-		this.x = vec3.x;
-		this.y = vec3.y;
-		this.z = vec3.z;
-		this.w = 1;
+		this(quat.x, quat.y, quat.z, quat.w);
 	}
 	
-	public Quaternion(Vector3f vec3, float w)
+	/**
+	 * Set component values
+	 * 
+	 * @param vx - x component
+	 * @param vy - y component
+	 * @param vz - z component
+	 * @param vw - w component
+	 * 
+	 * @return this
+	 */
+	public Quaternion set(float vx, float vy, float vz, float vw)
 	{
-		this.x = vec3.x;
-		this.y = vec3.y;
-		this.z = vec3.z;
-		this.w = w;
+		x = vx;
+		y = vy;
+		z = vz;
+		w = vw;
+		
+		return this;
 	}
 	
+	/**
+	 * Set component values
+	 * 
+	 * @param quat - x, y, z, w components
+	 * 
+	 * @return this
+	 */
+	public Quaternion set(Quaternion quat)
+	{
+		return set(quat.x, quat.y, quat.z, quat.w);
+	}
+	
+	/**
+	 * Set orientation by axis-angle
+	 * 
+	 * @param ax - x axis
+	 * @param ay - y axis
+	 * @param az - z axis
+	 * @param theta - angle
+	 * 
+	 * @return this
+	 */
+	public Quaternion setAxisAngle(float ax, float ay, float az, float theta)
+	{
+		float halfSin = (float)Math.sin(Math.toRadians(theta) * 0.5f);
+		float halfCos = (float)Math.cos(Math.toRadians(theta) * 0.5f);
+		return set(ax * halfSin, ay * halfSin, az * halfSin, halfCos);
+	}
+	
+	/**
+	 * Set orientation by axis-angle
+	 * 
+	 * @param axis - x, y, and z axis
+	 * @param theta - angle
+	 * 
+	 * @return this
+	 */
+	public Quaternion setAxisAngle(Vector3f axis, float theta)
+	{
+		return setAxisAngle(axis.x, axis.y, axis.z, theta);
+	}
+	
+	/**
+	 * Copy components to destination
+	 * 
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion copy(Quaternion dest)
+	{
+		dest.x = x;
+		dest.y = y;
+		dest.z = z;
+		dest.w = w;
+		
+		return this;
+	}
+	
+	/**
+	 * Copy components to new instance
+	 * 
+	 * @return this
+	 */
 	public Quaternion copy()
 	{
 		return new Quaternion(x, y, z, w);
 	}
 	
-	public static Quaternion Identity()
+	/**
+	 * Multiply quaternions
+	 * 
+	 * @param quat - multiplied quaternion
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion mul(Quaternion quat, Quaternion dest)
 	{
-		return new Quaternion();
-	}
-	
-	public static Quaternion Rotation(Vector3f axis, float angle)
-	{
-		float halfSin = (float)Math.sin(angle / 2.0f);
-		float halfCos = (float)Math.cos(angle / 2.0f);
-		return new Quaternion(axis.x * halfSin, axis.y * halfSin, axis.z * halfSin, halfCos);
-	}
-	
-	public static Quaternion Rotation(Vector3f axis, double angle)
-	{
-		float halfSin = (float)Math.sin(angle / 2.0f);
-		float halfCos = (float)Math.cos(angle / 2.0f);
-		return new Quaternion(axis.x * halfSin, axis.y * halfSin, axis.z * halfSin, halfCos);
-	}
-	
-	public Quaternion set(float x, float y, float z, float w)
-	{
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
+		dest.x = w * quat.x + x * quat.w + y * quat.z - z * quat.y;
+		dest.y = w * quat.y - x * quat.z + y * quat.w + z * quat.x;
+		dest.z = w * quat.z + x * quat.y - y * quat.x + z * quat.w;
+		dest.w = w * quat.w - x * quat.x - y * quat.y - z * quat.z;
+		
 		return this;
 	}
 	
-	public Quaternion set(Quaternion quat)
-	{
-		this.x = quat.x;
-		this.y = quat.y;
-		this.z = quat.z;
-		this.w = quat.w;
-		return this;
-	}
-	
+	/**
+	 * Multiply quaternions
+	 * 
+	 * @param quat - multiplied quaternion
+	 * 
+	 * @return this
+	 */
 	public Quaternion mul(Quaternion quat)
 	{
-		float rx = (x * quat.w) + (w * quat.x) + (y * quat.z) - (z * quat.y);
-		float ry = (y * quat.w) + (w * quat.y) + (z * quat.x) - (x * quat.z);
-		float rz = (z * quat.w) + (w * quat.z) + (x * quat.y) - (y * quat.x);
-		float rw = (w * quat.w) - (x * quat.x) - (y * quat.y) - (z * quat.z);
-
-		x = rx;
-		y = ry;
-		z = rz;
-		w = rw;
+		return mul(quat, this);
+	}
+	
+	/**
+	 * Rotate quaternion on local axis
+	 * 
+	 * @param quat - orientation
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotateLocal(Quaternion quat, Quaternion dest)
+	{
+		quat.mul(this, dest);
+		return this;
+	}
+	
+	/**
+	 * Rotate quaternion by local orientation
+	 * 
+	 * @param quat - orientation
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotateLocal(Quaternion quat)
+	{
+		return rotateLocal(quat, this);
+	}
+	
+	/**
+	 * Rotate quaternion by orientation
+	 * 
+	 * @param quat - orientation
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotate(Quaternion quat, Quaternion dest)
+	{
+		this.mul(quat, dest);
+		return this;
+	}
+	
+	/**
+	 * Rotate quaternion by orientation
+	 * 
+	 * @param quat - orientation
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotate(Quaternion quat)
+	{
+		return rotate(quat, this);
+	}
+	
+	/**
+	 * Rotate by axis-angle
+	 * 
+	 * @param ax - x axis
+	 * @param ay - y axis
+	 * @param az - z axis
+	 * @param theta - angle
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotate(float ax, float ay, float az, float theta, Quaternion dest)
+	{
+		float halfAngle = (float)Math.toRadians(theta) * 0.5f;
+		float halfSin = (float)Math.sin(halfAngle);
+		float halfCos = (float)Math.cos(halfAngle);
+		float inverse = 1.0f / magnitude();
+		
+		float rx = ax * inverse * halfSin;
+		float ry = ay * inverse * halfSin;
+		float rz = az * inverse * halfSin;
+		float rw = halfCos;
+		
+		dest.x = w * rx + x * rw + y * rz - z * ry;
+		dest.y = w * ry - x * rz + y * rw + z * rx;
+		dest.z = w * rz + x * ry - y * rx + z * rw;
+		dest.w = w * rw - x * rx - y * ry - z * rz;
 		
 		return this;
 	}
 	
-	public Quaternion mul(Vector3f vec3)
+	/**
+	 * Rotate by axis-angle
+	 * 
+	 * @param axis - x, y, and z axis
+	 * @param theta - angle
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotate(Vector3f axis, float theta, Quaternion dest)
 	{
-		float rx = ( w * vec3.x) + (y * vec3.z) - (z * vec3.y);
-		float ry = ( w * vec3.y) + (z * vec3.x) - (x * vec3.z);
-		float rz = ( w * vec3.z) + (x * vec3.y) - (y * vec3.x);
-		float rw = (-x * vec3.x) - (y * vec3.y) - (z * vec3.z);
-		
-		x = rx;
-		y = ry;
-		z = rz;
-		w = rw;
+		return rotate(axis.x, axis.y, axis.z, theta, dest);
+	}
+	
+	/**
+	 * Rotate by axis-angle
+	 * 
+	 * @param axis - x, y, and z axis
+	 * @param theta - angle
+	 * 
+	 * @return this
+	 */
+	public Quaternion rotate(Vector3f axis, float theta)
+	{
+		return rotate(axis.x, axis.y, axis.z, theta, this);
+	}
+
+	/**
+	 * Conjugate quaternion
+	 * 
+	 * @param dest - result quaternion
+	 * 
+	 * @return this
+	 */
+	public Quaternion conjugate(Quaternion dest)
+	{
+		dest.x = -x;
+		dest.y = -y;
+		dest.z = -z;
 		
 		return this;
 	}
 	
-	public Vector3f getForward()
-	{
-		return new Vector3f(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y)).normalize();
-	}
-
-	public Vector3f getBack()
-	{
-		return new Vector3f(-2.0f * (x * z - w * y), -2.0f * (y * z + w * x), -(1.0f - 2.0f * (x * x + y * y))).normalize();
-	}
-
-	public Vector3f getUp()
-	{
-		return new Vector3f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x)).normalize();
-	}
-
-	public Vector3f getDown()
-	{
-		return new Vector3f(-2.0f * (x * y + w * z), -(1.0f - 2.0f * (x * x + z * z)), -2.0f * (y * z - w * x)).normalize();
-	}
-
-	public Vector3f getRight()
-	{
-		return new Vector3f(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y)).normalize();
-	}
-
-	public Vector3f getLeft()
-	{
-		return new Vector3f(-(1.0f - 2.0f * (y * y + z * z)), -2.0f * (x * y - w * z), -2.0f * (x * z + w * y)).normalize();
-	}
-	
-	public Quaternion normalize()
-	{
-		float magnitude = length();
-		x /= magnitude;
-		y /= magnitude;
-		z /= magnitude;
-		w /= magnitude;
-		return this;
-	}
-	
-	public float length()
-	{
-		return (float)Math.sqrt((x * x) + (y * y) + (z * z) + (w * w));
-	}
-	
+	/**
+	 * Conjugate quaternion
+	 * 
+	 * @return this
+	 */
 	public Quaternion conjugate()
 	{
-		x = -x;
-		y = -y;
-		z = -z;
+		return conjugate(this);
+	}
+	
+	/**
+     * Get forward vector
+     * 
+     * @param dest - result vector
+     * 
+     * @return this
+     * 
+     * @see Vector3f
+     */
+	public Quaternion getForward(Vector3f dest)
+	{
+		dest.set(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
 		return this;
 	}
 	
-	//TODO: look into using rotate getters for this:
+	/**
+     * Get forward vector
+     * 
+     * @return forward
+     * 
+     * @see Vector3f
+     */
+	public Vector3f getForward()
+	{
+		return new Vector3f(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
+	}
+	
+	/**
+     * Get back vector
+     * 
+     * @param dest - result vector
+     * 
+     * @return this
+     * 
+     * @see Vector3f
+     */
+	public Quaternion getBack(Vector3f dest)
+	{
+		dest.set(-2.0f * (x * z - w * y), -2.0f * (y * z + w * x), -(1.0f - 2.0f * (x * x + y * y)));
+		return this;
+	}
+
+	/**
+     * Get back vector
+     * 
+     * @return back
+     * 
+     * @see Vector3f
+     */
+	public Vector3f getBack()
+	{
+		return new Vector3f(-2.0f * (x * z - w * y), -2.0f * (y * z + w * x), -(1.0f - 2.0f * (x * x + y * y)));
+	}
+	
+	/**
+     * Get up vector
+     * 
+     * @param dest - result vector
+     * 
+     * @return this
+     * 
+     * @see Vector3f
+     */
+	public Quaternion getUp(Vector3f dest)
+	{
+		dest.set(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
+		return this;
+	}
+
+	/**
+     * Get up vector
+     * 
+     * @return up
+     * 
+     * @see Vector3f
+     */
+	public Vector3f getUp()
+	{
+		return new Vector3f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
+	}
+
+	/**
+     * Get down vector
+     * 
+     * @param dest - result vector
+     * 
+     * @return this
+     * 
+     * @see Vector3f
+     */
+	public Quaternion getDown(Vector3f dest)
+	{
+		dest.set(-2.0f * (x * y + w * z), -(1.0f - 2.0f * (x * x + z * z)), -2.0f * (y * z - w * x));
+		return this;
+	}
+	
+	/**
+     * Get down vector
+     * 
+     * @return down
+     * 
+     * @see Vector3f
+     */
+	public Vector3f getDown()
+	{
+		return new Vector3f(-2.0f * (x * y + w * z), -(1.0f - 2.0f * (x * x + z * z)), -2.0f * (y * z - w * x));
+	}
+
+	/**
+     * Get right vector
+     * 
+     * @param dest - result vector
+     * 
+     * @return this
+     * 
+     * @see Vector3f
+     */
+	public Quaternion getRight(Vector3f dest)
+	{
+		dest.set(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y));
+		return this;
+	}
+	
+	/**
+     * Get right vector
+     * 
+     * @return right
+     * 
+     * @see Vector3f
+     */
+	public Vector3f getRight()
+	{
+		return new Vector3f(1.0f - 2.0f * (y * y + z * z), 2.0f * (x * y - w * z), 2.0f * (x * z + w * y));
+	}
+	
+	/**
+     * Get left vector
+     * 
+     * @param dest - result vector
+     * 
+     * @return this
+     * 
+     * @see Vector3f
+     */
+	public Quaternion getLeft(Vector3f dest)
+	{
+		dest.set(-(1.0f - 2.0f * (y * y + z * z)), -2.0f * (x * y - w * z), -2.0f * (x * z + w * y));
+		return this;
+	}
+
+	/**
+     * Get left vector
+     * 
+     * @return left
+     * 
+     * @see Vector3f
+     */
+	public Vector3f getLeft()
+	{
+		return new Vector3f(-(1.0f - 2.0f * (y * y + z * z)), -2.0f * (x * y - w * z), -2.0f * (x * z + w * y));
+	}
+	
+	/**
+	 * The squared magnitude
+	 * 
+	 * @return magnitude
+	 */
+	public float magnitudeSquared()
+	{
+		return x * x + y * y + z * z + w * w;
+	}
+	
+	/**
+	 * The magnitude
+	 * 
+	 * @return magnitude
+	 */
+	public float magnitude()
+	{
+		return (float)Math.sqrt((double)magnitudeSquared() + 0.5);
+	}
+	
+	/**
+	 * Normalize components
+	 * 
+	 * @param dest - result vector
+	 * 
+	 * @return this
+	 */
+	public Quaternion normalize(Quaternion dest)
+	{
+		float inv = 1.0f / magnitude();
+		dest.x = x * inv;
+		dest.y = y * inv;
+		dest.z = z * inv;
+		dest.w = w * inv;
+		
+		return this;
+	}
+	
+	/**
+	 * Normalize components
+	 * 
+	 * @return this
+	 */
+	public Quaternion normalize()
+	{
+		return normalize(this);
+	}
+	
+	/**
+	 * Return quaternion as a Vector4f
+	 * 
+	 * @return quaternion vector
+	 */
+	public Vector4f toVector4f()
+	{
+		return new Vector4f(x, y, z, w);
+	}
+
+	/**
+	 * Compute rotation matrix
+	 * 
+	 * @param dest - result vector
+	 * 
+	 * @return this
+	 */
+	public Quaternion toMatrix(Matrix4f dest)
+	{
+		dest.elements[0 + 0 * 4] = 1.0f - 2.0f * (y * y + z * z);
+		dest.elements[0 + 1 * 4] = 2.0f * (x * y - w * z);
+		dest.elements[0 + 2 * 4] = 2.0f * (x * z + w * y);
+		dest.elements[0 + 3 * 4] = 0.0f;
+
+		dest.elements[1 + 0 * 4] = 2.0f * (x * y + w * z);
+		dest.elements[1 + 1 * 4] = 1.0f - 2.0f * (x * x + z * z);
+		dest.elements[1 + 2 * 4] = 2.0f * (y * z - w * x);
+		dest.elements[1 + 3 * 4] = 0.0f;
+		
+		dest.elements[2 + 0 * 4] = 2.0f * (x * z - w * y);
+		dest.elements[2 + 1 * 4] = 2.0f * (y * z + w * x);
+		dest.elements[2 + 2 * 4] = 1.0f - 2.0f * (x * x + y * y);
+		dest.elements[2 + 3 * 4] = 0.0f;
+		
+		dest.elements[3 + 0 * 4] = 0.0f;
+		dest.elements[3 + 1 * 4] = 0.0f;
+		dest.elements[3 + 2 * 4] = 0.0f;
+		dest.elements[3 + 3 * 4] = 1.0f;
+		
+		return this;
+	}
+	
+	/**
+	 * Computer and return rotation matrix
+	 * 
+	 * @return this
+	 */
 	public Matrix4f toMatrix()
 	{
-		float[] elements = new float[]
-		{
-			1.0f - 2.0f * (y * y + z * z), 	2.0f * (x * y + w * z),			2.0f * (x * z - w * y),			0,
-			2.0f * (x * y - w * z),			1.0f - 2.0f * (x * x + z * z),	2.0f * (y * z + w * x),			0,
-			2.0f * (x * z + w * y),			2.0f * (y * z - w * x),			1.0f - 2.0f * (x * x + y * y),	0,
-			0,								0,								0,								1
-		};
-		
-		return new Matrix4f(elements);
+		Matrix4f result = new Matrix4f();
+		toMatrix(result);
+		return result;
 	}
 	
-	public Matrix4f toMatrix(Matrix4f mat4f)
+	/**
+	 * The size in bytes
+	 * 
+	 * @return size
+	 */
+	public int sizeInBytes()
 	{
-		mat4f.elements[0 + 0 * 4] = 1.0f - 2.0f * (y * y + z * z);
-		mat4f.elements[0 + 1 * 4] = 2.0f * (x * y - w * z);
-		mat4f.elements[0 + 2 * 4] = 2.0f * (x * z + w * y);
-		mat4f.elements[0 + 3 * 4] = 0.0f;
-
-		mat4f.elements[1 + 0 * 4] = 2.0f * (x * y + w * z);
-		mat4f.elements[1 + 1 * 4] = 1.0f - 2.0f * (x * x + z * z);
-		mat4f.elements[1 + 2 * 4] = 2.0f * (y * z - w * x);
-		mat4f.elements[1 + 3 * 4] = 0.0f;
-		
-		mat4f.elements[2 + 0 * 4] = 2.0f * (x * z - w * y);
-		mat4f.elements[2 + 1 * 4] = 2.0f * (y * z + w * x);
-		mat4f.elements[2 + 2 * 4] = 1.0f - 2.0f * (x * x + y * y);
-		mat4f.elements[2 + 3 * 4] = 0.0f;
-		
-		mat4f.elements[3 + 0 * 4] = 0.0f;
-		mat4f.elements[3 + 1 * 4] = 0.0f;
-		mat4f.elements[3 + 2 * 4] = 0.0f;
-		mat4f.elements[3 + 3 * 4] = 1.0f;
-		
-		return mat4f;
+		return Float.SIZE * 4;
 	}
 	
+	/**
+	 * Store components in a FloatBuffer
+	 * 
+	 * @param flip - automatically flip the buffer
+	 * 
+	 * @return this
+	 * 
+	 * @see FloatBuffer
+	 */
+	public Quaternion putFloatBuffer(FloatBuffer buffer, boolean flip)
+	{
+		buffer.put(x);
+		buffer.put(y);
+		buffer.put(z);
+		buffer.put(w);
+		if(flip) buffer.flip();
+		return this;
+	}
+	
+	/**
+	 * Store components in a FloatBuffer
+	 * 
+	 * @return this
+	 * 
+	 * @see FloatBuffer
+	 */
+	public Quaternion putFloatBuffer(FloatBuffer buffer)
+	{
+		return putFloatBuffer(buffer, false);
+	}
+	
+	/**
+	 * Return new FloatBuffer of components
+	 * 
+	 * @param flip - automatically flip the buffer
+	 * 
+	 * @return new buffer
+	 * 
+	 * @see FloatBuffer
+	 */
 	public FloatBuffer toFloatBuffer(boolean flip)
 	{
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(SIZE);
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(sizeInBytes());
 		buffer.put(x);
 		buffer.put(y);
 		buffer.put(z);
@@ -218,19 +651,25 @@ public class Quaternion
 		return buffer;
 	}
 	
+	/**
+	 * Return new FloatBuffer of components
+	 * 
+	 * @return new buffer
+	 * 
+	 * @see FloatBuffer
+	 */
 	public FloatBuffer toFloatBuffer()
 	{
 		return toFloatBuffer(false);
 	}
 	
-	public float[] toArray()
-	{
-		return new float[] { x, y, z, w };
-	}
-	
+	/**
+	 * Return string value
+	 */
 	@Override
 	public String toString()
 	{
 		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
 	}
+	
 }
