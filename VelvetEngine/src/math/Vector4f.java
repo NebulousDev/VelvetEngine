@@ -798,12 +798,25 @@ public class Vector4f {
 	 * 
 	 * @see Matrix4f
 	 */
+	public Vector4f mul(Matrix4f mat4f, Vector4f dest)
+	{
+		dest.x = mat4f.elements[0 + 0 * 4] * x + mat4f.elements[0 + 1 * 4] * y + mat4f.elements[0 + 2 * 4] * z + mat4f.elements[0 + 3 * 4] * w;
+		dest.y = mat4f.elements[1 + 0 * 4] * x + mat4f.elements[1 + 1 * 4] * y + mat4f.elements[1 + 2 * 4] * z + mat4f.elements[1 + 3 * 4] * w;
+		dest.z = mat4f.elements[2 + 0 * 4] * x + mat4f.elements[2 + 1 * 4] * y + mat4f.elements[2 + 2 * 4] * z + mat4f.elements[2 + 3 * 4] * w;
+		dest.w = mat4f.elements[3 + 0 * 4] * x + mat4f.elements[3 + 1 * 4] * y + mat4f.elements[3 + 2 * 4] * z + mat4f.elements[3 + 3 * 4] * w;
+		return this;
+	}
+	
+	/**
+	 * Multiply by Matrix4f
+	 * 
+	 * @return this
+	 * 
+	 * @see Matrix4f
+	 */
 	public Vector4f mul(Matrix4f mat4f)
 	{
-		x = x * mat4f.elements[0 + 0 * 4] + y * mat4f.elements[1 + 0 * 4] + z * mat4f.elements[2 + 0 * 4] + w * mat4f.elements[3 + 0 * 4];
-		y = x * mat4f.elements[0 + 1 * 4] + y * mat4f.elements[1 + 1 * 4] + z * mat4f.elements[2 + 1 * 4] + w * mat4f.elements[3 + 1 * 4];
-		z = x * mat4f.elements[0 + 2 * 4] + y * mat4f.elements[1 + 2 * 4] + z * mat4f.elements[2 + 2 * 4] + w * mat4f.elements[3 + 2 * 4];
-		return this;
+		return mul(mat4f, this);
 	}
 	
 	/**

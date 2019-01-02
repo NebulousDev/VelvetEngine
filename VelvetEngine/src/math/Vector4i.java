@@ -789,6 +789,36 @@ public class Vector4i {
 	}
 	
 	/**
+	 * Multiply by Matrix4f
+	 * 
+	 * @param mat4 - transformation
+	 * 
+	 * @return this
+	 * 
+	 * @see Matrix4f
+	 */
+	public Vector4i mul(Matrix4f mat4f, Vector4i dest)
+	{
+		dest.x = (int)(mat4f.elements[0 + 0 * 4] * x + mat4f.elements[0 + 1 * 4] * y + mat4f.elements[0 + 2 * 4] * z + mat4f.elements[0 + 3 * 4] * w);
+		dest.y = (int)(mat4f.elements[1 + 0 * 4] * x + mat4f.elements[1 + 1 * 4] * y + mat4f.elements[1 + 2 * 4] * z + mat4f.elements[1 + 3 * 4] * w);
+		dest.z = (int)(mat4f.elements[2 + 0 * 4] * x + mat4f.elements[2 + 1 * 4] * y + mat4f.elements[2 + 2 * 4] * z + mat4f.elements[2 + 3 * 4] * w);
+		dest.w = (int)(mat4f.elements[3 + 0 * 4] * x + mat4f.elements[3 + 1 * 4] * y + mat4f.elements[3 + 2 * 4] * z + mat4f.elements[3 + 3 * 4] * w);
+		return this;
+	}
+	
+	/**
+	 * Multiply by Matrix4f
+	 * 
+	 * @return this
+	 * 
+	 * @see Matrix4f
+	 */
+	public Vector4i mul(Matrix4f mat4f)
+	{
+		return mul(mat4f, this);
+	}
+	
+	/**
 	 * Multiply component values
 	 * 
 	 * @param vx - x component
