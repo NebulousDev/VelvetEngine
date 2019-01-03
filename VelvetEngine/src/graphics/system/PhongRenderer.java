@@ -20,6 +20,7 @@ import graphics.ShaderProgram;
 import graphics.component.DirectionalLightComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongRenderComponent;
+import graphics.component.PointLightComponent;
 import math.Matrix4f;
 
 public class PhongRenderer extends Renderer {
@@ -60,20 +61,48 @@ public class PhongRenderer extends Renderer {
 		graphics.setUniform(graphics.getUniform(shader, "view"), view);
 		graphics.setUniform(graphics.getUniform(shader, "perspective"), perspective);
 		
+		// DirectionalLights
+		
 		Iterator<DirectionalLightComponent> dirLightIterator 
 			= entityManager.getComponentTable().getComponentIterator(DirectionalLightComponent.class);
 		
-		int dirLightCount = 0;
-		while(dirLightIterator.hasNext())
+		if(dirLightIterator != null)	// TODO: getIterator should return blank not null
 		{
-			DirectionalLightComponent dirLight = dirLightIterator.next();
-			graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].direction"), dirLight.direction);
-			graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].color"), dirLight.color);
-			graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].intensity"), dirLight.intensity);
-			dirLightCount++;
+			int dirLightCount = 0;
+			while(dirLightIterator.hasNext())
+			{
+				DirectionalLightComponent dirLight = dirLightIterator.next();
+				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].direction"), dirLight.direction);
+				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].color"), dirLight.color);
+				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].intensity"), dirLight.intensity);
+				dirLightCount++;
+			}
+			
+			graphics.setUniform(graphics.getUniform(shader, "dirLightCount"), dirLightCount);
 		}
 		
-		graphics.setUniform(graphics.getUniform(shader, "dirLightCount"), dirLightCount);
+		
+		// Point Lights
+		
+		Iterator<PointLightComponent> pointLightIterator 
+			= entityManager.getComponentTable().getComponentIterator(PointLightComponent.class);
+	
+		if(pointLightIterator != null)
+		{
+			int pointLightCount = 0;
+			while(pointLightIterator.hasNext())
+			{
+				PointLightComponent pointLight = pointLightIterator.next();
+				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].position"), pointLight.position);
+				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].attenuation"), pointLight.attenuation);
+				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].color"), pointLight.color);
+				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].intensity"), pointLight.intensity);
+				pointLightCount++;
+			}
+			
+			graphics.setUniform(graphics.getUniform(shader, "pointLightCount"), pointLightCount);
+		}
+		
 		
 		Iterator<Long> iterator = entityManager.getComponentTable().getEntityIterator(PhongRenderComponent.class);
 		

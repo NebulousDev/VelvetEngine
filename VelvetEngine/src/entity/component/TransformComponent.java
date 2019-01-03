@@ -88,7 +88,8 @@ public class TransformComponent implements Component {
 	
 	public Matrix4f getModelMatrix(Matrix4f dest)
 	{
-		return dest.setTranslation(position).rotate(orientation).scale(scale);
+		//TODO: fix scale
+		return dest.setTranslation(position).rotate(orientation).mul(new Matrix4f().setScale(scale));
 	}
 	
 	public Matrix4f getModelMatrix()

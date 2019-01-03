@@ -15,6 +15,7 @@ import graphics.component.LineRenderComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
+import graphics.component.PointLightComponent;
 import graphics.system.LineRenderer;
 import graphics.system.PhongRenderer;
 import input.Buttons;
@@ -38,7 +39,6 @@ public class Sandbox extends Game
 	Entity				cameraEntity;
 	
 	Entity 				lineEntity;
-	Entity				dirLightEntity;
 	
 	@Override
 	@SuppressWarnings("unused")
@@ -71,7 +71,8 @@ public class Sandbox extends Game
 		
 		/* Load Resources */
 		
-		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "testscene");
+//		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "testscene");
+		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "sponza");
 		Mesh  			standard 	= resourceManager.getResource(Mesh.class, "standard");
 		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "bunny");
 		Texture 		texture 	= resourceManager.getResource(Texture.class, "default2");
@@ -84,7 +85,7 @@ public class Sandbox extends Game
 		
 		class RotatingComponent implements UpdateComponent
 		{
-			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.005f);
+			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.01f);
 
 			@Override
 			public void update(Game game, Entity entity, float delta)
@@ -105,7 +106,7 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 		
-		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Quaternion());
+		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.01f, 0.01f, 0.01f), new Quaternion());
 		MeshComponent 			groundMesh 			= new MeshComponent(scene);
 		PhongMaterialComponent 	groundMaterial		= new PhongMaterialComponent();
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
@@ -121,12 +122,43 @@ public class Sandbox extends Game
 		
 		/* Setup Lights */
 		
-		Vector3f direction = new Vector3f(0.0f, 1.0f, -0.5f);
+		Vector3f direction = new Vector3f(0.0f, -1.0f, 0.5f);
 		Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
-		float intensity = 1.0f;
-		DirectionalLightComponent dirLightComponent = new DirectionalLightComponent(direction, color, intensity);
+		float intensity = 0.1f;
+		DirectionalLightComponent dirLightComponent1 = new DirectionalLightComponent(direction, color, intensity);
 		
-		dirLightEntity = getEntityManager().createEntity("dirLight1", dirLightComponent);
+		Vector3f direction2 = new Vector3f(0.0f, -1.0f, -0.8f);
+		Vector3f color2 = new Vector3f(0.1f, 0.1f, 1.0f);
+		float intensity2 = 0.1f;
+		DirectionalLightComponent dirLightComponent2 = new DirectionalLightComponent(direction2, color2, intensity2);
+		
+		Entity dirLight1Entity = getEntityManager().createEntity("dirLight1", dirLightComponent1);
+		Entity dirLight2Entity = getEntityManager().createEntity("dirLight2", dirLightComponent2);
+		
+		Vector3f position3 = new Vector3f(-5.0f, 1.0f, 0.0f);
+		Vector3f color3 = new Vector3f(1.0f, 0.0f, 0.0f);
+		Vector3f attenuation3 = new Vector3f(10.0f, 0.01f, 1.0f);
+		float intensity3 = 10.0f;
+		PointLightComponent pointLightComponnet1 = new PointLightComponent(attenuation3, color3, intensity3);
+		pointLightComponnet1.position = position3;
+		
+		Vector3f position4 = new Vector3f(0.0f, 1.0f, 0.0f);
+		Vector3f color4 = new Vector3f(0.0f, 1.0f, 0.0f);
+		Vector3f attenuation4 = new Vector3f(10.0f, 0.01f, 1.0f);
+		float intensity4 = 10.0f;
+		PointLightComponent pointLightComponnet2 = new PointLightComponent(attenuation4, color4, intensity4);
+		pointLightComponnet2.position = position4;
+		
+		Vector3f position5 = new Vector3f(5.0f, 1.0f, 0.0f);
+		Vector3f color5 = new Vector3f(0.0f, 0.0f, 1.0f);
+		Vector3f attenuation5 = new Vector3f(10.0f, 0.01f, 1.0f);
+		float intensity5 = 10.0f;
+		PointLightComponent pointLightComponnet3 = new PointLightComponent(attenuation5, color5, intensity5);
+		pointLightComponnet3.position = position5;
+		
+		Entity pointLight1Entity = getEntityManager().createEntity("pointLight1", pointLightComponnet1);
+		Entity pointLight2Entity = getEntityManager().createEntity("pointLight2", pointLightComponnet2);
+		Entity pointLight3Entity = getEntityManager().createEntity("pointLight3", pointLightComponnet3);
 		
 		/* Setup Camera */
 		
