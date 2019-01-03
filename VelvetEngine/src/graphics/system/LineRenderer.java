@@ -34,7 +34,7 @@ public class LineRenderer extends Renderer {
 	@Override
 	public void begin(Graphics graphics, EntityManager entityManager)
 	{
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LESS);
 		//GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_CULL_FACE);

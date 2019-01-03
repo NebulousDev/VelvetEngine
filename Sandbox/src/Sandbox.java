@@ -10,6 +10,8 @@ import graphics.Graphics;
 import graphics.Mesh;
 import graphics.ShaderProgram;
 import graphics.Texture;
+import graphics.component.DirectionalLightComponent;
+import graphics.component.LineRenderComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
@@ -20,19 +22,23 @@ import input.Input;
 import input.Keys;
 import math.Matrix4f;
 import math.Quaternion;
+import math.Vector2f;
 import math.Vector3f;
+import math.Vector4f;
 import resource.ResourceManager;
 import utils.Axis;
 
 public class Sandbox extends Game
 {
+	PhongRenderer 		phongRenderer;
+	LineRenderer 		lineRenderer;
+
 	TransformComponent 	cameraTransform;
 	CameraComponent 	cameraComponent;
 	Entity				cameraEntity;
-	PhongRenderer 		phongRenderer;
-	LineRenderer 		lineRenderer;
 	
 	Entity 				lineEntity;
+	Entity				dirLightEntity;
 	
 	@Override
 	@SuppressWarnings("unused")
@@ -40,31 +46,18 @@ public class Sandbox extends Game
 	{
 //		float[] data = 
 //		{
-//			0.9989685f, 0.0f, -0.04551963f, 0.0f,
-//			0.0f, 1.000005f, 0.0f, 0.0f,
-//			0.04551963f, 0.0f, 0.9989685f, 0.0f,
-//			0.0f, 0.0f, 0.0f, 1.0f
-//		};
-//		
-//		float[] data2 = 
-//		{
 //			1.0f, 2.0f, 3.0f, 0.0f,
 //			4.0f, 5.0f, 6.0f, 0.0f,
 //			7.0f, 8.0f, 9.0f, 0.0f,
 //			0.0f, 0.0f, 0.0f, 1.0f
 //		};
-//		
+//				
 //		Matrix4f id = new Matrix4f();
-//		Matrix4f mat1 = new Matrix4f(data2);
+//		Matrix4f mat = new Matrix4f(data);
+//		Matrix4f mat = new Matrix4f(id.elements);
 //		
-//		System.out.println("---\n" + id + "\n");
-//		System.out.println(mat1 + "\n");
-//		
-//		Matrix4f result = new Matrix4f();
-//		
-//		id.mul(mat1);
-//		
-//		System.out.println(id + "\n");
+//		System.out.println(mat);
+//		System.out.println(mat.invert());
 		
 		/* Initialize Resources */
 		
@@ -91,7 +84,7 @@ public class Sandbox extends Game
 		
 		class RotatingComponent implements UpdateComponent
 		{
-			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.001f);
+			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.005f);
 
 			@Override
 			public void update(Game game, Entity entity, float delta)
@@ -126,6 +119,15 @@ public class Sandbox extends Game
 		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
 		
+		/* Setup Lights */
+		
+		Vector3f direction = new Vector3f(0.0f, 1.0f, -0.5f);
+		Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
+		float intensity = 1.0f;
+		DirectionalLightComponent dirLightComponent = new DirectionalLightComponent(direction, color, intensity);
+		
+		dirLightEntity = getEntityManager().createEntity("dirLight1", dirLightComponent);
+		
 		/* Setup Camera */
 		
 		cameraTransform 	= new TransformComponent(new Vector3f(0f, 0f, 0f), new Vector3f(1.0f, 1.0f, 1.0f), new Quaternion());
@@ -137,16 +139,10 @@ public class Sandbox extends Game
 		phongRenderer 	= new PhongRenderer(this);
 		lineRenderer	= new LineRenderer(this);
 
-		//lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(cameraTransform.position, getMouseRay(cameraEntity), new Vector4f(0, 1, 1, 1)));
+		lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(cameraTransform.position, getMouseRay(cameraEntity), new Vector4f(0, 1, 1, 1)));
 	
 	}
 
-	float sensitivity = 0.04f;
-	float speed = 0.001f;
-	
-	Matrix4f mvpMatrix = null;
-	
-	/*
 	public Vector3f getMouseRay(Entity camera)
 	{
 		TransformComponent transformComponent = camera.getComponent(TransformComponent.class);
@@ -159,19 +155,36 @@ public class Sandbox extends Game
 		
 		float mousePosNormX = (mousePosition.x * 2.0f) / width - 1.0f;
 		float mousePosNormY = 1.0f - (mousePosition.y * 2.0f) / height;
+		
+//		System.out.println("NormX: " + mousePosNormX + ", NormY: " + mousePosNormY);
 
 		Vector3f rayNorm = new Vector3f(mousePosNormX, mousePosNormY, 1.0f);
 		Vector4f rayClip = new Vector4f(rayNorm.x, rayNorm.y, -1.0f, 1.0f);
-		Vector4f rayEye = rayClip.mul(cameraComponent.projection.inverse());
-		rayEye = new Vector4f(rayEye.x, rayEye.y, -1.0f, 1.0f);
 		
-		Matrix4f view = transformComponent.orientation.toMatrix().mul(Matrix4f.Translation(transformComponent.position));
-		
-		Vector4f rayWorld = rayEye.mul(view.inverse()).normalize();
+//		System.out.println("ClipX: " + rayClip.x + ", ClipY: " + rayClip.y);
 
-		return rayWorld.xyz();
+		Matrix4f invProjection = new Matrix4f();
+		cameraComponent.projection.invert(invProjection);
+		
+		Vector4f rayEye = rayClip.mul(invProjection);
+		rayEye = new Vector4f(rayEye.x, rayEye.y, -1.0f, 0.0f);
+		
+//		System.out.println("EyeX: " + rayEye.x + ", EyeY: " + rayEye.y);
+		
+		Matrix4f view = transformComponent.getViewMatrix();
+		
+//		System.out.println(view); 
+		
+		Matrix4f invView = new Matrix4f();
+		view.invert(invView);
+
+		Vector4f rayWorld = rayEye.mul(invView);
+
+		return rayWorld.xyz().normalize();
 	}
-	*/
+	
+	float sensitivity = 0.04f;
+	float speed = 0.001f;
 	
 	Quaternion pitch = new Quaternion();
 	Quaternion yaw = new Quaternion();
@@ -184,8 +197,8 @@ public class Sandbox extends Game
 		if(Input.keyHeld(Keys.KEY_A)) cameraTransform.position.add(cameraTransform.getLeft().mul(-speed));
 		if(Input.keyHeld(Keys.KEY_D)) cameraTransform.position.add(cameraTransform.getRight().mul(-speed));
 		
-		if(Input.keyHeld(Keys.KEY_LEFT)) cameraTransform.orientation.rotate(Axis.FORWARD, 0.5f * sensitivity);
-		if(Input.keyHeld(Keys.KEY_RIGHT)) cameraTransform.orientation.rotate(Axis.FORWARD, 0.5f * -sensitivity);
+		if(Input.keyHeld(Keys.KEY_LEFT)) cameraTransform.orientation.rotateLocal(new Quaternion().setAxisAngle(Axis.FORWARD, 0.5f * sensitivity));
+		if(Input.keyHeld(Keys.KEY_RIGHT)) cameraTransform.orientation.rotateLocal(new Quaternion().setAxisAngle(Axis.FORWARD, 0.5f * -sensitivity));
 		
 		if(Input.keyPressed(Keys.KEY_UP)) 	speed *= 2.0;
 		if(Input.keyPressed(Keys.KEY_DOWN)) speed /= 2.0;
@@ -204,16 +217,25 @@ public class Sandbox extends Game
 	
 		Graphics gfx = getGraphics();
 		
-		//lineEntity.getComponent(LineRenderComponent.class).p1 = cameraTransform.position;
-		//lineEntity.getComponent(LineRenderComponent.class).p2 = getMouseRay(cameraEntity);
+		Vector3f ray = getMouseRay(cameraEntity);
+//		System.out.println("---\nRayForward:" + ray);
+//		System.out.println("CameraForward: " + cameraTransform.orientation.getForward());
+		
+		lineEntity.getComponent(LineRenderComponent.class).p1 = cameraTransform.position;
+		lineEntity.getComponent(LineRenderComponent.class).p2 = ray;
+//		lineEntity.getComponent(TransformComponent.class).position = cameraTransform.position;
+		 
+//		System.out.println(lineEntity.getComponent(LineRenderComponent.class).p1);
+//		System.out.println(lineEntity.getComponent(LineRenderComponent.class).p2);
+//		System.out.println(lineEntity.getComponent(TransformComponent.class).position);
 		
 		phongRenderer.begin(gfx, getEntityManager());
 		phongRenderer.render(cameraEntity, gfx,getEntityManager());
 		phongRenderer.end(gfx, getEntityManager());
 		
-		//lineRenderer.begin(gfx, getEntityManager());
-		//lineRenderer.render(cameraEntity, gfx,getEntityManager());
-		//lineRenderer.end(gfx, getEntityManager());
+//		lineRenderer.begin(gfx, getEntityManager());
+//		lineRenderer.render(cameraEntity, gfx,getEntityManager());
+//		lineRenderer.end(gfx, getEntityManager());
 	}
 
 	@Override

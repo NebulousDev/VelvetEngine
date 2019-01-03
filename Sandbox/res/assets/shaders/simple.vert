@@ -8,11 +8,17 @@ uniform mat4 view;
 uniform mat4 perspective;
 uniform mat4 model;
 
+out vec3 vFragPos;
+out vec3 vNormal;
 out vec2 vTexCoord;
 
 void main()
 {
 	mat4 mvp = perspective * view * model;
-	gl_Position = mvp * vec4(position, 1.0);
+
+	vFragPos = vec3(model * vec4(position, 1.0));
+	vNormal = mat3(transpose(inverse(model))) * normal;
 	vTexCoord = texCoord;
+
+	gl_Position = mvp * vec4(position, 1.0);
 }

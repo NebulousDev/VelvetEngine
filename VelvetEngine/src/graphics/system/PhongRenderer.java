@@ -17,6 +17,7 @@ import graphics.GraphicsUniform;
 import graphics.Mesh;
 import graphics.Mesh.SubMesh;
 import graphics.ShaderProgram;
+import graphics.component.DirectionalLightComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongRenderComponent;
 import math.Matrix4f;
@@ -54,12 +55,25 @@ public class PhongRenderer extends Renderer {
 		Matrix4f perspective = cameraComponent.projection;
 		Matrix4f model = new Matrix4f();
 		
-		GraphicsUniform viewUniform = graphics.getUniform(shader, "view");
-		GraphicsUniform perspectiveUniform = graphics.getUniform(shader, "perspective");
 		GraphicsUniform modelUniform = graphics.getUniform(shader, "model");
+
+		graphics.setUniform(graphics.getUniform(shader, "view"), view);
+		graphics.setUniform(graphics.getUniform(shader, "perspective"), perspective);
 		
-		graphics.setUniform(viewUniform, view);
-		graphics.setUniform(perspectiveUniform, perspective);
+		Iterator<DirectionalLightComponent> dirLightIterator 
+			= entityManager.getComponentTable().getComponentIterator(DirectionalLightComponent.class);
+		
+		int dirLightCount = 0;
+		while(dirLightIterator.hasNext())
+		{
+			DirectionalLightComponent dirLight = dirLightIterator.next();
+			graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].direction"), dirLight.direction);
+			graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].color"), dirLight.color);
+			graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].intensity"), dirLight.intensity);
+			dirLightCount++;
+		}
+		
+		graphics.setUniform(graphics.getUniform(shader, "dirLightCount"), dirLightCount);
 		
 		Iterator<Long> iterator = entityManager.getComponentTable().getEntityIterator(PhongRenderComponent.class);
 		
