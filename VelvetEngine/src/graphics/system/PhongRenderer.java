@@ -216,12 +216,14 @@ public class PhongRenderer extends Renderer {
 			// Attribute Layout
 			// TODO: investigate moving to begin()
 			
-			GL20.glEnableVertexAttribArray(0);
-			GL20.glEnableVertexAttribArray(1);
-			GL20.glEnableVertexAttribArray(2);
-			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 0);
-			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
-			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
+			GL20.glEnableVertexAttribArray(0);	// Position
+			GL20.glEnableVertexAttribArray(1);  // TexCoord
+			GL20.glEnableVertexAttribArray(2);  // Normal
+			GL20.glEnableVertexAttribArray(3);  // Tangent
+			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 12 * Float.BYTES, 0);
+			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 12 * Float.BYTES, 3 * Float.BYTES);
+			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 12 * Float.BYTES, 5 * Float.BYTES);
+			GL20.glVertexAttribPointer(3, 3, GL11.GL_FLOAT, false, 12 * Float.BYTES, 8 * Float.BYTES);
 			
 			// Draw sub-meshes
 			
@@ -248,6 +250,7 @@ public class PhongRenderer extends Renderer {
 		graphics.bindBuffer(renderQuadIBO);
 		
 		GL20.glDisableVertexAttribArray(2);
+		GL20.glDisableVertexAttribArray(3);
 		GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
 		GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
 		

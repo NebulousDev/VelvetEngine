@@ -8,7 +8,6 @@ import entity.component.TransformComponent;
 import entity.component.UpdateComponent;
 import graphics.Graphics;
 import graphics.Mesh;
-import graphics.ShaderProgram;
 import graphics.Texture;
 import graphics.component.DirectionalLightComponent;
 import graphics.component.LineRenderComponent;
@@ -71,13 +70,16 @@ public class Sandbox extends Game
 		
 		/* Load Resources */
 		
-//		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "testscene");
-		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "sponza");
+		Mesh 			testScene	= resourceManager.getResource(Mesh.class, "testscene");
+		Mesh 			sponza 		= resourceManager.getResource(Mesh.class, "sponza");
 		Mesh  			standard 	= resourceManager.getResource(Mesh.class, "standard");
-		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "dragon");
+		Mesh  			dragon 		= resourceManager.getResource(Mesh.class, "dragon");
+		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "bunny");
 		Texture 		default1 	= resourceManager.getResource(Texture.class, "default1");
 		Texture 		default2 	= resourceManager.getResource(Texture.class, "default2");
-		ShaderProgram 	program 	= resourceManager.getResource(ShaderProgram.class, "simple");
+		Texture 		marble 		= resourceManager.getResource(Texture.class, "marble");
+		Texture 		brick 		= resourceManager.getResource(Texture.class, "brickwall");
+		Texture 		brick_n 	= resourceManager.getResource(Texture.class, "brickwall_n");
 		
 		/* Setup Entities */
 		
@@ -104,14 +106,14 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 
-		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(default2, default2, 1.0f, 1024.0f);
+		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(default2, brick_n, 1.0f, 1024.0f);
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f), new Quaternion());
-		MeshComponent 			groundMesh 			= new MeshComponent(scene);
+		MeshComponent 			groundMesh 			= new MeshComponent(sponza);
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
 		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, defaultMaterial, groundRender);
 		
-		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 0.0f, -10.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
+		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 2.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
 		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
 		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
@@ -123,7 +125,7 @@ public class Sandbox extends Game
 		
 		Vector3f direction = new Vector3f(0.0f, -1.0f, 0.5f);
 		Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
-		float intensity = 0.1f;
+		float intensity = 0.2f;
 		DirectionalLightComponent dirLightComponent1 = new DirectionalLightComponent(direction, color, intensity);
 		
 		Vector3f direction2 = new Vector3f(0.0f, -1.0f, -0.8f);
@@ -134,24 +136,24 @@ public class Sandbox extends Game
 		Entity dirLight1Entity = getEntityManager().createEntity("dirLight1", dirLightComponent1);
 		Entity dirLight2Entity = getEntityManager().createEntity("dirLight2", dirLightComponent2);
 		
-		Vector3f position3 = new Vector3f(-5.0f, 1.0f, 0.0f);
+		Vector3f position3 = new Vector3f(-20.0f, 5.0f, 0.0f);
 		Vector3f color3 = new Vector3f(1.0f, 0.0f, 0.0f);
-		Vector3f attenuation3 = new Vector3f(10.0f, 0.01f, 1.0f);
-		float intensity3 = 10.0f;
+		Vector3f attenuation3 = new Vector3f(50.0f, 0.01f, 5.0f);
+		float intensity3 = 100.0f;
 		PointLightComponent pointLightComponnet1 = new PointLightComponent(attenuation3, color3, intensity3);
 		TransformComponent pointLightTransform1 = new TransformComponent(position3);
 		
-		Vector3f position4 = new Vector3f(0.0f, 1.0f, 0.0f);
+		Vector3f position4 = new Vector3f(0.0f, 5.0f, 0.0f);
 		Vector3f color4 = new Vector3f(0.0f, 1.0f, 0.0f);
-		Vector3f attenuation4 = new Vector3f(10.0f, 0.01f, 1.0f);
-		float intensity4 = 10.0f;
+		Vector3f attenuation4 = new Vector3f(50.0f, 0.01f, 5.0f);
+		float intensity4 = 100.0f;
 		PointLightComponent pointLightComponnet2 = new PointLightComponent(attenuation4, color4, intensity4);
 		TransformComponent pointLightTransform2 = new TransformComponent(position4);
 		
-		Vector3f position5 = new Vector3f(5.0f, 1.0f, 0.0f);
+		Vector3f position5 = new Vector3f(20.0f, 5.0f, 0.0f);
 		Vector3f color5 = new Vector3f(0.0f, 0.0f, 1.0f);
-		Vector3f attenuation5 = new Vector3f(10.0f, 0.01f, 1.0f);
-		float intensity5 = 10.0f;
+		Vector3f attenuation5 = new Vector3f(50.0f, 0.01f, 5.0f);
+		float intensity5 = 100.0f;
 		PointLightComponent pointLightComponnet3 = new PointLightComponent(attenuation5, color5, intensity5);
 		TransformComponent pointLightTransform3 = new TransformComponent(position5);
 		

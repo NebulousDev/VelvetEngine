@@ -27,7 +27,7 @@ public class ModelLoader
 		String ext = FileUtils.getFileExtention(filepath);
 		
 		if(ext.equals(".obj"))
-			return loadFromOBJ(gfx, filepath);
+			return loadFromOBJ(gfx, filepath, true);
 		
 		else
 		{
@@ -37,7 +37,57 @@ public class ModelLoader
 		
 	}
 	
-	private static Mesh loadFromOBJ(Graphics gfx, String filepath)
+	private static float[] calcTangent(OBJVertex[] vertices, int index)
+	{
+		float[] tangent = new float[3];
+		
+		float pos1X = vertices[index].position[0];
+		float pos1Y = vertices[index].position[1];
+		float pos1Z = vertices[index].position[2];
+		
+		float pos2X = vertices[index + 1].position[0];
+		float pos2Y = vertices[index + 1].position[1];
+		float pos2Z = vertices[index + 1].position[2];
+		
+		float pos3X = vertices[index + 2].position[0];
+		float pos3Y = vertices[index + 2].position[1];
+		float pos3Z = vertices[index + 2].position[2];
+		
+		float uv1X = vertices[index].texture[0];
+		float uv1Y = vertices[index].texture[1];
+		
+		float uv2X = vertices[index + 1].texture[0];
+		float uv2Y = vertices[index + 1].texture[1];
+		
+		float uv3X = vertices[index + 2].texture[0];
+		float uv3Y = vertices[index + 2].texture[1];
+		
+		float edge1X = pos2X - pos1X;
+		float edge1Y = pos2Y - pos1Y;
+		float edge1Z = pos2Z - pos1Z;
+		
+		float edge2X = pos3X - pos2X;
+		float edge2Y = pos3Y - pos2Y;
+		float edge2Z = pos3Z - pos2Z;
+		
+		float duv1X = uv2X - uv1X;
+		float duv1Y = uv2Y - uv1Y;
+		
+		float duv2X = uv3X - uv2X;
+		float duv2Y = uv3Y - uv2Y;
+		
+		float f = 1.0f / (duv1X * duv2Y - duv2X * duv1Y);
+		
+		tangent[0] = f * (duv2Y * edge1X - duv1Y * edge2X);
+		tangent[1] = f * (duv2Y * edge1Y - duv1Y * edge2Y);
+		tangent[2] = f * (duv2Y * edge1Z - duv1Y * edge2Z);
+		
+		//TODO: normalize these!
+		
+		return tangent;
+	}
+	
+	private static Mesh loadFromOBJ(Graphics gfx, String filepath, boolean calcTangent)
 	{
 		Mesh model = new Mesh();
 		OBJModel objModel = OBJParser.parseOBJ(FileUtils.RESOURCE_PATH + filepath);
@@ -47,11 +97,13 @@ public class ModelLoader
 		
 		model.subMeshes = new ArrayList<>();
 		
-		FloatBuffer vertexBuffer = FloatBuffer.allocate(objModel.vertices.length * 8);
+		FloatBuffer vertexBuffer = FloatBuffer.allocate(objModel.vertices.length * 12);
 		IntBuffer indexBuffer = IntBuffer.allocate(objModel.indices.length);
 		
-		for(OBJVertex vert : objModel.vertices)
+		for(int i = 0; i < objModel.vertices.length; i++)
 		{
+			OBJVertex vert = objModel.vertices[i];
+			
 			if(vert.position != null) vertexBuffer.put(vert.position);
 			else vertexBuffer.put(new float[] {0,0,0});
 			
@@ -60,6 +112,9 @@ public class ModelLoader
 			
 			if(vert.normal != null) vertexBuffer.put(vert.normal);
 			else vertexBuffer.put(new float[] {0,0,0});
+			
+			if(vert.normal != null && calcTangent)
+				vertexBuffer.put(calcTangent(objModel.vertices, i));
 		}
 		
 		indexBuffer.put(objModel.indices);
