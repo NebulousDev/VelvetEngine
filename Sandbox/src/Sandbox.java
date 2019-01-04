@@ -74,7 +74,7 @@ public class Sandbox extends Game
 //		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "testscene");
 		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "sponza");
 		Mesh  			standard 	= resourceManager.getResource(Mesh.class, "standard");
-		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "bunny");
+		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "dragon");
 		Texture 		default1 	= resourceManager.getResource(Texture.class, "default1");
 		Texture 		default2 	= resourceManager.getResource(Texture.class, "default2");
 		ShaderProgram 	program 	= resourceManager.getResource(ShaderProgram.class, "simple");
@@ -104,7 +104,7 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 
-		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(default2, default2, 1.0f, 32.0f);
+		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(default2, default2, 1.0f, 1024.0f);
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f), new Quaternion());
 		MeshComponent 			groundMesh 			= new MeshComponent(scene);
@@ -167,8 +167,11 @@ public class Sandbox extends Game
 		
 		/* Setup Systems */
 		
-		phongRenderer 	= new PhongRenderer(this);
-		lineRenderer	= new LineRenderer(this);
+		phongRenderer 	= new PhongRenderer();
+		lineRenderer	= new LineRenderer();
+		
+		phongRenderer.initialize(this, gfx);
+		lineRenderer.initialize(this, gfx);
 
 		lineEntity = getEntityManager().createEntity(new TransformComponent(), new LineRenderComponent(cameraTransform.position, getMouseRay(cameraEntity), new Vector4f(0, 1, 1, 1)));
 	

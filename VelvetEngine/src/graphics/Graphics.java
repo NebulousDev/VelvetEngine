@@ -12,6 +12,15 @@ import math.Vector4f;
 
 public interface Graphics
 {
+	
+	public enum RenderBufferType
+	{
+		COLOR,
+		DEPTH,
+		STENCIL,
+		DEPTH_STENCIL
+	}
+	
 	public enum BufferType
 	{
 		VERTEX,
@@ -39,9 +48,12 @@ public interface Graphics
 	
 	Shader createShader(String name, ShaderType type, String data);
 	
-	GraphicsUniform getUniform(ShaderProgram program, String name);
-	
 	Texture createTexture();
+
+	FrameBuffer createFrameBuffer();
+	
+	RenderBuffer createRenderBuffer(RenderBufferType type, int index,
+			TextureFormat format, int width, int height, int samples);
 	
 	boolean setContextCurrent(GraphicsContext context);
 	
@@ -81,19 +93,27 @@ public interface Graphics
 	
 	boolean freeProgram(ShaderProgram program);
 	
-	boolean setUniform(GraphicsUniform uniform, int data);
+	boolean setUniform(Uniform uniform, int data);
 	
-	boolean setUniform(GraphicsUniform uniform, float data);
+	boolean setUniform(Uniform uniform, float data);
 	
-	boolean setUniform(GraphicsUniform uniform, Vector2f data);
+	boolean setUniform(Uniform uniform, Vector2f data);
 	
-	boolean setUniform(GraphicsUniform uniform, Vector3f data);
+	boolean setUniform(Uniform uniform, Vector3f data);
 	
-	boolean setUniform(GraphicsUniform uniform, Vector4f data);
+	boolean setUniform(Uniform uniform, Vector4f data);
 	
-	boolean setUniform(GraphicsUniform uniform, Matrix4f data);
+	boolean setUniform(Uniform uniform, Matrix4f data);
+	
+	Uniform getUniform(ShaderProgram program, String name);
 	
 	boolean bindTexture(Texture texture);
+	
+	boolean bindFrameBuffer(FrameBuffer buffer);
+	
+	boolean unbindFrameBuffer();
+	
+	boolean attachRenderBuffer(FrameBuffer frameBuffer, RenderBuffer renderBuffer);
 	
 	boolean unbindTexture();
 	
@@ -116,4 +136,8 @@ public interface Graphics
 	boolean drawElements(DrawMode mode, int count);
 	
 	boolean drawElementsRange(DrawMode mode, int iboOffset, int iboLength);
+
+	boolean drawBuffers(RenderBuffer... buffers);
+	
+	boolean setViewport(int x, int y, int width, int height);
 }

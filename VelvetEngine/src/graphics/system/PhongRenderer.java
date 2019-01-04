@@ -6,16 +6,23 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import core.Game;
+import core.Window;
 import entity.Entity;
 import entity.EntityManager;
 import entity.camera.CameraComponent;
 import entity.camera.PerspectiveCameraComponent;
 import entity.component.TransformComponent;
+import graphics.FrameBuffer;
 import graphics.Graphics;
+import graphics.Graphics.BufferType;
 import graphics.Graphics.DrawMode;
-import graphics.GraphicsUniform;
+import graphics.Graphics.RenderBufferType;
+import graphics.GraphicsBuffer;
 import graphics.Mesh.SubMesh;
+import graphics.RenderBuffer;
 import graphics.ShaderProgram;
+import graphics.TextureFormat;
+import graphics.Uniform;
 import graphics.component.DirectionalLightComponent;
 import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
@@ -25,23 +32,66 @@ import math.Matrix4f;
 
 public class PhongRenderer extends Renderer {
 
-	private ShaderProgram shader;
+	private ShaderProgram 	drawShader;
+	private ShaderProgram 	quadShader;
+	private FrameBuffer 	frameBuffer;
+	private RenderBuffer 	colorBuffer;
+	private RenderBuffer	depthBuffer;
+	private GraphicsBuffer	renderQuadVBO;
+	private GraphicsBuffer	renderQuadIBO;
+	
+	private Window 			window;
 
-	public PhongRenderer(Game game)
+	@Override
+	public void initialize(Game game, Graphics graphics)
 	{
-		this.shader = game.getResourceManager().getResource(ShaderProgram.class, "simple");
+		this.drawShader = game.getResourceManager().getResource(ShaderProgram.class, "simple");
+		this.quadShader = game.getResourceManager().getResource(ShaderProgram.class, "quad");
+		
+		this.window = game.getApplication().getWindow();
+		
+//		int width = 2160;
+//		int height = 1440;
+		
+		int width = window.getWidth();
+		int height = window.getHeight();
+		
+		this.frameBuffer = graphics.createFrameBuffer();
+		
+		graphics.bindFrameBuffer(frameBuffer);
+		
+		this.colorBuffer = graphics.createRenderBuffer(RenderBufferType.COLOR, 0, TextureFormat.TEXTURE_FORMAT_FLOAT_RGB, width, height, 0);
+		this.depthBuffer = graphics.createRenderBuffer(RenderBufferType.DEPTH_STENCIL, 0, TextureFormat.TEXTURE_FORMAT_DEPTH_STENCIL, width, height, 0);
+		
+		int error = GL11.glGetError();
+		if(error != 0)
+			System.out.println(error);
+		
+		graphics.attachRenderBuffer(frameBuffer, colorBuffer);
+		graphics.attachRenderBuffer(frameBuffer, depthBuffer);
+		
+		graphics.unbindFrameBuffer();
+		
+		float[] vbo =
+		{ 
+			-1.0f, -1.0f, 	0.0f, 0.0f,
+			-1.0f,  1.0f,	0.0f, 1.0f,
+			 1.0f,  1.0f,  	1.0f, 1.0f,
+			 1.0f, -1.0f,	1.0f, 0.0f 
+		};
+		
+		int[] ibo = { 0, 1, 2, 0, 2, 3 };
+		
+		renderQuadVBO = graphics.createBuffer();
+		graphics.setBufferData(renderQuadVBO, BufferType.VERTEX, vbo);
+		renderQuadIBO = graphics.createBuffer();
+		graphics.setBufferData(renderQuadIBO, BufferType.ELEMENT, ibo);
 	}
 	
 	@Override
 	public void begin(Graphics graphics, EntityManager entityManager)
 	{
-		//TODO: add state checks
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthFunc(GL11.GL_LESS);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-		
-		shader.bind(graphics);
+		// Nothing
 	}
 
 	//TODO: pass a World instead
@@ -50,6 +100,20 @@ public class PhongRenderer extends Renderer {
 	@Override
 	public void render(Entity camera, Graphics graphics, EntityManager entityManager)
 	{
+		graphics.bindFrameBuffer(frameBuffer);
+		graphics.setViewport(0, 0, colorBuffer.getTexture().width(), colorBuffer.getTexture().height());
+		graphics.drawBuffers(colorBuffer, depthBuffer);
+	
+		graphics.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		graphics.clearBuffers();
+		
+		drawShader.bind(graphics);
+
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthFunc(GL11.GL_LESS);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		
 		// View-Perspective
 		
 		CameraComponent cameraComponent = camera.getComponent(PerspectiveCameraComponent.class);
@@ -59,12 +123,12 @@ public class PhongRenderer extends Renderer {
 		Matrix4f perspective = cameraComponent.projection;
 		Matrix4f model = new Matrix4f();
 		
-		GraphicsUniform modelUniform = graphics.getUniform(shader, "model");
+		Uniform modelUniform = graphics.getUniform(drawShader, "model");
 
-		graphics.setUniform(graphics.getUniform(shader, "cameraPosition"), cameraTransform.position);
+		graphics.setUniform(graphics.getUniform(drawShader, "cameraPosition"), cameraTransform.position);
 		
-		graphics.setUniform(graphics.getUniform(shader, "view"), view);
-		graphics.setUniform(graphics.getUniform(shader, "perspective"), perspective);
+		graphics.setUniform(graphics.getUniform(drawShader, "view"), view);
+		graphics.setUniform(graphics.getUniform(drawShader, "perspective"), perspective);
 		
 		// Directional Lights
 		
@@ -79,14 +143,14 @@ public class PhongRenderer extends Renderer {
 				
 				DirectionalLightComponent dirLight = entityManager.getComponent(DirectionalLightComponent.class, entityID);
 				
-				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].direction"), dirLight.direction);
-				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].color"), dirLight.color);
-				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].intensity"), dirLight.intensity);
+				graphics.setUniform(graphics.getUniform(drawShader, "dirLights[" + dirLightCount + "].direction"), dirLight.direction);
+				graphics.setUniform(graphics.getUniform(drawShader, "dirLights[" + dirLightCount + "].color"), dirLight.color);
+				graphics.setUniform(graphics.getUniform(drawShader, "dirLights[" + dirLightCount + "].intensity"), dirLight.intensity);
 				
 				dirLightCount++;
 			}
 			
-			graphics.setUniform(graphics.getUniform(shader, "dirLightCount"), dirLightCount);
+			graphics.setUniform(graphics.getUniform(drawShader, "dirLightCount"), dirLightCount);
 		}
 		
 		// Point Lights
@@ -103,15 +167,15 @@ public class PhongRenderer extends Renderer {
 				PointLightComponent pointLight = entityManager.getComponent(PointLightComponent.class, entityID);
 				TransformComponent tansform = entityManager.getComponent(TransformComponent.class, entityID);
 				
-				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].position"), tansform.position);
-				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].attenuation"), pointLight.attenuation);
-				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].color"), pointLight.color);
-				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].intensity"), pointLight.intensity);
+				graphics.setUniform(graphics.getUniform(drawShader, "pointLights[" + pointLightCount + "].position"), tansform.position);
+				graphics.setUniform(graphics.getUniform(drawShader, "pointLights[" + pointLightCount + "].attenuation"), pointLight.attenuation);
+				graphics.setUniform(graphics.getUniform(drawShader, "pointLights[" + pointLightCount + "].color"), pointLight.color);
+				graphics.setUniform(graphics.getUniform(drawShader, "pointLights[" + pointLightCount + "].intensity"), pointLight.intensity);
 				
 				pointLightCount++;
 			}
 			
-			graphics.setUniform(graphics.getUniform(shader, "pointLightCount"), pointLightCount);
+			graphics.setUniform(graphics.getUniform(drawShader, "pointLightCount"), pointLightCount);
 		}
 		
 		// Render Entities
@@ -126,8 +190,8 @@ public class PhongRenderer extends Renderer {
 			
 			PhongMaterialComponent 	material	= entityManager.getComponent(PhongMaterialComponent.class, entityID);
 
-			graphics.setUniform(graphics.getUniform(shader, "material.diffuse"), 0);
-			graphics.setUniform(graphics.getUniform(shader, "material.normal"), 1);
+			graphics.setUniform(graphics.getUniform(drawShader, "material.diffuse"), 0);
+			graphics.setUniform(graphics.getUniform(drawShader, "material.normal"), 1);
 			
 			graphics.setActiveTextureSlot(0);
 			graphics.bindTexture(material.diffuse);
@@ -135,8 +199,8 @@ public class PhongRenderer extends Renderer {
 			graphics.setActiveTextureSlot(1);
 			graphics.bindTexture(material.normal);
 			
-			graphics.setUniform(graphics.getUniform(shader, "material.intensity"), material.intensity);
-			graphics.setUniform(graphics.getUniform(shader, "material.exponent"), material.exponent);
+			graphics.setUniform(graphics.getUniform(drawShader, "material.intensity"), material.intensity);
+			graphics.setUniform(graphics.getUniform(drawShader, "material.exponent"), material.exponent);
 			
 			// Mesh
 			
@@ -150,6 +214,7 @@ public class PhongRenderer extends Renderer {
 			graphics.bindBuffer(mesh.mesh.ibo);
 			
 			// Attribute Layout
+			// TODO: investigate moving to begin()
 			
 			GL20.glEnableVertexAttribArray(0);
 			GL20.glEnableVertexAttribArray(1);
@@ -164,14 +229,40 @@ public class PhongRenderer extends Renderer {
 				graphics.drawElementsRange(DrawMode.TRIANGLES, subMesh.offset, subMesh.count);
 		}
 		
+		drawShader.unbind(graphics);
+		
+		graphics.unbindFrameBuffer();
+		
+		graphics.setViewport(0, 0, window.getWidth(), window.getHeight());
+		graphics.setClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+		graphics.clearBuffers();
+
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		
+		// Render quad
+		
+		quadShader.bind(graphics);
+		
+		graphics.bindBuffer(renderQuadVBO);
+		graphics.bindBuffer(renderQuadIBO);
+		
+		GL20.glDisableVertexAttribArray(2);
+		GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
+		GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+		
+		graphics.setActiveTextureSlot(0);
+		graphics.bindTexture(colorBuffer.getTexture());
+		
+		graphics.drawElements(DrawMode.TRIANGLES, 6);
+		
+		quadShader.unbind(graphics);
 	}
 
 	@Override
 	public void end(Graphics graphics, EntityManager entityManager)
 	{
-		//NOTE: Unnecessary
-		
-		shader.unbind(graphics); 
+		// nothing
 	}
 
 }

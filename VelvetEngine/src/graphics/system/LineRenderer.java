@@ -15,7 +15,7 @@ import graphics.Graphics;
 import graphics.Graphics.BufferType;
 import graphics.Graphics.DrawMode;
 import graphics.GraphicsBuffer;
-import graphics.GraphicsUniform;
+import graphics.Uniform;
 import graphics.ShaderProgram;
 import graphics.component.LineRenderComponent;
 import math.Matrix4f;
@@ -26,9 +26,18 @@ public class LineRenderer extends Renderer {
 	private GraphicsBuffer	lineVBO;
 	private GraphicsBuffer	lineIBO;
 	
-	public LineRenderer(Game game)
+	@Override
+	public void initialize(Game game, Graphics graphics)
 	{
 		shader = game.getResourceManager().getResource(ShaderProgram.class, "line");
+		
+		float[] vbo = { 0,0,0, 0,0,0 };
+		int[] 	ibo = { 0, 1 };
+		
+		lineVBO = graphics.createBuffer();
+		graphics.setBufferData(lineVBO, BufferType.VERTEX, vbo);
+		lineIBO = graphics.createBuffer();
+		graphics.setBufferData(lineIBO, BufferType.ELEMENT, ibo);
 	}
 	
 	@Override
@@ -40,17 +49,6 @@ public class LineRenderer extends Renderer {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		
-		if(lineVBO == null)
-		{
-			float[] vbo = { 0,0,0, 0,0,0 };
-			int[] 	ibo = { 0, 1 };
-			
-			lineVBO = graphics.createBuffer();
-			graphics.setBufferData(lineVBO, BufferType.VERTEX, vbo);
-			lineIBO = graphics.createBuffer();
-			graphics.setBufferData(lineIBO, BufferType.ELEMENT, ibo);
-		}
-
 		shader.bind(graphics);
 	}
 
@@ -64,10 +62,10 @@ public class LineRenderer extends Renderer {
 		Matrix4f perspective = cameraComponent.projection;
 		Matrix4f model = new Matrix4f();
 		
-		GraphicsUniform viewUniform = graphics.getUniform(shader, "view");
-		GraphicsUniform perspectiveUniform = graphics.getUniform(shader, "perspective");
-		GraphicsUniform modelUniform = graphics.getUniform(shader, "model");
-		GraphicsUniform colorUniform = graphics.getUniform(shader, "color");
+		Uniform viewUniform = graphics.getUniform(shader, "view");
+		Uniform perspectiveUniform = graphics.getUniform(shader, "perspective");
+		Uniform modelUniform = graphics.getUniform(shader, "model");
+		Uniform colorUniform = graphics.getUniform(shader, "color");
 		
 		graphics.setUniform(viewUniform, view);
 		graphics.setUniform(perspectiveUniform, perspective);

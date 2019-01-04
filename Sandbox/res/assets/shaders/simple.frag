@@ -3,6 +3,8 @@
 #define MAX_DIRECTIONAL_LIGHTS 4
 #define MAX_POINT_LIGHTS 16
 
+layout (location = 0) out vec3 fColorOut;
+
 struct DirectionLight
 {
 	vec3 direction;
@@ -39,8 +41,6 @@ uniform Material material;
 in vec3 vFragPos;
 in vec3 vNormal;
 in vec2 vTexCoord;
-
-out vec4 outColor;
 
 vec3 calcDirectionalLight(DirectionLight dirLight, vec3 normal)
 {
@@ -100,5 +100,5 @@ void main()
 	
 	vec3 result = diffuse * texture(material.diffuse, vTexCoord).xyz;
 
-	outColor = vec4(result, 1.0);
+	fColorOut = result;
 }

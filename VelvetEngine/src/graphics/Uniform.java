@@ -1,11 +1,11 @@
 package graphics;
 
-public class GraphicsUniform
+public class Uniform
 {
 	int 	id		= -1;
 	String 	name	= null;
 	
-	GraphicsUniform() {}
+	Uniform() {}
 	
 	public int ID() { return id; }
 	

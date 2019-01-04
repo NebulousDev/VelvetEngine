@@ -110,10 +110,10 @@ public class GLGraphics implements Graphics
 			case TEXTURE_FORMAT_RG:					return GL30.GL_RG;
 			case TEXTURE_FORMAT_RGB:				return GL11.GL_RGB;
 			case TEXTURE_FORMAT_RGBA:				return GL11.GL_RGBA;
-			case TEXTURE_FORMAT_FLOAT_R:			return GL11.GL_RED;
+			case TEXTURE_FORMAT_FLOAT_R:			return GL30.GL_RED;
 			case TEXTURE_FORMAT_FLOAT_RG:			return GL30.GL_RG;
-			case TEXTURE_FORMAT_FLOAT_RGB:			return GL11.GL_RGB;
-			case TEXTURE_FORMAT_FLOAT_RGBA:			return GL11.GL_RGBA;
+			case TEXTURE_FORMAT_FLOAT_RGB:			return GL30.GL_RGB;
+			case TEXTURE_FORMAT_FLOAT_RGBA:			return GL30.GL_RGBA;
 			case TEXTURE_FORMAT_DEPTH:				return GL11.GL_DEPTH_COMPONENT;
 			case TEXTURE_FORMAT_DEPTH16:			return GL11.GL_DEPTH_COMPONENT;
 			case TEXTURE_FORMAT_DEPTH24:			return GL11.GL_DEPTH_COMPONENT;
@@ -134,16 +134,54 @@ public class GLGraphics implements Graphics
 			case TEXTURE_FORMAT_RG:					return GL30.GL_RG8;
 			case TEXTURE_FORMAT_RGB:				return GL11.GL_RGB8;
 			case TEXTURE_FORMAT_RGBA:				return GL11.GL_RGBA8;
-			case TEXTURE_FORMAT_FLOAT_R:			return GL30.GL_R8;
-			case TEXTURE_FORMAT_FLOAT_RG:			return GL30.GL_RG8;
-			case TEXTURE_FORMAT_FLOAT_RGB:			return GL11.GL_RGB8;
-			case TEXTURE_FORMAT_FLOAT_RGBA:			return GL11.GL_RGBA8;
+			case TEXTURE_FORMAT_FLOAT_R:			return GL30.GL_R16F;
+			case TEXTURE_FORMAT_FLOAT_RG:			return GL30.GL_RG16F;
+			case TEXTURE_FORMAT_FLOAT_RGB:			return GL30.GL_RGB16F;
+			case TEXTURE_FORMAT_FLOAT_RGBA:			return GL30.GL_RGBA16F;
 			case TEXTURE_FORMAT_DEPTH:				return GL11.GL_DEPTH_COMPONENT;
 			case TEXTURE_FORMAT_DEPTH16:			return GL14.GL_DEPTH_COMPONENT16;
 			case TEXTURE_FORMAT_DEPTH24:			return GL14.GL_DEPTH_COMPONENT24;
 			case TEXTURE_FORMAT_DEPTH32:			return GL14.GL_DEPTH_COMPONENT32;
 			case TEXTURE_FORMAT_FLOAT_DEPTH32:		return GL30.GL_DEPTH_COMPONENT32F;
 			case TEXTURE_FORMAT_DEPTH_STENCIL:		return GL30.GL_DEPTH24_STENCIL8;
+				
+			default:
+				return -1;
+		}
+	}
+	
+	private int textureFormatToPrimitiveType(TextureFormat format)
+	{
+		switch (format) {
+
+			case TEXTURE_FORMAT_R:					return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_RG:					return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_RGB:				return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_RGBA:				return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_FLOAT_R:			return GL11.GL_FLOAT;
+			case TEXTURE_FORMAT_FLOAT_RG:			return GL11.GL_FLOAT;
+			case TEXTURE_FORMAT_FLOAT_RGB:			return GL11.GL_FLOAT;
+			case TEXTURE_FORMAT_FLOAT_RGBA:			return GL11.GL_FLOAT;
+			case TEXTURE_FORMAT_DEPTH:				return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_DEPTH16:			return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_DEPTH24:			return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_DEPTH32:			return GL11.GL_UNSIGNED_INT;
+			case TEXTURE_FORMAT_FLOAT_DEPTH32:		return GL11.GL_FLOAT;
+			case TEXTURE_FORMAT_DEPTH_STENCIL:		return GL30.GL_UNSIGNED_INT_24_8;
+				
+			default:
+				return -1;
+		}
+	}
+	
+	private int renderBufferTypeToInt(RenderBufferType type)
+	{
+		switch (type) {
+
+			case COLOR: 		return GL30.GL_COLOR_ATTACHMENT0;
+			case DEPTH: 		return GL30.GL_DEPTH_ATTACHMENT;
+			case STENCIL: 		return GL30.GL_STENCIL_ATTACHMENT;
+			case DEPTH_STENCIL: return GL30.GL_DEPTH_STENCIL_ATTACHMENT;
 				
 			default:
 				return -1;
@@ -233,9 +271,9 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public GraphicsUniform getUniform(ShaderProgram program, String name)
+	public Uniform getUniform(ShaderProgram program, String name)
 	{
-		GraphicsUniform uniform = new GraphicsUniform();
+		Uniform uniform = new Uniform();
 		uniform.name = name;
 		uniform.id = GL20.glGetUniformLocation(program.id, name);
 		
@@ -501,7 +539,7 @@ public class GLGraphics implements Graphics
 	}
 	
 	@Override
-	public boolean setUniform(GraphicsUniform uniform, int data)
+	public boolean setUniform(Uniform uniform, int data)
 	{
 		if(uniform != null && uniform.isValid())
 		{
@@ -513,7 +551,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(GraphicsUniform uniform, float data)
+	public boolean setUniform(Uniform uniform, float data)
 	{
 		if(uniform != null && uniform.isValid())
 		{
@@ -525,7 +563,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(GraphicsUniform uniform, Vector2f data)
+	public boolean setUniform(Uniform uniform, Vector2f data)
 	{
 		if(uniform != null && uniform.isValid())
 		{
@@ -537,7 +575,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(GraphicsUniform uniform, Vector3f data)
+	public boolean setUniform(Uniform uniform, Vector3f data)
 	{
 		if(uniform != null && uniform.isValid())
 		{
@@ -549,7 +587,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(GraphicsUniform uniform, Vector4f data)
+	public boolean setUniform(Uniform uniform, Vector4f data)
 	{
 		if(uniform != null && uniform.isValid())
 		{
@@ -561,7 +599,7 @@ public class GLGraphics implements Graphics
 	}
 
 	@Override
-	public boolean setUniform(GraphicsUniform uniform, Matrix4f data)
+	public boolean setUniform(Uniform uniform, Matrix4f data)
 	{
 		if(uniform != null && uniform.isValid())
 		{
@@ -604,6 +642,19 @@ public class GLGraphics implements Graphics
 	public boolean drawElementsRange(DrawMode mode, int start, int count)
 	{
 		GL11.glDrawElements(drawModeToInt(mode), count, GL11.GL_UNSIGNED_INT, start * Integer.BYTES); 
+		return true;
+	}
+	
+	@Override
+	public boolean drawBuffers(RenderBuffer... buffers)
+	{
+		int[] elements = new int[buffers.length];
+		
+		for(int i = 0; i < buffers.length; i++)
+			elements[i] = renderBufferTypeToInt(buffers[i].type) + buffers[i].index;
+		
+		GL30.glDrawBuffers(elements);
+		
 		return true;
 	}
 
@@ -714,4 +765,92 @@ public class GLGraphics implements Graphics
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + slot);
 		return true;
 	}
+
+	@Override
+	public FrameBuffer createFrameBuffer()
+	{
+		FrameBuffer buffer = new FrameBuffer();
+		buffer.id = GL30.glGenFramebuffers();
+		
+		if(GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE)
+			System.out.println("FAILED TO GENERATE FRAME BUFFER");
+			
+		return buffer;
+	}
+
+	@Override
+	public boolean bindFrameBuffer(FrameBuffer buffer)
+	{
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, buffer.id);
+		return true;
+	}
+
+	@Override
+	public boolean unbindFrameBuffer()
+	{
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		return true;
+	}
+
+	@Override
+	public boolean attachRenderBuffer(FrameBuffer frameBuffer, RenderBuffer renderBuffer)
+	{
+		int attachment = renderBufferTypeToInt(renderBuffer.type);
+		
+		if(renderBuffer.type == RenderBufferType.COLOR)
+			attachment += renderBuffer.index;
+		
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, renderBuffer.id);
+		
+		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_RENDERBUFFER, renderBuffer.id);
+		
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_TEXTURE_2D, renderBuffer.texture.id, 0);
+		
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
+		
+		return true;
+	}
+
+	@Override
+	public RenderBuffer createRenderBuffer(RenderBufferType type, int index, TextureFormat format, int width, int height, int samples)
+	{
+		int textureFormatExt = textureFormatToInt(format);
+		int textureFormatInt = textureFormatToIntInternal(format);
+		int primitiveType 	= textureFormatToPrimitiveType(format);
+		
+		Texture renderTexture = createTexture();
+		renderTexture.format = format;
+		renderTexture.width = width;
+		renderTexture.height = height;
+		renderTexture.clamp = TextureClamp.TEXTUTE_CLAMP_REPEAT;
+		renderTexture.filter = TextureFilter.TEXTURE_FILTER_NEAREST_MIPMAP_LINEAR;
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D, renderTexture.id);
+		
+		GL11.glTexImage2D(GL30.GL_TEXTURE_2D, 0, textureFormatInt, width, height, 0, textureFormatExt, primitiveType, 0);  
+		
+		GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_NEAREST);
+		GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_NEAREST);
+			
+		RenderBuffer buffer = new RenderBuffer();
+		buffer.id = GL30.glGenRenderbuffers();
+		buffer.type = type;
+		buffer.index = index;
+		buffer.texture = renderTexture;
+		
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, buffer.id);
+		
+		GL30.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, samples, textureFormatInt, width, height);
+		
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
+		
+		return buffer;
+	}
+
+	@Override
+	public boolean setViewport(int x, int y, int width, int height)
+	{
+		GL11.glViewport(x, y, width, height);
+		return false;
+	}
+
 }
