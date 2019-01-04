@@ -63,18 +63,21 @@ public class PhongRenderer extends Renderer {
 		
 		// DirectionalLights
 		
-		Iterator<DirectionalLightComponent> dirLightIterator 
-			= entityManager.getComponentTable().getComponentIterator(DirectionalLightComponent.class);
+		Iterator<Long> dirLightEntityIterator = entityManager.getComponentTable().getEntityIterator(DirectionalLightComponent.class);
 		
-		if(dirLightIterator != null)	// TODO: getIterator should return blank not null
+		if(dirLightEntityIterator != null)
 		{
 			int dirLightCount = 0;
-			while(dirLightIterator.hasNext())
+			while(dirLightEntityIterator.hasNext())
 			{
-				DirectionalLightComponent dirLight = dirLightIterator.next();
+				Long entityID = dirLightEntityIterator.next();
+				
+				DirectionalLightComponent dirLight = entityManager.getComponent(DirectionalLightComponent.class, entityID);
+				
 				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].direction"), dirLight.direction);
 				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].color"), dirLight.color);
 				graphics.setUniform(graphics.getUniform(shader, "dirLights[" + dirLightCount + "].intensity"), dirLight.intensity);
+				
 				dirLightCount++;
 			}
 			
@@ -84,19 +87,23 @@ public class PhongRenderer extends Renderer {
 		
 		// Point Lights
 		
-		Iterator<PointLightComponent> pointLightIterator 
-			= entityManager.getComponentTable().getComponentIterator(PointLightComponent.class);
+		Iterator<Long> pointLightEntityIterator = entityManager.getComponentTable().getEntityIterator(PointLightComponent.class);
 	
-		if(pointLightIterator != null)
+		if(pointLightEntityIterator != null)
 		{
 			int pointLightCount = 0;
-			while(pointLightIterator.hasNext())
+			while(pointLightEntityIterator.hasNext())
 			{
-				PointLightComponent pointLight = pointLightIterator.next();
-				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].position"), pointLight.position);
+				Long entityID = pointLightEntityIterator.next();
+				
+				PointLightComponent pointLight = entityManager.getComponent(PointLightComponent.class, entityID);
+				TransformComponent tansform = entityManager.getComponent(TransformComponent.class, entityID);
+				
+				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].position"), tansform.position);
 				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].attenuation"), pointLight.attenuation);
 				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].color"), pointLight.color);
 				graphics.setUniform(graphics.getUniform(shader, "pointLights[" + pointLightCount + "].intensity"), pointLight.intensity);
+				
 				pointLightCount++;
 			}
 			

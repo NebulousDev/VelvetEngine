@@ -105,17 +105,18 @@ public class Sandbox extends Game
 		RotatingComponent rotatingComponent = new RotatingComponent();
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
+
+		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent();
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.01f, 0.01f, 0.01f), new Quaternion());
 		MeshComponent 			groundMesh 			= new MeshComponent(scene);
-		PhongMaterialComponent 	groundMaterial		= new PhongMaterialComponent();
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
-		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, groundMaterial, groundRender);
+		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, defaultMaterial, groundRender);
 		
 		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 0.0f, -10.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
 		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
-		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, groundMaterial, bunnyRender, test);
+		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
 		
 		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
@@ -140,25 +141,25 @@ public class Sandbox extends Game
 		Vector3f attenuation3 = new Vector3f(10.0f, 0.01f, 1.0f);
 		float intensity3 = 10.0f;
 		PointLightComponent pointLightComponnet1 = new PointLightComponent(attenuation3, color3, intensity3);
-		pointLightComponnet1.position = position3;
+		TransformComponent pointLightTransform1 = new TransformComponent(position3);
 		
 		Vector3f position4 = new Vector3f(0.0f, 1.0f, 0.0f);
 		Vector3f color4 = new Vector3f(0.0f, 1.0f, 0.0f);
 		Vector3f attenuation4 = new Vector3f(10.0f, 0.01f, 1.0f);
 		float intensity4 = 10.0f;
 		PointLightComponent pointLightComponnet2 = new PointLightComponent(attenuation4, color4, intensity4);
-		pointLightComponnet2.position = position4;
+		TransformComponent pointLightTransform2 = new TransformComponent(position4);
 		
 		Vector3f position5 = new Vector3f(5.0f, 1.0f, 0.0f);
 		Vector3f color5 = new Vector3f(0.0f, 0.0f, 1.0f);
 		Vector3f attenuation5 = new Vector3f(10.0f, 0.01f, 1.0f);
 		float intensity5 = 10.0f;
 		PointLightComponent pointLightComponnet3 = new PointLightComponent(attenuation5, color5, intensity5);
-		pointLightComponnet3.position = position5;
+		TransformComponent pointLightTransform3 = new TransformComponent(position5);
 		
-		Entity pointLight1Entity = getEntityManager().createEntity("pointLight1", pointLightComponnet1);
-		Entity pointLight2Entity = getEntityManager().createEntity("pointLight2", pointLightComponnet2);
-		Entity pointLight3Entity = getEntityManager().createEntity("pointLight3", pointLightComponnet3);
+		Entity pointLight1Entity = getEntityManager().createEntity("pointLight1", pointLightComponnet1, pointLightTransform1);
+		Entity pointLight2Entity = getEntityManager().createEntity("pointLight2", pointLightComponnet2, pointLightTransform2);
+		Entity pointLight3Entity = getEntityManager().createEntity("pointLight3", pointLightComponnet3, pointLightTransform3);
 		
 		/* Setup Camera */
 		

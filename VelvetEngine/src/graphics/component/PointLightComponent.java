@@ -8,8 +8,6 @@ import math.Vector3f;
 @Require(TransformComponent.class)
 public class PointLightComponent implements Component {
 	
-	//TODO: USE TRANSFORM COMPONENT INSTEAD!
-	public Vector3f position;
 	public Vector3f attenuation;
 	public Vector3f color;
 	public float 	intensity;
