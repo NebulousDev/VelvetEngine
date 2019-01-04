@@ -75,11 +75,9 @@ public class Sandbox extends Game
 		Mesh 			scene 		= resourceManager.getResource(Mesh.class, "sponza");
 		Mesh  			standard 	= resourceManager.getResource(Mesh.class, "standard");
 		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "bunny");
-		Texture 		texture 	= resourceManager.getResource(Texture.class, "default2");
+		Texture 		default1 	= resourceManager.getResource(Texture.class, "default1");
+		Texture 		default2 	= resourceManager.getResource(Texture.class, "default2");
 		ShaderProgram 	program 	= resourceManager.getResource(ShaderProgram.class, "simple");
-		
-		gfx.setActiveTextureSlot(0);
-		gfx.bindTexture(texture);
 		
 		/* Setup Entities */
 		
@@ -106,9 +104,9 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 
-		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent();
+		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(default2, default2, 1.0f, 32.0f);
 		
-		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.01f, 0.01f, 0.01f), new Quaternion());
+		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f), new Quaternion());
 		MeshComponent 			groundMesh 			= new MeshComponent(scene);
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
 		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, defaultMaterial, groundRender);

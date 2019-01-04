@@ -2,14 +2,20 @@ package graphics.component;
 
 import entity.Component;
 import graphics.Texture;
-import math.Vector4f;
 
 public class PhongMaterialComponent implements Component {
 
 	public Texture 	diffuse;
 	public Texture 	normal;
-	public Vector4f color;
-	public float	specularIntensity;
-	public float 	specularExponent;
+	public float	intensity;
+	public float 	exponent;
+	
+	public PhongMaterialComponent(Texture diffuse, Texture normal, float intensity, float exponent)
+	{
+		this.diffuse = diffuse;
+		this.normal = normal;
+		this.intensity = intensity;
+		this.exponent = exponent;
+	}
 	
 }

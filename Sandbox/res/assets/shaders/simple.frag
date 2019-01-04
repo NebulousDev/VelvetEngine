@@ -18,13 +18,23 @@ struct PointLight
 	float intensity;
 };
 
+struct Material
+{
+	sampler2D diffuse;
+	sampler2D normal;
+	float intensity;
+	float exponent;
+};
+
+uniform vec3 cameraPosition;
+
 uniform DirectionLight dirLights[MAX_DIRECTIONAL_LIGHTS];
 uniform int dirLightCount;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightCount;
 
-uniform sampler2D texture0;
+uniform Material material;
 
 in vec3 vFragPos;
 in vec3 vNormal;
@@ -35,14 +45,26 @@ out vec4 outColor;
 vec3 calcDirectionalLight(DirectionLight dirLight, vec3 normal)
 {
 	vec3 lightDir = normalize(-dirLight.direction);
-	float difference = max(dot(normal, lightDir), 0.0);
-	return difference * dirLight.color * dirLight.intensity;
+	vec3 viewDir = normalize(-cameraPosition - vFragPos);
+	vec3 halfDir = normalize(lightDir + viewDir);
+	
+	float spec = pow(max(dot(normal, halfDir), 0.0), material.exponent);
+	vec3 specular = material.intensity * spec * dirLight.color;  
+	
+	float diff = max(dot(normal, lightDir), 0.0);
+	vec3 diffuse = diff * dirLight.color * dirLight.intensity;
+	
+	return diffuse + specular;
 }
 
 vec3 calcPointLight(PointLight pointLight, vec3 normal)
 {
 	vec3 lightDir = normalize(pointLight.position - vFragPos);
-    float difference = max(dot(normal, lightDir), 0.0);
+	vec3 viewDir = normalize(cameraPosition - vFragPos);
+	vec3 halfDir = normalize(lightDir + viewDir);
+	
+	float spec = pow(max(dot(normal, halfDir), 0.0), material.exponent);
+	vec3 specular = material.intensity * spec * pointLight.color;  
     
     float constant = pointLight.attenuation.x;
     float linear = pointLight.attenuation.y;
@@ -50,8 +72,11 @@ vec3 calcPointLight(PointLight pointLight, vec3 normal)
     
     float distance = length(pointLight.position - vFragPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance));
+    
+    float difference = max(dot(normal, lightDir), 0.0);
+	vec3 diffuse = difference * pointLight.color * pointLight.intensity * attenuation;
   	
-    return (difference * pointLight.color) * attenuation * pointLight.intensity;
+    return diffuse + specular;
 }
 
 void main()
@@ -73,7 +98,7 @@ void main()
 	vec3 ambientColor = vec3(1.0, 1.0, 1.0) * ambientStrength;
 	diffuse += ambientColor;
 	
-	vec3 result = diffuse * texture(texture0, vTexCoord).xyz;
+	vec3 result = diffuse * texture(material.diffuse, vTexCoord).xyz;
 
 	outColor = vec4(result, 1.0);
 }

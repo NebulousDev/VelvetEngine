@@ -8,6 +8,8 @@ uniform mat4 view;
 uniform mat4 perspective;
 uniform mat4 model;
 
+uniform vec3 cameraPosition;
+
 out vec3 vFragPos;
 out vec3 vNormal;
 out vec2 vTexCoord;
