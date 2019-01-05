@@ -140,4 +140,6 @@ public interface Graphics
 	boolean drawBuffers(RenderBuffer... buffers);
 	
 	boolean setViewport(int x, int y, int width, int height);
+
+	boolean vsync(boolean vsync);
 }

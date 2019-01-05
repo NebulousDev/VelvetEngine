@@ -85,7 +85,7 @@ public class Sandbox extends Game
 		
 		class RotatingComponent implements UpdateComponent
 		{
-			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.01f);
+			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 1f);
 
 			@Override
 			public void update(Game game, Entity entity, float delta)
@@ -106,7 +106,7 @@ public class Sandbox extends Game
 		
 		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 
-		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(default2, brick_n, 1.0f, 1024.0f);
+		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(brick, brick_n, 1.0f, 1024.0f);
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f), new Quaternion());
 		MeshComponent 			groundMesh 			= new MeshComponent(sponza);
@@ -116,7 +116,7 @@ public class Sandbox extends Game
 		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 2.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
 		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
-		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
+//		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
 		
 		MeshComponent			standardMesh		= new MeshComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
@@ -220,7 +220,7 @@ public class Sandbox extends Game
 	}
 	
 	float sensitivity = 0.04f;
-	float speed = 0.001f;
+	float speed = 0.15f;
 	
 	Quaternion pitch = new Quaternion();
 	Quaternion yaw = new Quaternion();

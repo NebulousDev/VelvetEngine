@@ -850,7 +850,14 @@ public class GLGraphics implements Graphics
 	public boolean setViewport(int x, int y, int width, int height)
 	{
 		GL11.glViewport(x, y, width, height);
-		return false;
+		return true;
+	}
+
+	@Override
+	public boolean vsync(boolean vsync)
+	{
+		GLFW.glfwSwapInterval(vsync ? 1 : 0);
+		return true;
 	}
 
 }

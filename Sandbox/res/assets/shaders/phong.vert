@@ -14,24 +14,14 @@ uniform vec3 cameraPosition;
 out vec3 vFragPos;
 out vec2 vTexCoord;
 out vec3 vNormal;
-out mat3 vTBN;
+out mat4 vView;
 
 void main()
 {
-	mat4 mvp = perspective * view * model;
-
-	mat3 inverseModel = mat3(transpose(inverse(model)));
-
-	vec3 n = normalize(inverseModel * normal);
-	vec3 t = normalize(inverseModel * tangent);
-	vec3 b = normalize(inverseModel * cross(normal, tangent));
-	
-	mat3 tbn = mat3(t, b, n);
-
 	vFragPos = vec3(model * vec4(position, 1.0));
 	vTexCoord = texCoord;
-	vNormal = inverseModel * normal;
-	vTBN = tbn;
+	vNormal = mat3(transpose(inverse(model))) * normal;
+	vView = perspective * view;
 
-	gl_Position = mvp * vec4(position, 1.0);
+	gl_Position = model * vec4(position, 1.0);
 }

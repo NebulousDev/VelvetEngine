@@ -45,7 +45,7 @@ public class PhongRenderer extends Renderer {
 	@Override
 	public void initialize(Game game, Graphics graphics)
 	{
-		this.drawShader = game.getResourceManager().getResource(ShaderProgram.class, "simple");
+		this.drawShader = game.getResourceManager().getResource(ShaderProgram.class, "phong");
 		this.quadShader = game.getResourceManager().getResource(ShaderProgram.class, "quad");
 		
 		this.window = game.getApplication().getWindow();
@@ -86,6 +86,8 @@ public class PhongRenderer extends Renderer {
 		graphics.setBufferData(renderQuadVBO, BufferType.VERTEX, vbo);
 		renderQuadIBO = graphics.createBuffer();
 		graphics.setBufferData(renderQuadIBO, BufferType.ELEMENT, ibo);
+		
+		graphics.vsync(true);
 	}
 	
 	@Override
@@ -104,7 +106,7 @@ public class PhongRenderer extends Renderer {
 		graphics.setViewport(0, 0, colorBuffer.getTexture().width(), colorBuffer.getTexture().height());
 		graphics.drawBuffers(colorBuffer, depthBuffer);
 	
-		graphics.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		graphics.setClearColor(0.0f, 0.1f, 0.12f, 0.0f);
 		graphics.clearBuffers();
 		
 		drawShader.bind(graphics);
@@ -219,11 +221,9 @@ public class PhongRenderer extends Renderer {
 			GL20.glEnableVertexAttribArray(0);	// Position
 			GL20.glEnableVertexAttribArray(1);  // TexCoord
 			GL20.glEnableVertexAttribArray(2);  // Normal
-			GL20.glEnableVertexAttribArray(3);  // Tangent
-			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 12 * Float.BYTES, 0);
-			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 12 * Float.BYTES, 3 * Float.BYTES);
-			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 12 * Float.BYTES, 5 * Float.BYTES);
-			GL20.glVertexAttribPointer(3, 3, GL11.GL_FLOAT, false, 12 * Float.BYTES, 8 * Float.BYTES);
+			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 0);
+			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
+			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
 			
 			// Draw sub-meshes
 			

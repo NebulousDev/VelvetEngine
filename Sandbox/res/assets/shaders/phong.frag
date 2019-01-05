@@ -38,15 +38,14 @@ uniform int pointLightCount;
 
 uniform Material material;
 
-in vec3 vFragPos;
-in vec2 vTexCoord;
-in vec3 vNormal;
-in mat3 vTBN;
+in vec3 gFragPos;
+in vec2 gTexCoord;
+in mat3 gTBN;
 
 vec3 calcDirectionalLight(DirectionLight dirLight, vec3 normal)
 {
 	vec3 lightDir = normalize(-dirLight.direction);
-	vec3 viewDir = normalize(-cameraPosition - vFragPos);
+	vec3 viewDir = normalize(-cameraPosition - gFragPos);
 	vec3 halfDir = normalize(lightDir + viewDir);
 	
 	float spec = pow(max(dot(normal, halfDir), 0.0), material.exponent);
@@ -60,15 +59,15 @@ vec3 calcDirectionalLight(DirectionLight dirLight, vec3 normal)
 
 vec3 calcPointLight(PointLight pointLight, vec3 normal)
 {
-	vec3 lightDir = normalize(pointLight.position - vFragPos);
-	vec3 viewDir = normalize(cameraPosition - vFragPos);
+	vec3 lightDir = normalize(pointLight.position - gFragPos);
+	vec3 viewDir = normalize(cameraPosition - gFragPos);
 	vec3 halfDir = normalize(lightDir + viewDir);
 	
     float constant = pointLight.attenuation.x;
     float linear = pointLight.attenuation.y;
     float quadratic = pointLight.attenuation.z;
     
-    float distance = length(pointLight.position - vFragPos);
+    float distance = length(pointLight.position - gFragPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance));
     
     float spec = pow(max(dot(normal, halfDir), 0.0), material.exponent);
@@ -80,18 +79,22 @@ vec3 calcPointLight(PointLight pointLight, vec3 normal)
     return diffuse + specular;
 }
 
-vec3 calcNormal(sampler2D normTexture, vec3 faceNormal)
+vec3 calcNormal(sampler2D normTexture)
 {
-	vec3 texNormal = vTBN * normalize(texture(normTexture, vTexCoord).rgb * 2.0);
-	return texNormal;
-	//return faceNormal;
+	const float normStrength = 1.0;
+
+	vec3 texNormal = texture(normTexture, gTexCoord).rgb;
+	texNormal = normalize(texNormal * 2.0 - 1.0);
+	texNormal = texNormal * vec3(normStrength, normStrength, 1.0);
+
+	return normalize(gTBN * texNormal);
 }
 
 void main()
 {
-	vec3 diffuse;
-
-	vec3 norm = calcNormal(material.normal, normalize(vNormal));
+	vec3 diffuse = vec3(0);
+	
+	vec3 norm = calcNormal(material.normal);
 	
 	// Directional Lights
 	for(int i = 0; i < min(dirLightCount, MAX_DIRECTIONAL_LIGHTS); i++)
@@ -106,7 +109,7 @@ void main()
 	vec3 ambientColor = vec3(1.0, 1.0, 1.0) * ambientStrength;
 	diffuse += ambientColor;
 	
-	vec3 result = diffuse * texture(material.diffuse, vTexCoord).rgb;
+	vec3 result = diffuse * texture(material.diffuse, gTexCoord).rgb;
 
 	fColorOut = result;
 }

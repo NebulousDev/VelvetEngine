@@ -8,5 +8,16 @@ uniform sampler2D diffuse;
 
 void main()
 {
-	outColor = texture(diffuse, vTexCoord);
+	const float hdrEffect = 0.0;
+
+	const float gamma = 2.2;
+    vec3 color = texture(diffuse, vTexCoord).rgb;
+  
+    // Exposure tone mapping
+    vec3 mapped = vec3(1.0) - exp(-color * 1.0);
+    
+    // Gamma correction 
+    mapped = pow(mapped, vec3(1.0 / gamma));
+  
+	outColor = mix(vec4(color, 1.0), vec4(mapped, 1.0), hdrEffect);
 }

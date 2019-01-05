@@ -36,6 +36,8 @@ public class ShaderProgram extends Resource
 		graphics.unbindProgram();
 	}
 
+	//TODO: This badly needs to be re-written
+	
 	@Override
 	protected Resource load(Game game, ResourceManager manager, String tag, String filepath)
 	{
@@ -56,14 +58,25 @@ public class ShaderProgram extends Resource
 		
 		String vert = FileUtils.readFileAsString(filename + ".vert");
 		String frag = FileUtils.readFileAsString(filename + ".frag");
+		String geom = null;
+
+		if(FileUtils.fileExists(filename + ".geom"))
+			geom = FileUtils.readFileAsString(filename + ".geom");
 		
 		Shader vertex = gfx.createShader(tag + "_vertex", ShaderType.SHADER_TYPE_VERTEX, vert);
 		Shader fragment = gfx.createShader(tag + "_fragment", ShaderType.SHADER_TYPE_FRAGMENT, frag);
+		Shader geometry = null;
+		
+		if(geom != null)
+			geometry = gfx.createShader(tag + "_geometry", ShaderType.SHADER_TYPE_GEOMETRY, geom);
 		
 		boolean result = false;
 		
 		result = gfx.attachShader(this, vertex);
 		result = gfx.attachShader(this, fragment);
+		
+		if(geometry != null)
+			result = gfx.attachShader(this, geometry);
 		
 		result = gfx.finalizeProgram(this);
 		
