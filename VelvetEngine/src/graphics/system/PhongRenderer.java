@@ -28,7 +28,9 @@ import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
 import graphics.component.PointLightComponent;
+import graphics.component.SpotLightComponent;
 import math.Matrix4f;
+import math.Vector3f;
 
 public class PhongRenderer extends Renderer {
 
@@ -129,6 +131,9 @@ public class PhongRenderer extends Renderer {
 
 		graphics.setUniform(graphics.getUniform(drawShader, "cameraPosition"), cameraTransform.position);
 		
+		graphics.setUniform(graphics.getUniform(drawShader, "ambientColor"), new Vector3f(1.0f, 1.0f, 1.0f));
+		graphics.setUniform(graphics.getUniform(drawShader, "ambientIntensity"), 0.0f);
+		
 		graphics.setUniform(graphics.getUniform(drawShader, "view"), view);
 		graphics.setUniform(graphics.getUniform(drawShader, "perspective"), perspective);
 		
@@ -153,6 +158,33 @@ public class PhongRenderer extends Renderer {
 			}
 			
 			graphics.setUniform(graphics.getUniform(drawShader, "dirLightCount"), dirLightCount);
+		}
+		
+		// Spot Lights
+		
+		Iterator<Long> spotLightEntityIterator = entityManager.getComponentTable().getEntityIterator(SpotLightComponent.class);
+	
+		if(spotLightEntityIterator != null)
+		{
+			int spotLightCount = 0;
+			while(spotLightEntityIterator.hasNext())
+			{
+				Long entityID = spotLightEntityIterator.next();
+				
+				SpotLightComponent spotLight = entityManager.getComponent(SpotLightComponent.class, entityID);
+				TransformComponent tansform = entityManager.getComponent(TransformComponent.class, entityID);
+				
+				graphics.setUniform(graphics.getUniform(drawShader, "spotLights[" + spotLightCount + "].position"), tansform.position);
+				graphics.setUniform(graphics.getUniform(drawShader, "spotLights[" + spotLightCount + "].direction"), spotLight.direction);
+				graphics.setUniform(graphics.getUniform(drawShader, "spotLights[" + spotLightCount + "].attenuation"), spotLight.attenuation);
+				graphics.setUniform(graphics.getUniform(drawShader, "spotLights[" + spotLightCount + "].color"), spotLight.color);
+				graphics.setUniform(graphics.getUniform(drawShader, "spotLights[" + spotLightCount + "].radius"), spotLight.radius);
+				graphics.setUniform(graphics.getUniform(drawShader, "spotLights[" + spotLightCount + "].intensity"), spotLight.intensity);
+				
+				spotLightCount++;
+			}
+			
+			graphics.setUniform(graphics.getUniform(drawShader, "spotLightCount"), spotLightCount);
 		}
 		
 		// Point Lights

@@ -1,6 +1,7 @@
 #version 330
 
 #define MAX_DIRECTIONAL_LIGHTS 4
+#define MAX_SPOT_LIGHTS 16
 #define MAX_POINT_LIGHTS 16
 
 layout (location = 0) out vec3 fColorOut;
@@ -9,6 +10,16 @@ struct DirectionLight
 {
 	vec3 direction;
 	vec3 color;
+	float intensity;
+};
+
+struct SpotLight
+{
+	vec3 position;
+	vec3 direction;
+	vec3 attenuation;
+	vec3 color;
+	float radius;
 	float intensity;
 };
 
@@ -30,8 +41,14 @@ struct Material
 
 uniform vec3 cameraPosition;
 
+uniform vec3 ambientColor;
+uniform float ambientIntensity;
+
 uniform DirectionLight dirLights[MAX_DIRECTIONAL_LIGHTS];
 uniform int dirLightCount;
+
+uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
+uniform int spotLightCount;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform int pointLightCount;
@@ -55,6 +72,36 @@ vec3 calcDirectionalLight(DirectionLight dirLight, vec3 normal)
 	vec3 diffuse = diff * dirLight.color * dirLight.intensity;
 	
 	return diffuse + specular;
+}
+
+vec3 calcSpotLight(SpotLight spotLight, vec3 normal)
+{
+	vec3 lightDir = normalize(spotLight.position - gFragPos);
+	
+	float theta = dot(lightDir, normalize(-spotLight.direction));
+	
+	if(theta > spotLight.radius)
+	{
+		vec3 viewDir = normalize(cameraPosition - gFragPos);
+		vec3 halfDir = normalize(lightDir + viewDir);
+	
+		float constant = spotLight.attenuation.x;
+	    float linear = spotLight.attenuation.y;
+	    float quadratic = spotLight.attenuation.z;
+	    
+	    float distance = length(spotLight.position - gFragPos);
+	    float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance));
+	    
+	    float spec = pow(max(dot(normal, halfDir), 0.0), material.exponent);
+		vec3 specular = spec * spotLight.color * material.intensity * attenuation;  
+	    
+	    float difference = max(dot(normal, lightDir), 0.0);
+		vec3 diffuse = difference * spotLight.color * spotLight.intensity * attenuation;
+		
+		return diffuse + specular;
+	}
+  	
+    return vec3(0);
 }
 
 vec3 calcPointLight(PointLight pointLight, vec3 normal)
@@ -92,24 +139,25 @@ vec3 calcNormal(sampler2D normTexture)
 
 void main()
 {
-	vec3 diffuse = vec3(0);
+	vec3 result = vec3(0);
 	
-	vec3 norm = calcNormal(material.normal);
+	vec3 normal = calcNormal(material.normal);
 	
 	// Directional Lights
 	for(int i = 0; i < min(dirLightCount, MAX_DIRECTIONAL_LIGHTS); i++)
-		diffuse += calcDirectionalLight(dirLights[i], norm);
+		result += calcDirectionalLight(dirLights[i], normal);
+		
+	// Spotlight Lights
+	for(int i = 0; i < min(spotLightCount, MAX_SPOT_LIGHTS); i++)
+		result += calcSpotLight(spotLights[i], normal);
 	
 	// Point Lights
 	for(int i = 0; i < min(pointLightCount, MAX_POINT_LIGHTS); i++)
-		diffuse += calcPointLight(pointLights[i], norm);
+		result += calcPointLight(pointLights[i], normal);
 	
 	// Ambient Color
-	float ambientStrength = 0.1;
-	vec3 ambientColor = vec3(1.0, 1.0, 1.0) * ambientStrength;
-	diffuse += ambientColor;
+	vec3 ambient = ambientColor * ambientIntensity;
+	result += ambient;
 	
-	vec3 result = diffuse * texture(material.diffuse, gTexCoord).rgb;
-
-	fColorOut = result;
+	fColorOut = result * texture(material.diffuse, gTexCoord).rgb;
 }

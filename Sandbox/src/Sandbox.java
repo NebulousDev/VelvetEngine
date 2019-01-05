@@ -15,6 +15,7 @@ import graphics.component.MeshComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
 import graphics.component.PointLightComponent;
+import graphics.component.SpotLightComponent;
 import graphics.system.LineRenderer;
 import graphics.system.PhongRenderer;
 import input.Buttons;
@@ -123,6 +124,8 @@ public class Sandbox extends Game
 		
 		/* Setup Lights */
 		
+		// DIRECTIONAL LIGHTS
+		
 		Vector3f direction = new Vector3f(0.0f, -1.0f, 0.5f);
 		Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
 		float intensity = 0.2f;
@@ -136,6 +139,8 @@ public class Sandbox extends Game
 		Entity dirLight1Entity = getEntityManager().createEntity("dirLight1", dirLightComponent1);
 		Entity dirLight2Entity = getEntityManager().createEntity("dirLight2", dirLightComponent2);
 		
+		// POINT LIGHTS
+		
 		Vector3f position3 = new Vector3f(-20.0f, 5.0f, 0.0f);
 		Vector3f color3 = new Vector3f(1.0f, 0.0f, 0.0f);
 		Vector3f attenuation3 = new Vector3f(50.0f, 0.01f, 5.0f);
@@ -146,20 +151,33 @@ public class Sandbox extends Game
 		Vector3f position4 = new Vector3f(0.0f, 5.0f, 0.0f);
 		Vector3f color4 = new Vector3f(0.0f, 1.0f, 0.0f);
 		Vector3f attenuation4 = new Vector3f(50.0f, 0.01f, 5.0f);
-		float intensity4 = 100.0f;
+		float intensity4 = 200.0f;
 		PointLightComponent pointLightComponnet2 = new PointLightComponent(attenuation4, color4, intensity4);
 		TransformComponent pointLightTransform2 = new TransformComponent(position4);
 		
 		Vector3f position5 = new Vector3f(20.0f, 5.0f, 0.0f);
 		Vector3f color5 = new Vector3f(0.0f, 0.0f, 1.0f);
 		Vector3f attenuation5 = new Vector3f(50.0f, 0.01f, 5.0f);
-		float intensity5 = 100.0f;
+		float intensity5 = 200.0f;
 		PointLightComponent pointLightComponnet3 = new PointLightComponent(attenuation5, color5, intensity5);
 		TransformComponent pointLightTransform3 = new TransformComponent(position5);
 		
 		Entity pointLight1Entity = getEntityManager().createEntity("pointLight1", pointLightComponnet1, pointLightTransform1);
 		Entity pointLight2Entity = getEntityManager().createEntity("pointLight2", pointLightComponnet2, pointLightTransform2);
 		Entity pointLight3Entity = getEntityManager().createEntity("pointLight3", pointLightComponnet3, pointLightTransform3);
+		
+		// SPOT LIGHTS
+		
+		Vector3f position6 = new Vector3f(40.0f, 10.0f, 0.0f);
+		Vector3f direction6 = new Vector3f(0.0f, -1.0f, 0.0f);
+		Vector3f color6 = new Vector3f(1.0f, 1.0f, 1.0f);
+		Vector3f attenuation6 = new Vector3f(50.0f, 0.01f, 5.0f);
+		float radius = 0.8f;
+		float intensity6 = 300.0f;
+		SpotLightComponent spotLightComponnet1 = new SpotLightComponent(direction6, attenuation6, color6, radius, intensity6);
+		TransformComponent spotLightTransform1 = new TransformComponent(position6);
+		
+		Entity spotLight1Entity = getEntityManager().createEntity("spotLight1", spotLightComponnet1, spotLightTransform1);
 		
 		/* Setup Camera */
 		
