@@ -18,13 +18,13 @@ import graphics.Graphics.BufferType;
 import graphics.Graphics.DrawMode;
 import graphics.Graphics.RenderBufferType;
 import graphics.GraphicsBuffer;
-import graphics.Mesh.SubMesh;
+import graphics.Mesh;
 import graphics.RenderBuffer;
 import graphics.ShaderProgram;
 import graphics.TextureFormat;
 import graphics.Uniform;
 import graphics.component.DirectionalLightComponent;
-import graphics.component.MeshComponent;
+import graphics.component.ModelComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
 import graphics.component.PointLightComponent;
@@ -239,28 +239,31 @@ public class PhongRenderer extends Renderer {
 			// Mesh
 			
 			TransformComponent 		transform 	= entityManager.getComponent(TransformComponent.class, entityID);
-			MeshComponent 			mesh 		= entityManager.getComponent(MeshComponent.class, entityID);
+			ModelComponent 			mesh 		= entityManager.getComponent(ModelComponent.class, entityID);
 			
 			transform.getModelMatrix(model);
 			graphics.setUniform(modelUniform, model);
 			
-			graphics.bindBuffer(mesh.mesh.vbo);
-			graphics.bindBuffer(mesh.mesh.ibo);
-			
-			// Attribute Layout
-			// TODO: investigate moving to begin()
-			
-			GL20.glEnableVertexAttribArray(0);	// Position
-			GL20.glEnableVertexAttribArray(1);  // TexCoord
-			GL20.glEnableVertexAttribArray(2);  // Normal
-			GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 0);
-			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
-			GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
-			
 			// Draw sub-meshes
 			
-			for(SubMesh subMesh : mesh.mesh.subMeshes)
-				graphics.drawElementsRange(DrawMode.TRIANGLES, subMesh.offset, subMesh.count);
+			for(Mesh subMesh : mesh.model.meshes)
+			{
+				graphics.bindBuffer(subMesh.vertexBuffer);
+				graphics.bindBuffer(subMesh.indexBuffer);
+				
+				// Attribute Layout
+				// TODO: investigate moving to begin()
+				
+				GL20.glEnableVertexAttribArray(0);	// Position
+				GL20.glEnableVertexAttribArray(1);  // TexCoord
+				GL20.glEnableVertexAttribArray(2);  // Normal
+				GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 0);
+				GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
+				GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
+				
+				graphics.drawElements(DrawMode.TRIANGLES, subMesh.indexSize);
+			
+			}
 		}
 		
 		drawShader.unbind(graphics);

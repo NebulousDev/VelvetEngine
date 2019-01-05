@@ -8,7 +8,7 @@ uniform sampler2D diffuse;
 
 void main()
 {
-	const float hdrEffect = 0.0;
+	const float hdrEffect = 1.0;
 
 	const float gamma = 2.2;
     vec3 color = texture(diffuse, vTexCoord).rgb;

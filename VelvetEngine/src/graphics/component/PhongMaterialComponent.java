@@ -7,6 +7,7 @@ public class PhongMaterialComponent implements Component {
 
 	public Texture 	diffuse;
 	public Texture 	normal;
+	public Texture 	specular;
 	public float	intensity;
 	public float 	exponent;
 	

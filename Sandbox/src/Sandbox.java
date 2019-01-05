@@ -7,11 +7,11 @@ import entity.camera.PerspectiveCameraComponent;
 import entity.component.TransformComponent;
 import entity.component.UpdateComponent;
 import graphics.Graphics;
-import graphics.Mesh;
+import graphics.Model;
 import graphics.Texture;
 import graphics.component.DirectionalLightComponent;
 import graphics.component.LineRenderComponent;
-import graphics.component.MeshComponent;
+import graphics.component.ModelComponent;
 import graphics.component.PhongMaterialComponent;
 import graphics.component.PhongRenderComponent;
 import graphics.component.PointLightComponent;
@@ -65,22 +65,20 @@ public class Sandbox extends Game
 		gfx.setClearColor(0.0f, 0.06f, 0.08f, 1.0f);
 		
 		ResourceManager resourceManager = getResourceManager();
-		resourceManager.addPath("assets/models");
-		resourceManager.addPath("assets/shaders");
-		resourceManager.addPath("assets/textures");
+		resourceManager.addPath("assets");
 		
 		/* Load Resources */
 		
-		Mesh 			testScene	= resourceManager.getResource(Mesh.class, "testscene");
-		Mesh 			sponza 		= resourceManager.getResource(Mesh.class, "sponza");
-		Mesh  			standard 	= resourceManager.getResource(Mesh.class, "standard");
-		Mesh  			dragon 		= resourceManager.getResource(Mesh.class, "dragon");
-		Mesh  			bunny 		= resourceManager.getResource(Mesh.class, "bunny");
-		Texture 		default1 	= resourceManager.getResource(Texture.class, "default1");
-		Texture 		default2 	= resourceManager.getResource(Texture.class, "default2");
-		Texture 		marble 		= resourceManager.getResource(Texture.class, "marble");
-		Texture 		brick 		= resourceManager.getResource(Texture.class, "brickwall");
-		Texture 		brick_n 	= resourceManager.getResource(Texture.class, "brickwall_n");
+		Model 		testScene	= resourceManager.getResource(Model.class, "testscene");
+		Model 		sponza 		= resourceManager.getResource(Model.class, "sponza");
+		Model  		standard 	= resourceManager.getResource(Model.class, "standard");
+		Model  		dragon 		= resourceManager.getResource(Model.class, "dragon");
+		Model  		bunny 		= resourceManager.getResource(Model.class, "bunny");
+		Texture 	default1 	= resourceManager.getResource(Texture.class, "default1");
+		Texture 	default2 	= resourceManager.getResource(Texture.class, "default2");
+		Texture 	marble 		= resourceManager.getResource(Texture.class, "marble");
+		Texture 	brick 		= resourceManager.getResource(Texture.class, "brickwall");
+		Texture 	brick_n 	= resourceManager.getResource(Texture.class, "brickwall_n");
 		
 		/* Setup Entities */
 		
@@ -110,16 +108,16 @@ public class Sandbox extends Game
 		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(brick, brick_n, 1.0f, 1024.0f);
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f), new Quaternion());
-		MeshComponent 			groundMesh 			= new MeshComponent(sponza);
+		ModelComponent 			groundMesh 			= new ModelComponent(sponza);
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
 		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, defaultMaterial, groundRender);
 		
 		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 2.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
-		MeshComponent 			bunnyMesh 			= new MeshComponent(bunny);
+		ModelComponent 			bunnyMesh 			= new ModelComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
-//		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
+		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
 		
-		MeshComponent			standardMesh		= new MeshComponent(standard);
+		ModelComponent			standardMesh		= new ModelComponent(standard);
 		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
 		
 		/* Setup Lights */
@@ -144,7 +142,7 @@ public class Sandbox extends Game
 		Vector3f position3 = new Vector3f(-20.0f, 5.0f, 0.0f);
 		Vector3f color3 = new Vector3f(1.0f, 0.0f, 0.0f);
 		Vector3f attenuation3 = new Vector3f(50.0f, 0.01f, 5.0f);
-		float intensity3 = 100.0f;
+		float intensity3 = 200.0f;
 		PointLightComponent pointLightComponnet1 = new PointLightComponent(attenuation3, color3, intensity3);
 		TransformComponent pointLightTransform1 = new TransformComponent(position3);
 		
@@ -262,8 +260,8 @@ public class Sandbox extends Game
 			pitch.setAxisAngle(Axis.RIGHT, Input.getMouseRelative().y * sensitivity);
 			yaw.setAxisAngle(Axis.UP, Input.getMouseRelative().x * sensitivity);
 			
-			cameraTransform.orientation.rotateLocal(pitch);
 			cameraTransform.orientation.rotate(yaw);
+			cameraTransform.orientation.rotateLocal(pitch);
 		}
 		
 		if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);

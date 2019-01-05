@@ -13,7 +13,7 @@ public abstract class Resource {
 	
 	protected abstract void release(Game game, ResourceManager manager);
 
-	public void unload()
+	public void unload(ResourceManager manager)
 	{
 		manager.unload(this);
 	}
@@ -28,7 +28,7 @@ public abstract class Resource {
 		return filepath;
 	}
 
-	public boolean isLoaded()
+	public boolean isLoaded(ResourceManager manager)
 	{
 		return manager.isLoaded(name);
 	}
