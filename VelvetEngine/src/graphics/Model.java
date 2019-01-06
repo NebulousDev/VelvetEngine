@@ -14,7 +14,7 @@ public class Model extends Resource
 	@Override
 	protected Resource load(Game game, ResourceManager manager, String tag, String filepath)
 	{
-		return ModelLoader.load(this, game.getGraphics(), filepath, false, false, false, false);
+		return ModelLoader.load(this, manager, game.getGraphics(), filepath, false, false, false, false);
 	}
 
 	@Override

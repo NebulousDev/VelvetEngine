@@ -18,9 +18,11 @@ import graphics.Graphics.BufferType;
 import graphics.Graphics.DrawMode;
 import graphics.Graphics.RenderBufferType;
 import graphics.GraphicsBuffer;
+import graphics.Material;
 import graphics.Mesh;
 import graphics.RenderBuffer;
 import graphics.ShaderProgram;
+import graphics.Texture;
 import graphics.TextureFormat;
 import graphics.Uniform;
 import graphics.component.DirectionalLightComponent;
@@ -43,7 +45,7 @@ public class PhongRenderer extends Renderer {
 	private GraphicsBuffer	renderQuadIBO;
 	
 	private Window 			window;
-
+	
 	@Override
 	public void initialize(Game game, Graphics graphics)
 	{
@@ -62,7 +64,7 @@ public class PhongRenderer extends Renderer {
 		
 		graphics.bindFrameBuffer(frameBuffer);
 		
-		this.colorBuffer = graphics.createRenderBuffer(RenderBufferType.COLOR, 0, TextureFormat.TEXTURE_FORMAT_FLOAT_RGB, width, height, 0);
+		this.colorBuffer = graphics.createRenderBuffer(RenderBufferType.COLOR, 0, TextureFormat.TEXTURE_FORMAT_FLOAT_RGBA, width, height, 0);
 		this.depthBuffer = graphics.createRenderBuffer(RenderBufferType.DEPTH_STENCIL, 0, TextureFormat.TEXTURE_FORMAT_DEPTH_STENCIL, width, height, 0);
 		
 		int error = GL11.glGetError();
@@ -117,6 +119,8 @@ public class PhongRenderer extends Renderer {
 		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		// View-Perspective
 		
@@ -222,19 +226,19 @@ public class PhongRenderer extends Renderer {
 			
 			// Material
 			
-			PhongMaterialComponent 	material	= entityManager.getComponent(PhongMaterialComponent.class, entityID);
-
-			graphics.setUniform(graphics.getUniform(drawShader, "material.diffuse"), 0);
-			graphics.setUniform(graphics.getUniform(drawShader, "material.normal"), 1);
-			
-			graphics.setActiveTextureSlot(0);
-			graphics.bindTexture(material.diffuse);
-			
-			graphics.setActiveTextureSlot(1);
-			graphics.bindTexture(material.normal);
-			
-			graphics.setUniform(graphics.getUniform(drawShader, "material.intensity"), material.intensity);
-			graphics.setUniform(graphics.getUniform(drawShader, "material.exponent"), material.exponent);
+			PhongMaterialComponent materialComponent = entityManager.getComponent(PhongMaterialComponent.class, entityID);
+//
+//			graphics.setUniform(graphics.getUniform(drawShader, "material.diffuse"), 0);
+//			graphics.setUniform(graphics.getUniform(drawShader, "material.normal"), 1);
+//			
+//			graphics.setActiveTextureSlot(0);
+//			graphics.bindTexture(material.diffuse);
+//			
+//			graphics.setActiveTextureSlot(1);
+//			graphics.bindTexture(material.normal);
+//			
+//			graphics.setUniform(graphics.getUniform(drawShader, "material.intensity"), material.intensity);
+//			graphics.setUniform(graphics.getUniform(drawShader, "material.exponent"), material.exponent);
 			
 			// Mesh
 			
@@ -243,6 +247,12 @@ public class PhongRenderer extends Renderer {
 			
 			transform.getModelMatrix(model);
 			graphics.setUniform(modelUniform, model);
+			
+			
+			Texture diffuseTexture = null;
+			Texture normalTexture = null;
+			float specularExponent = 0.0f;
+			float specularIntensity = 0.0f;
 			
 			// Draw sub-meshes
 			
@@ -261,6 +271,44 @@ public class PhongRenderer extends Renderer {
 				GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
 				GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
 				
+				
+				
+				Material material = subMesh.material;
+				
+				if(material == null || material.diffuse == null)
+					diffuseTexture = materialComponent.diffuse;
+				else
+					diffuseTexture = material.diffuse;
+					
+				if(material == null || material.normal == null)
+					normalTexture = materialComponent.normal;
+				else
+					normalTexture = material.normal;	
+				
+				if(material == null)
+					specularExponent = materialComponent.exponent;
+				else
+					specularExponent = material.exponent;
+				
+				if(material == null)
+					specularIntensity = materialComponent.intensity;
+				else
+					specularIntensity = material.intensity;
+				
+				graphics.setUniform(graphics.getUniform(drawShader, "material.diffuse"), 0);
+				graphics.setUniform(graphics.getUniform(drawShader, "material.normal"), 1);
+				
+				graphics.setActiveTextureSlot(0);
+				graphics.bindTexture(diffuseTexture);
+				
+				graphics.setActiveTextureSlot(1);
+				graphics.bindTexture(normalTexture);
+				
+				graphics.setUniform(graphics.getUniform(drawShader, "material.intensity"), specularIntensity);
+				graphics.setUniform(graphics.getUniform(drawShader, "material.exponent"), specularExponent);
+				
+				
+				
 				graphics.drawElements(DrawMode.TRIANGLES, subMesh.indexSize);
 			
 			}
@@ -276,6 +324,7 @@ public class PhongRenderer extends Renderer {
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_BLEND);
 		
 		// Render quad
 		

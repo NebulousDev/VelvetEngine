@@ -14,7 +14,7 @@ void main()
     vec3 color = texture(diffuse, vTexCoord).rgb;
   
     // Exposure tone mapping
-    vec3 mapped = vec3(1.0) - exp(-color * 0.5);
+    vec3 mapped = vec3(1.0) - exp(-color * 0.1);
     
     // Gamma correction 
     mapped = pow(mapped, vec3(1.0 / gamma));

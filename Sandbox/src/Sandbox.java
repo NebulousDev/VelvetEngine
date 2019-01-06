@@ -126,7 +126,7 @@ public class Sandbox extends Game
 		
 		Vector3f direction = new Vector3f(0.0f, -1.0f, 0.5f);
 		Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
-		float intensity = 0.2f;
+		float intensity = 0.8f;
 		DirectionalLightComponent dirLightComponent1 = new DirectionalLightComponent(direction, color, intensity);
 		
 		Vector3f direction2 = new Vector3f(0.0f, -1.0f, -0.8f);

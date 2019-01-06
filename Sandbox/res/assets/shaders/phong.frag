@@ -4,7 +4,7 @@
 #define MAX_SPOT_LIGHTS 16
 #define MAX_POINT_LIGHTS 16
 
-layout (location = 0) out vec3 fColorOut;
+layout (location = 0) out vec4 fColorOut;
 
 struct DirectionLight
 {
@@ -159,5 +159,7 @@ void main()
 	vec3 ambient = ambientColor * ambientIntensity;
 	result += ambient;
 	
-	fColorOut = result * texture(material.diffuse, gTexCoord).rgb;
+	vec4 texture = texture(material.diffuse, gTexCoord);
+	
+	fColorOut = vec4(result, 1.0) * texture;
 }

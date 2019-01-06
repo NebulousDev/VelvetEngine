@@ -35,7 +35,12 @@ public class ResourceManager {
 		{
 			File folder = path.toFile();
 			for(File f : folder.listFiles())
-				resourceFilepaths.put(FileUtils.stripExtention(f.getName()), f.getPath());
+			{
+				if(f.isDirectory())
+					addPath(f.getPath());
+				else
+					resourceFilepaths.put(FileUtils.stripExtention(f.getName()), f.getPath());
+			}
 			
 			resourceFolders.add(filepath);
 		}
@@ -97,6 +102,7 @@ public class ResourceManager {
 		return type.cast(loadedResources.get(tag));
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public <T extends Resource> void unload(T resource)
 	{
 		if(loadedResources.containsKey(resource))
