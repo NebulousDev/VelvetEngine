@@ -271,8 +271,6 @@ public class PhongRenderer extends Renderer {
 				GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8 * Float.BYTES, 3 * Float.BYTES);
 				GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8 * Float.BYTES, 5 * Float.BYTES);
 				
-				
-				
 				Material material = subMesh.material;
 				
 				if(material == null || material.diffuse == null)
@@ -283,7 +281,7 @@ public class PhongRenderer extends Renderer {
 				if(material == null || material.normal == null)
 					normalTexture = materialComponent.normal;
 				else
-					normalTexture = material.normal;	
+					normalTexture = material.normal;
 				
 				if(material == null)
 					specularExponent = materialComponent.exponent;

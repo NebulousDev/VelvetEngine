@@ -640,55 +640,53 @@ public class Matrix4f {
  	 */
  	public Matrix4f invert(Matrix4f dest)
 	{
- 		dest.clear();
- 		
-		float a = elements[0 + 0 * 4] * elements[1 + 1 * 4] - elements[0 + 1 * 4] * elements[1 + 0 * 4];
-		float b = elements[0 + 0 * 4] * elements[1 + 2 * 4] - elements[0 + 2 * 4] * elements[1 + 0 * 4];
-		float c = elements[0 + 0 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 0 * 4];
-		float d = elements[0 + 1 * 4] * elements[1 + 2 * 4] - elements[0 + 2 * 4] * elements[1 + 1 * 4];
-		float e = elements[0 + 1 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 1 * 4];
-		float f = elements[0 + 2 * 4] * elements[1 + 3 * 4] - elements[0 + 3 * 4] * elements[1 + 2 * 4];
-		float g = elements[2 + 0 * 4] * elements[3 + 1 * 4] - elements[2 + 1 * 4] * elements[3 + 0 * 4];
-		float h = elements[2 + 0 * 4] * elements[3 + 2 * 4] - elements[2 + 2 * 4] * elements[3 + 0 * 4];
-		float i = elements[2 + 0 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 0 * 4];
-		float j = elements[2 + 1 * 4] * elements[3 + 2 * 4] - elements[2 + 2 * 4] * elements[3 + 1 * 4];
-		float k = elements[2 + 1 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 1 * 4];
-		float l = elements[2 + 2 * 4] * elements[3 + 3 * 4] - elements[2 + 3 * 4] * elements[3 + 2 * 4];
+		float a = elements[0 + 0 * 4] * elements[1 + 1 * 4] - elements[1 + 0 * 4] * elements[0 + 1 * 4];
+		float b = elements[0 + 0 * 4] * elements[2 + 1 * 4] - elements[2 + 0 * 4] * elements[0 + 1 * 4];
+		float c = elements[0 + 0 * 4] * elements[3 + 1 * 4] - elements[3 + 0 * 4] * elements[0 + 1 * 4];
+		float d = elements[1 + 0 * 4] * elements[2 + 1 * 4] - elements[2 + 0 * 4] * elements[1 + 1 * 4];
+		float e = elements[1 + 0 * 4] * elements[3 + 1 * 4] - elements[3 + 0 * 4] * elements[1 + 1 * 4];
+		float f = elements[2 + 0 * 4] * elements[3 + 1 * 4] - elements[3 + 0 * 4] * elements[2 + 1 * 4];
+		float g = elements[0 + 2 * 4] * elements[1 + 3 * 4] - elements[1 + 2 * 4] * elements[0 + 3 * 4];
+		float h = elements[0 + 2 * 4] * elements[2 + 3 * 4] - elements[2 + 2 * 4] * elements[0 + 3 * 4];
+		float i = elements[0 + 2 * 4] * elements[3 + 3 * 4] - elements[3 + 2 * 4] * elements[0 + 3 * 4];
+		float j = elements[1 + 2 * 4] * elements[2 + 3 * 4] - elements[2 + 2 * 4] * elements[1 + 3 * 4];
+		float k = elements[1 + 2 * 4] * elements[3 + 3 * 4] - elements[3 + 2 * 4] * elements[1 + 3 * 4];
+		float l = elements[2 + 2 * 4] * elements[3 + 3 * 4] - elements[3 + 2 * 4] * elements[2 + 3 * 4];
 		
 		float det = 1.0f / (a * l - b * k + c * j + d * i - e * h + f * g);
 		
-		float m00 = (elements[1 + 1 * 4] * l - elements[1 + 2 * 4] * k + elements[1 + 3 * 4] * j) * det;
-		float m01 = (-elements[0 + 1 * 4] * l + elements[0 + 2 * 4] * k - elements[0 + 3 * 4] * j) * det;
-		float m02 = (elements[3 + 1 * 4] * f - elements[3 + 2 * 4] * e + elements[3 + 3 * 4] * d) * det;
-		float m03 = (-elements[2 + 1 * 4] * f + elements[2 + 2 * 4] * e - elements[2 + 3 * 4] * d) * det;
-		float m10 = (-elements[1 + 0 * 4] * l + elements[1 + 2 * 4] * i - elements[1 + 3 * 4] * h) * det;
-		float m11 = (elements[0 + 0 * 4] * l - elements[0 + 2 * 4] * i + elements[0 + 3 * 4] * h) * det;
-		float m12 = (-elements[3 + 0 * 4] * f + elements[3 + 2 * 4] * c - elements[3 + 3 * 4] * b) * det;
-		float m13 = (elements[2 + 0 * 4] * f - elements[2 + 2 * 4] * c + elements[2 + 3 * 4] * b) * det;
-		float m20 = (elements[1 + 0 * 4] * k - elements[1 + 1 * 4] * i + elements[1 + 3 * 4] * g) * det;
-		float m21 = (-elements[0 + 0 * 4] * k + elements[0 + 1 * 4] * i - elements[0 + 3 * 4] * g) * det;
-		float m22 = (elements[3 + 0 * 4] * e - elements[3 + 1 * 4] * c + elements[3 + 3 * 4] * a) * det;
-		float m23 = (-elements[2 + 0 * 4] * e + elements[2 + 1 * 4] * c - elements[2 + 3 * 4] * a) * det;
-		float m30 = (-elements[1 + 0 * 4] * j + elements[1 + 1 * 4] * h - elements[1 + 2 * 4] * g) * det;
-		float m31 = (elements[0 + 0 * 4] * j - elements[0 + 1 * 4] * h + elements[0 + 2 * 4] * g) * det;
-		float m32 = (-elements[3 + 0 * 4] * d + elements[3 + 1 * 4] * b - elements[3 + 2 * 4] * a) * det;
-		float m33 = (elements[2 + 0 * 4] * d - elements[2 + 1 * 4] * b + elements[2 + 2 * 4] * a) * det;
+		float m00 = ( elements[1 + 1 * 4] * l - elements[2 + 1 * 4] * k + elements[3 + 1 * 4] * j) * det;
+		float m10 = (-elements[1 + 0 * 4] * l + elements[2 + 0 * 4] * k - elements[3 + 0 * 4] * j) * det;
+		float m20 = ( elements[1 + 3 * 4] * f - elements[2 + 3 * 4] * e + elements[3 + 3 * 4] * d) * det;
+		float m30 = (-elements[1 + 2 * 4] * f + elements[2 + 2 * 4] * e - elements[3 + 2 * 4] * d) * det;
+		float m01 = (-elements[0 + 1 * 4] * l + elements[2 + 1 * 4] * i - elements[3 + 1 * 4] * h) * det;
+		float m11 = ( elements[0 + 0 * 4] * l - elements[2 + 0 * 4] * i + elements[3 + 0 * 4] * h) * det;
+		float m21 = (-elements[0 + 3 * 4] * f + elements[2 + 3 * 4] * c - elements[3 + 3 * 4] * b) * det;
+		float m31 = ( elements[0 + 2 * 4] * f - elements[2 + 2 * 4] * c + elements[3 + 2 * 4] * b) * det;
+		float m02 = ( elements[0 + 1 * 4] * k - elements[1 + 1 * 4] * i + elements[3 + 1 * 4] * g) * det;
+		float m12 = (-elements[0 + 0 * 4] * k + elements[1 + 0 * 4] * i - elements[3 + 0 * 4] * g) * det;
+		float m22 = ( elements[0 + 3 * 4] * e - elements[1 + 3 * 4] * c + elements[3 + 3 * 4] * a) * det;
+		float m32 = (-elements[0 + 2 * 4] * e + elements[1 + 2 * 4] * c - elements[3 + 2 * 4] * a) * det;
+		float m03 = (-elements[0 + 1 * 4] * j + elements[1 + 1 * 4] * h - elements[2 + 1 * 4] * g) * det;
+		float m13 = ( elements[0 + 0 * 4] * j - elements[1 + 0 * 4] * h + elements[2 + 0 * 4] * g) * det;
+		float m23 = (-elements[0 + 3 * 4] * d + elements[1 + 3 * 4] * b - elements[2 + 3 * 4] * a) * det;
+		float m33 = ( elements[0 + 2 * 4] * d - elements[1 + 2 * 4] * b + elements[2 + 2 * 4] * a) * det;
 		
 		dest.elements[0 + 0 * 0] = m00;
-		dest.elements[0 + 1 * 4] = m01;
-		dest.elements[0 + 2 * 4] = m02;
-		dest.elements[0 + 3 * 4] = m03;
 		dest.elements[1 + 0 * 4] = m10;
-		dest.elements[1 + 1 * 4] = m11;
-		dest.elements[1 + 2 * 4] = m12;
-		dest.elements[1 + 3 * 4] = m13;
 		dest.elements[2 + 0 * 4] = m20;
-		dest.elements[2 + 1 * 4] = m21;
-		dest.elements[2 + 2 * 4] = m22;
-		dest.elements[2 + 3 * 4] = m23;
 		dest.elements[3 + 0 * 4] = m30;
+		dest.elements[0 + 1 * 4] = m01;
+		dest.elements[1 + 1 * 4] = m11;
+		dest.elements[2 + 1 * 4] = m21;
 		dest.elements[3 + 1 * 4] = m31;
+		dest.elements[0 + 2 * 4] = m02;
+		dest.elements[1 + 2 * 4] = m12;
+		dest.elements[2 + 2 * 4] = m22;
 		dest.elements[3 + 2 * 4] = m32;
+		dest.elements[0 + 3 * 4] = m03;
+		dest.elements[1 + 3 * 4] = m13;
+		dest.elements[2 + 3 * 4] = m23;
 		dest.elements[3 + 3 * 4] = m33;
 
 		return this;
