@@ -2,7 +2,7 @@ package input;
 
 import org.lwjgl.glfw.GLFW;
 
-public enum Buttons
+public enum MouseButton
 {
 	BUTTON_LEFT(GLFW.GLFW_MOUSE_BUTTON_LEFT),
 	BUTTON_RIGHT(GLFW.GLFW_MOUSE_BUTTON_RIGHT),
@@ -18,7 +18,7 @@ public enum Buttons
 	
 	private int id;
 	
-	Buttons(int id) { this.id = id; }
+	MouseButton(int id) { this.id = id; }
 
 	public int getId() { return id; }
 }

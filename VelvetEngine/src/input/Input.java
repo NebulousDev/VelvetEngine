@@ -106,17 +106,17 @@ public class Input
 		if(captured) setMouse(window.getCenter());
 	}
 	
-	public static boolean buttonHeld(Buttons button)
+	public static boolean buttonHeld(MouseButton button)
 	{
 		return buttons[button.getId()];
 	}
 	
-	public static boolean buttonPressed(Buttons button)
+	public static boolean buttonPressed(MouseButton button)
 	{
 		return buttons[button.getId()] && !buttonsLast[button.getId()];
 	}
 	
-	public static boolean buttonRelease(Buttons button)
+	public static boolean buttonRelease(MouseButton button)
 	{
 		return !buttons[button.getId()] && buttonsLast[button.getId()];
 	}
@@ -160,7 +160,6 @@ public class Input
 	
 	public static Vector2f getMouseRelative()
 	{
-		
 		return mouseRelative;
 	}
 	

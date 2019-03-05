@@ -9,7 +9,8 @@ import entity.component.UpdateComponent;
 
 public class UpdateSystem implements System {
 	
-	public void updateAll(Game game, EntityManager manager, float delta)
+	@Override
+	public void update(Game game, EntityManager manager, float delta)
 	{
 		Iterator<Long> iterator = manager.getComponentTable().getEntityIterator(UpdateComponent.class);
 		if(iterator != null)

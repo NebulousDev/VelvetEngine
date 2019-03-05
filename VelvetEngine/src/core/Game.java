@@ -68,13 +68,16 @@ public abstract class Game {
 		if(initialized && state == State.RUNNING)
 		{
 			onUpdate();
-			updateSystem.updateAll(this, entityManager, 0.0f);
+			updateSystem.update(this, entityManager, 0.0f);
 		}
 	}
 	
 	public void render()
 	{
-		renderSystem.renderWorld(entityManager);
+		if(initialized && state == State.RUNNING)
+		{
+			renderSystem.update(this, entityManager, 0.0f);
+		}
 	}
 	
 	public void pause()

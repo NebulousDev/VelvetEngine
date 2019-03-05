@@ -1,11 +1,13 @@
 package graphics.system;
 
+import core.Game;
 import entity.EntityManager;
 import entity.System;
 
 public class RenderSystem implements System {
 
-	public void renderWorld(EntityManager entityManager)
+	@Override
+	public void update(Game game, EntityManager manager, float delta)
 	{
 		
 	}
@@ -18,6 +20,7 @@ public class RenderSystem implements System {
 	@Override
 	public String getLocalName()
 	{
-		return null;
+		return "RenderSystem";
 	}
+
 }
