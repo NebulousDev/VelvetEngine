@@ -1,6 +1,7 @@
 package loaders.ini;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -84,6 +85,15 @@ public class INIConfig {
 	{
 		try
 		{
+			// Create file if it does not exist
+			File iniFile = new File(filepath);
+			boolean test = iniFile.createNewFile();
+			if(test)
+			{
+				this.save(filepath);
+				System.out.println("[VelvetINI] New config file created: " + filepath);
+			}
+			
 			BufferedReader reader = new BufferedReader(new FileReader(filepath));
 			
 			String line = null;
