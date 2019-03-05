@@ -1,6 +1,5 @@
 import core.Application;
 import core.Game;
-import entity.Component;
 import entity.Entity;
 import entity.camera.CameraComponent;
 import entity.camera.PerspectiveCameraComponent;
@@ -18,9 +17,9 @@ import graphics.component.PointLightComponent;
 import graphics.component.SpotLightComponent;
 import graphics.system.LineRenderer;
 import graphics.system.PhongRenderer;
-import input.Buttons;
 import input.Input;
 import input.Keys;
+import input.MouseButton;
 import math.Matrix4f;
 import math.Quaternion;
 import math.Vector2f;
@@ -44,21 +43,6 @@ public class Sandbox extends Game
 	@SuppressWarnings("unused")
 	protected void onLoad()
 	{
-//		float[] data = 
-//		{
-//			1.0f, 2.0f, 3.0f, 0.0f,
-//			4.0f, 5.0f, 6.0f, 0.0f,
-//			7.0f, 8.0f, 9.0f, 0.0f,
-//			0.0f, 0.0f, 0.0f, 1.0f
-//		};
-//				
-//		Matrix4f id = new Matrix4f();
-//		Matrix4f mat = new Matrix4f(data);
-//		Matrix4f mat = new Matrix4f(id.elements);
-//		
-//		System.out.println(mat);
-//		System.out.println(mat.invert());
-		
 		/* Initialize Resources */
 		
 		Graphics gfx = getGraphics();
@@ -68,23 +52,19 @@ public class Sandbox extends Game
 		resourceManager.addPath("assets");
 		
 		/* Load Resources */
-		
-		Model 		testScene	= resourceManager.getResource(Model.class, "testscene");
-		Model 		sponza 		= resourceManager.getResource(Model.class, "sponza");
-		Model  		standard 	= resourceManager.getResource(Model.class, "standard");
-		Model  		dragon 		= resourceManager.getResource(Model.class, "dragon");
+
 		Model  		bunny 		= resourceManager.getResource(Model.class, "bunny");
+		Model  		sponza 		= resourceManager.getResource(Model.class, "sponza");
 		Texture 	default1 	= resourceManager.getResource(Texture.class, "default1");
 		Texture 	default2 	= resourceManager.getResource(Texture.class, "default2");
-		Texture 	marble 		= resourceManager.getResource(Texture.class, "marble");
 		Texture 	brick 		= resourceManager.getResource(Texture.class, "brickwall");
-		Texture 	brick_n 	= resourceManager.getResource(Texture.class, "brickwall_n");
+		Texture 	brick_n 	= resourceManager.getResource(Texture.class, "norm");
 		
 		/* Setup Entities */
 		
 		class RotatingComponent implements UpdateComponent
 		{
-			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 1f);
+			Quaternion rot = new Quaternion().setAxisAngle(Axis.UP, 0.25f);
 
 			@Override
 			public void update(Game game, Entity entity, float delta)
@@ -94,20 +74,12 @@ public class Sandbox extends Game
 					transform.orientation.rotate(rot);
 			}
 			
-			@Override
-			public Class<? extends Component> getCastType()
-			{
-				return UpdateComponent.class;
-			}
 		}
-		
-		RotatingComponent rotatingComponent = new RotatingComponent();
-		
-		UpdateComponent test = UpdateComponent.class.cast(rotatingComponent);
 
 		PhongMaterialComponent 	defaultMaterial		= new PhongMaterialComponent(brick, brick_n, 1.0f, 1024.0f);
 		
 		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f), new Quaternion());
+//		TransformComponent 		groundTransform 	= new TransformComponent(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Quaternion());
 		ModelComponent 			groundMesh 			= new ModelComponent(sponza);
 		PhongRenderComponent	groundRender		= new PhongRenderComponent();
 		Entity 					groundEntity 		= getEntityManager().createEntity("entity_ground", groundTransform, groundMesh, defaultMaterial, groundRender);
@@ -115,10 +87,7 @@ public class Sandbox extends Game
 		TransformComponent 		bunnyTransform 		= new TransformComponent(new Vector3f(0.0f, 2.0f, 0.0f), new Vector3f(2.0f, 2.0f, 2.0f), new Quaternion());
 		ModelComponent 			bunnyMesh 			= new ModelComponent(bunny);
 		PhongRenderComponent	bunnyRender			= new PhongRenderComponent();
-		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, rotatingComponent, defaultMaterial, bunnyRender, test);
-		
-		ModelComponent			standardMesh		= new ModelComponent(standard);
-		PhongRenderComponent	standatdRender		= new PhongRenderComponent();
+		Entity 					bunnyEntity 		= getEntityManager().createEntity("entity_bunny", bunnyTransform, bunnyMesh, new RotatingComponent(), defaultMaterial, bunnyRender);
 		
 		/* Setup Lights */
 		
@@ -126,12 +95,12 @@ public class Sandbox extends Game
 		
 		Vector3f direction = new Vector3f(0.0f, -1.0f, 0.5f);
 		Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
-		float intensity = 0.8f;
+		float intensity = 0.2f;
 		DirectionalLightComponent dirLightComponent1 = new DirectionalLightComponent(direction, color, intensity);
 		
 		Vector3f direction2 = new Vector3f(0.0f, -1.0f, -0.8f);
 		Vector3f color2 = new Vector3f(0.1f, 0.1f, 1.0f);
-		float intensity2 = 0.1f;
+		float intensity2 = 0.05f;
 		DirectionalLightComponent dirLightComponent2 = new DirectionalLightComponent(direction2, color2, intensity2);
 		
 		Entity dirLight1Entity = getEntityManager().createEntity("dirLight1", dirLightComponent1);
@@ -264,7 +233,7 @@ public class Sandbox extends Game
 			cameraTransform.orientation.rotateLocal(pitch);
 		}
 		
-		if(Input.buttonPressed(Buttons.BUTTON_LEFT)) Input.captureMouse(false);
+		if(Input.buttonPressed(MouseButton.BUTTON_LEFT)) Input.captureMouse(false);
 		if(Input.keyPressed(Keys.KEY_ESCAPE)) Input.releaseMouse();
 	
 		Graphics gfx = getGraphics();
